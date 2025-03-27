@@ -1,17 +1,104 @@
-<!-- usuarios/templates/usuarios/agregarrol.html -->
 {% extends 'plantilla.html' %}
 
 {% block contenido %}
-  <div class="card">
-    <div class="card-header">
-      <h4 class="card-title">Agregar Nuevo Rol</h4>
+<!-- Mensajes -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Descripción -->
+<div class="card mb-3">
+    <div class="card-body bg-light">
+        <h5 class="card-title">Gestión de Roles</h5>
+        <p class="card-text">Aquí puedes administrar los roles del sistema, agregando, editando o eliminando roles según sea necesario.</p>
     </div>
-    <div class="card-body">
-      <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
+</div>
+
+<!-- Listar Roles -->
+<section id="listar-roles" class="row match-height">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Lista de Roles</h4>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarRol">Agregar Rol</button>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <!-- Tabla de roles -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nombre del Rol</th>
+                                    <th>Descripción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rol in roles %}
+                                    <tr>
+                                        <td>{{ rol.nombre_rol }}</td>
+                                        <td>{{ rol.descripcion|default:"Sin descripción" }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarRolModal{{ rol.id }}">
+                                                Editar
+                                            </button>
+                                            <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+                                        </td>
+                                        
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No hay roles registrados.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</section>
+<!--/ Listar Roles -->
+
+<!-- Modal Agregar Rol -->
+<div class="modal fade" id="modalAgregarRol" tabindex="-1" role="dialog" aria-labelledby="modalAgregarRolLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAgregarRolLabel">Agregar Nuevo Rol</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'guardarrol' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nombre_rol">Nombre del Rol <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nombre_rol" name="nombre_rol" required>
+                        <small class="form-text text-muted">El nombre del rol debe ser único (máximo 50 caracteres).</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción (Opcional)</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                        <small class="form-text text-muted">Proporcione una descripción del rol, si lo desea.</small>
+                    </div>
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Agregar Rol</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ Modal Agregar Rol -->
 {% endblock %}
