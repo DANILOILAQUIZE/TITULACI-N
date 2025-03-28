@@ -50,10 +50,68 @@
                                             <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarRolModal{{ rol.id }}">
                                                 Editar
                                             </button>
-                                            <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+                                            
+
+                                            <!-- Botón para abrir el modal -->
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#eliminarRolModal{{ rol.id }}">
+                                            Eliminar
+                                            </button>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="eliminarRolModal{{ rol.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarRolModalLabel{{ rol.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarRolModalLabel{{ rol.id }}">Confirmar Eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar el rol <strong>{{ rol.nombre_rol }}</strong>? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <a href="{% url 'eliminarrol' rol.id %}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
                                         </td>
-                                        
                                     </tr>
+
+                                    <!-- Modal Editar Rol (Debe ir dentro del bucle for) -->
+                                    <div class="modal fade" id="editarRolModal{{ rol.id }}" tabindex="-1" role="dialog" aria-labelledby="editarRolModalLabel{{ rol.id }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editarRolModalLabel{{ rol.id }}">Editar Rol</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" action="{% url 'editar_rol' rol.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="form-group">
+                                                            <label for="nombre_rol">Nombre del Rol</label>
+                                                            <input type="text" class="form-control" name="nombre_rol" value="{{ rol.nombre_rol }}" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descripcion">Descripción</label>
+                                                            <textarea class="form-control" name="descripcion" rows="3">{{ rol.descripcion }}</textarea>
+                                                        </div>
+                                                        <div class="form-group text-right">
+                                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Fin del Modal Editar Rol -->
                                 {% empty %}
                                     <tr>
                                         <td colspan="3" class="text-center">No hay roles registrados.</td>
@@ -67,7 +125,7 @@
         </div>
     </div>
 </section>
-<!--/ Listar Roles -->
+
 
 <!-- Modal Agregar Rol -->
 <div class="modal fade" id="modalAgregarRol" tabindex="-1" role="dialog" aria-labelledby="modalAgregarRolLabel" aria-hidden="true">
