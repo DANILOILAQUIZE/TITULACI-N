@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'Aplicaciones.administracion',
     'Aplicaciones.elecciones',
     'Aplicaciones.padron',
-    'Aplicaciones.usuarios',
     'Aplicaciones.votacion',
+    'Aplicaciones.usuarios',
     
 ]
 
