@@ -108,16 +108,17 @@
     
             <!-- Padrón con submenú -->
             <li class="nav-item">
-                <a href="#"><i class="ft-droplet"></i><span class="menu-title" data-i18n="">Padrón</span></a>
+                <a href="#"><i class="ft-list"></i><span class="menu-title" data-i18n="">Padrón</span></a>
                 <ul class="menu-content">
-                    <li><a class="menu-item" href="icons.html">Opción 1</a></li>
-                    <li><a class="menu-item" href="icons2.html">Opción 2</a></li>
+                    <li><a class="menu-item" href="{% url 'gestion_padron' %}">AgregarPadron</a></li>
+                    <li><a class="menu-item" href="{% url 'generar_credenciales' %}">Contraseña</a></li>
+                    <li><a class="menu-item" href="{% url 'agregarEmail' %}">credenciales</a></li>
                 </ul>
             </li>
     
             <!-- Cards con submenú -->
             <li class="nav-item">
-                <a href="#"><i class="ft-layers"></i><span class="menu-title" data-i18n="">Cards</span></a>
+                <a href="#"><i class="ft-plus-circle"></i><span class="menu-title" data-i18n="">Candidatos</span></a>
                 <ul class="menu-content">
                     <li><a class="menu-item" href="cards-basic.html">Básico</a></li>
                     <li><a class="menu-item" href="cards-advanced.html">Avanzado</a></li>
@@ -126,7 +127,7 @@
     
             <!-- Buttons con submenú -->
             <li class="nav-item">
-                <a href="#"><i class="ft-box"></i><span class="menu-title" data-i18n="">Buttons</span></a>
+                <a href="#"><i class="ft-check-circle"></i><span class="menu-title" data-i18n="">Votantes</span></a>
                 <ul class="menu-content">
                     <li><a class="menu-item" href="buttons-basic.html">Botón 1</a></li>
                     <li><a class="menu-item" href="buttons-advanced.html">Botón 2</a></li>
@@ -135,12 +136,16 @@
     
             <!-- Typography -->
             <li class="nav-item">
-                <a href="typography.html"><i class="ft-bold"></i><span class="menu-title" data-i18n="">Typography</span></a>
+                <a href="#"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Resultado</span></a>
+                <ul class="menu-content">
+                  <li><a class="menu-item" href="buttons-basic.html">Botón 1</a></li>
+                  <li><a class="menu-item" href="buttons-advanced.html">Botón 2</a></li>
+              </ul>
             </li>
     
             <!-- Tables -->
-            <li class="nav-item">
-                <a href="tables.html"><i class="ft-credit-card"></i><span class="menu-title" data-i18n="">Tables</span></a>
+              <li class="nav-item">
+                  <a href="tables.html"><i class="ft-settings"></i><span class="menu-title" data-i18n="">Configuración</span></a>
             </li>
     
             <!-- Form Elements -->

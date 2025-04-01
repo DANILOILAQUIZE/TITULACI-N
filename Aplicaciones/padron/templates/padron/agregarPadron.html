@@ -1,0 +1,704 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+<!-- Gestión Académica -->
+<section id="gestion-academica" class="row match-height">
+    <!-- Sección de Grados -->
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Lista de Grados</h4>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarGrado">
+                    <i class="la la-plus"></i> Agregar Grado
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    {% if grados.exists %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th class="text-center">N° Paralelos</th>
+                                    <th class="text-center">N° Estudiantes</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grado in grados %}
+                                <tr>
+                                    <td>{{ grado.nombre }}</td>
+                                    <td class="text-center">{{ grado.paralelos.count }}</td>
+                                    <td class="text-center">{{ grado.estudiantes.count }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarGradoModal{{ grado.id }}">
+                                                <i class="la la-edit"></i> Editar
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#eliminarGradoModal{{ grado.id }}">
+                                                <i class="la la-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="la la-info-circle"></i> No hay grados registrados.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Paralelos -->
+    <div class="col-sm-12 mt-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Lista de Paralelos</h4>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarParalelo" {% if not grados.exists %}disabled title="Primero debe agregar un grado"{% endif %}>
+                    <i class="la la-plus"></i> Agregar Paralelo
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    {% if paralelos.exists %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Grado</th>
+                                    <th class="text-center">N° Estudiantes</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for paralelo in paralelos %}
+                                <tr>
+                                    <td>{{ paralelo.nombre }}</td>
+                                    <td>{{ paralelo.grado.nombre }}</td>
+                                    <td class="text-center">{{ paralelo.estudiantes.count }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarParaleloModal{{ paralelo.id }}">
+                                                <i class="la la-edit"></i> Editar
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#eliminarParaleloModal{{ paralelo.id }}">
+                                                <i class="la la-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="la la-info-circle"></i> 
+                        {% if grados.exists %}
+                            No hay paralelos registrados.
+                        {% else %}
+                            Primero debe agregar al menos un grado.
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Estudiantes -->
+    <div class="col-sm-12 mt-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Lista de Estudiantes</h4>
+                <div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarEstudiante" {% if not grados.exists or not paralelos.exists %}disabled title="Primero debe agregar grados y paralelos"{% endif %}>
+                        <i class="la la-user-plus"></i> Agregar Manual
+                    </button>
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalImportarExcel" {% if not grados.exists or not paralelos.exists %}disabled title="Primero debe agregar grados y paralelos"{% endif %}>
+                        <i class="la la-file-excel"></i> Importar Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    {% if estudiantes %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Cédula</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Grado/Paralelo</th>
+                                    <th>Correo</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for estudiante in estudiantes %}
+                                <tr>
+                                    <td>{{ estudiante.cedula }}</td>
+                                    <td>{{ estudiante.nombre }} {{ estudiante.apellidos }}</td>
+                                    <td>{{ estudiante.grado }} - {{ estudiante.paralelo }}</td>
+                                    <td>{{ estudiante.correo }}</td>
+                                    <td class="text-center">
+                                        <span class="badge badge-{% if estudiante.estado == 'activo' %}success{% else %}danger{% endif %}">
+                                            {{ estudiante.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarEstudianteModal{{ estudiante.id }}">
+                                                <i class="la la-edit"></i> Editar
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#cambiarEstadoModal{{ estudiante.id }}">
+                                                {% if estudiante.estado == 'activo' %}
+                                                    <i class="la la-ban"></i> Desactivar
+                                                {% else %}
+                                                    <i class="la la-check"></i> Activar
+                                                {% endif %}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <!-- Paginación -->
+                        {% if estudiantes.has_other_pages %}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                {% if estudiantes.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ estudiantes.previous_page_number }}#gestion-academica">&laquo;</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                                {% endif %}
+                                
+                                {% for i in estudiantes.paginator.page_range %}
+                                {% if estudiantes.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}#gestion-academica">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                                
+                                {% if estudiantes.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ estudiantes.next_page_number }}#gestion-academica">&raquo;</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="la la-info-circle"></i> 
+                        {% if grados.exists and paralelos.exists %}
+                            No hay estudiantes registrados.
+                        {% else %}
+                            Primero debe agregar grados y paralelos.
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODALES -->
+
+<!-- Modal Agregar Grado -->
+<div class="modal fade" id="modalAgregarGrado" tabindex="-1" role="dialog" aria-labelledby="modalAgregarGradoLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="la la-plus-circle"></i> Agregar Grado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'agregar_grado' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Grado</label>
+                        <input type="text" class="form-control" name="nombre" required>
+                        <small class="form-text text-muted">Ejemplo: "Primero", "Segundo", etc.</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Grado -->
+{% for grado in grados %}
+<div class="modal fade" id="editarGradoModal{{ grado.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="la la-edit"></i> Editar Grado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'editar_grado' grado.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nombre del Grado</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ grado.nombre }}" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Eliminar Grado -->
+{% for grado in grados %}
+<div class="modal fade" id="eliminarGradoModal{{ grado.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="la la-trash"></i> Confirmar Eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar el grado <strong>"{{ grado.nombre }}"</strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer y eliminará todos sus paralelos y estudiantes asociados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <a href="{% url 'eliminar_grado' grado.id %}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Agregar Paralelo -->
+<div class="modal fade" id="modalAgregarParalelo" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="la la-plus-circle"></i> Agregar Paralelo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'agregar_paralelo' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nombre del Paralelo</label>
+                        <input type="text" class="form-control" name="nombre" required maxlength="5">
+                        <small class="form-text text-muted">Ejemplo: "A", "B" (Máx. 5 caracteres)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Grado</label>
+                        <select class="form-control" name="grado" required>
+                            <option value="" disabled selected>-- Seleccione --</option>
+                            {% for grado in grados %}
+                            <option value="{{ grado.id }}">{{ grado.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Paralelo -->
+{% for paralelo in paralelos %}
+<div class="modal fade" id="editarParaleloModal{{ paralelo.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="la la-edit"></i> Editar Paralelo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'editar_paralelo' paralelo.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nombre del Paralelo</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ paralelo.nombre }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Grado</label>
+                        <select class="form-control" name="grado" required>
+                            {% for grado in grados %}
+                            <option value="{{ grado.id }}" {% if grado.id == paralelo.grado.id %}selected{% endif %}>{{ grado.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Eliminar Paralelo -->
+{% for paralelo in paralelos %}
+<div class="modal fade" id="eliminarParaleloModal{{ paralelo.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="la la-trash"></i> Confirmar Eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar el paralelo <strong>"{{ paralelo.nombre }}"</strong> del grado {{ paralelo.grado.nombre }}?</p>
+                <p class="text-danger">Esta acción no se puede deshacer y eliminará todos los estudiantes asociados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <a href="{% url 'eliminar_paralelo' paralelo.id %}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Agregar Estudiante -->
+<div class="modal fade" id="modalAgregarEstudiante" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="la la-user-plus"></i> Agregar Estudiante</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'agregar_estudiante' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cédula <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="cedula" required maxlength="10" pattern="[0-9]{10}" title="10 dígitos">
+                            </div>
+                            <div class="form-group">
+                                <label>Nombres <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="apellidos" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Correo <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="correo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Grado <span class="text-danger">*</span></label>
+                                <select class="form-control" name="grado" id="selectGrado" required>
+                                    <option value="" disabled selected>-- Seleccione --</option>
+                                    {% for grado in grados %}
+                                    <option value="{{ grado.id }}">{{ grado.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Paralelo <span class="text-danger">*</span></label>
+                                <select class="form-control" name="paralelo" id="selectParalelo" required>
+                                    <option value="" disabled selected>-- Seleccione --</option>
+                                    {% for paralelo in paralelos %}
+                                    <option value="{{ paralelo.id }}" data-grado="{{ paralelo.grado.id }}">{{ paralelo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Importar Excel -->
+<div class="modal fade" id="modalImportarExcel" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="la la-file-excel"></i> Importar desde Excel</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <h6><i class="la la-info-circle"></i> Instrucciones:</h6>
+                    <ul>
+                        <li>Los grados y paralelos se crearán automáticamente si no existen</li>
+                        <li>Formato .xlsx o .xls</li>
+                        <li>Columnas requeridas: Cédula, Nombres, Apellidos, Correo, Grado, Paralelo</li>
+                        <li>Primera fila como encabezado</li>
+                        <li><a href="{% url 'descargar_plantilla' %}" class="alert-link">Descargar plantilla</a></li>
+                    </ul>
+                </div>
+                
+                <form method="POST" action="{% url 'importar_estudiantes_excel' %}" enctype="multipart/form-data" id="formImportarExcel">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Archivo Excel <span class="text-danger">*</span></label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="archivo_excel" name="archivo_excel" accept=".xlsx,.xls" required>
+                            <label class="custom-file-label" for="archivo_excel">Seleccionar archivo...</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="sobreescribir" name="sobreescribir">
+                            <label class="custom-control-label" for="sobreescribir">Sobreescribir estudiantes existentes</label>
+                        </div>
+                    </div>
+                    
+                    <div class="progress mb-3 d-none" id="progressBarContainer">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success" id="btnImportar">Importar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Estudiante -->
+{% for estudiante in estudiantes %}
+<div class="modal fade" id="editarEstudianteModal{{ estudiante.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="la la-edit"></i> Editar Estudiante</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'editar_estudiante' estudiante.id %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cédula</label>
+                                <input type="text" class="form-control" value="{{ estudiante.cedula }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Nombres <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nombre" value="{{ estudiante.nombre }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="apellidos" value="{{ estudiante.apellidos }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Correo <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="correo" value="{{ estudiante.correo }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Grado <span class="text-danger">*</span></label>
+                                <select class="form-control" name="grado" required>
+                                    {% for grado in grados %}
+                                    <option value="{{ grado.id }}" {% if grado.id == estudiante.grado.id %}selected{% endif %}>{{ grado.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Paralelo <span class="text-danger">*</span></label>
+                                <select class="form-control" name="paralelo" required>
+                                    {% for paralelo in estudiante.grado.paralelos.all %}
+                                    <option value="{{ paralelo.id }}" {% if paralelo.id == estudiante.paralelo.id %}selected{% endif %}>{{ paralelo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Cambiar Estado Estudiante -->
+{% for estudiante in estudiantes %}
+<div class="modal fade" id="cambiarEstadoModal{{ estudiante.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    {% if estudiante.estado == 'activo' %}
+                        <i class="la la-ban"></i> Desactivar Estudiante
+                    {% else %}
+                        <i class="la la-check"></i> Activar Estudiante
+                    {% endif %}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Confirmar que desea 
+                    {% if estudiante.estado == 'activo' %}
+                        desactivar
+                    {% else %}
+                        activar
+                    {% endif %} 
+                    a <strong>{{ estudiante.nombre }} {{ estudiante.apellidos }}</strong>?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{% url 'cambiar_estado_estudiante' estudiante.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        {% if estudiante.estado == 'activo' %}
+                            Desactivar
+                        {% else %}
+                            Activar
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- JavaScript -->
+<script>
+$(document).ready(function() {
+    // Actualizar nombre de archivo en input file
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+    
+    // Cargar paralelos según grado seleccionado
+    $('#selectGrado').change(function() {
+        let gradoId = $(this).val();
+        if (gradoId) {
+            $.ajax({
+                url: '{% url "get_paralelos_by_grado" %}',
+                data: { 'grado_id': gradoId },
+                success: function(data) {
+                    $('#selectParalelo').empty().append('<option value="" disabled selected>-- Seleccione --</option>');
+                    $.each(data, function(key, value) {
+                        $('#selectParalelo').append('<option value="' + value.id + '">' + value.nombre + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#selectParalelo').empty().append('<option value="" disabled selected>-- Seleccione --</option>');
+        }
+    });
+    
+    // Manejar importación Excel con barra de progreso
+    $('#formImportarExcel').submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $('#progressBarContainer').removeClass('d-none');
+        $('#btnImportar').prop('disabled', true);
+        
+        $.ajax({
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total) * 100;
+                        $('#progressBar').css('width', percentComplete + '%').html(percentComplete.toFixed(2) + '%');
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.message);
+                    $('#btnImportar').prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('Error al importar');
+                $('#btnImportar').prop('disabled', false);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

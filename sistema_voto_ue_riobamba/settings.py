@@ -138,3 +138,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #LOGIN
 AUTH_USER_MODEL = 'usuarios.Usuarios'
+
+
+#CORREO ELECTRONICO
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'darwin.ilaquize1102@utc.edu.ec'  
+EMAIL_HOST_PASSWORD = 'juuk pglj emvf wmhv'  
+ADMIN_EMAIL = 'darwin.ilaquize1102@utc.edu.ec'
