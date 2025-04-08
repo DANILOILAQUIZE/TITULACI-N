@@ -3,12 +3,24 @@ from .models import Roles, Usuarios
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+
+from Aplicaciones.padron.models import PadrónElectoral
+
+import random
+import string
+from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 # Create your views here.
 
 
 
+
 def dashboard(request):
-    return render(request, 'rol/dashboard.html')
+    context = {
+        'total_usuarios': Usuarios.objects.count(),
+        'total_estudiantes': PadrónElectoral.objects.count(),
+    }
+    return render(request, 'rol/dashboard.html', context)
 
 #CREAMOS LAS VIEWS PARA LOS ROLES
 
@@ -65,38 +77,56 @@ def agregarUsuario(request):
     usuarios = Usuarios.objects.all()  # Obtener todos los usuarios para la tabla
     return render(request, 'usuarios/agregarUsuario.html', {'roles': roles, 'usuarios': usuarios})
 
-# Vista para guardar el usuario
+def generar_contraseña_aleatoria(longitud=8):
+    caracteres = string.ascii_letters + string.digits
+    return ''.join(random.choice(caracteres) for _ in range(longitud))
+
 def guardarUsuario(request):
     if request.method == 'POST':
+        cedula = request.POST['cedula']  # Ahora se usa como username
         nombre = request.POST['nombre']
         apellido = request.POST['apellido']
         email = request.POST['email']
-        username = request.POST['username']
-        password = request.POST['password']
         id_rol = request.POST['id_rol']
         activo = request.POST.get('activo', 'off') == 'on'
-        imagen = request.FILES.get('imagen')  # Obtener la imagen del formulario
+        imagen = request.FILES.get('imagen')
 
-        # Verificar si el username ya está en uso
-        if Usuarios.objects.filter(username=username).exists():
-            messages.error(request, 'El nombre de usuario ya está en uso. Por favor, elige otro.')
+        # Verificar si la cédula (username) ya está registrada
+        if Usuarios.objects.filter(username=cedula).exists():
+            messages.error(request, 'La cédula ya está registrada como nombre de usuario.')
             return redirect('agregarUsuario')
 
-        # Crear el usuario
+        # Generar contraseña aleatoria
+        password_aleatoria = generar_contraseña_aleatoria()
+
+        # Crear usuario
         usuario = Usuarios(
+            username=cedula,
             nombre=nombre,
             apellido=apellido,
             email=email,
-            username=username,
-            password=make_password(password),
+            password=make_password(password_aleatoria),
             id_rol_id=id_rol,
             activo=activo,
             imagen=imagen
         )
         usuario.save()
 
-        messages.success(request, 'Usuario agregado con éxito.')
-        return redirect('agregarUsuario')  # Volver a la lista de usuarios
+        # Enviar la contraseña por correo electrónico
+        try:
+            send_mail(
+                'Credenciales de acceso',
+                f'Hola {nombre}, tu usuario ha sido creado.\n\nCédula (usuario): {cedula}\nContraseña: {password_aleatoria}\n\nPor favor, cambia tu contraseña al iniciar sesión.',
+                'darwin.ilaquize1102@utc.edu.ec',  # Remitente
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.warning(request, f'Usuario creado, pero ocurrió un error al enviar el correo: {str(e)}')
+            return redirect('agregarUsuario')
+
+        messages.success(request, 'Usuario agregado con éxito y contraseña enviada al correo.')
+        return redirect('agregarUsuario')
 
     roles = Roles.objects.all()
     return render(request, 'usuarios/agregarUsuario.html', {'roles': roles})
@@ -143,13 +173,9 @@ def eliminarUsuario(request, id):
     # Obtener al usuario con el id proporcionado
     usuario = get_object_or_404(Usuarios, id=id)
 
-    # Si el usuario está activo, desactivarlo, sino no hacer nada
-    if usuario.activo:
-        usuario.activo = False  # Cambiar el estado a desactivado
-        usuario.save()
-        messages.success(request, "Usuario desactivado con éxito.")
-    else:
-        messages.info(request, "El usuario ya está desactivado.")
-    
-    # Redirigir a la vista de usuarios
+    # Eliminar el usuario definitivamente
+    usuario.delete()
+    messages.success(request, "Usuario eliminado con éxito.")
+
+    # Redirigir a la vista donde se listan/agregan usuarios
     return redirect('agregarUsuario')

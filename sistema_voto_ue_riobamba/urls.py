@@ -25,5 +25,6 @@ urlpatterns = [
     path('', include('Aplicaciones.votacion.urls')),
     path('', include('Aplicaciones.administracion.urls')),
     path('', include('Aplicaciones.usuarios.urls')),
+    path('', include('Aplicaciones.periodo.urls')),
     
 ]

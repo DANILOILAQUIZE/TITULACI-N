@@ -1,0 +1,208 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+
+
+<!-- Gestión de Periodos Académicos -->
+<section id="periodos-academicos" class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row w-100">
+                    <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
+                        <h4 class="card-title mb-0">Periodos Académicos</h4>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+                            <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="BUSCAR TODO">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarPeriodo">
+                                <i class="la la-plus"></i> Nuevo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-content">
+                <div class="card-body">
+                    
+                    
+                    {% if periodos.exists %}
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>nombre</th>
+                                    <th>fecha inicio</th>
+                                    <th>fecha fin</th>
+                                    <th>duración</th>
+                                    <th>estado</th>
+                                    <th>acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for periodo in periodos %}
+                                <tr>
+                                    <td>{{ periodo.nombre }}</td>
+                                    <td>{{ periodo.fecha_inicio|date:"d/m/Y" }}</td>
+                                    <td>{{ periodo.fecha_fin|date:"d/m/Y" }}</td>
+                                    <td>{{ periodo.duracion }} días</td>
+                                    <td>
+                                        <span class="status-badge {% if periodo.estado == 'Activo' %}status-active{% else %}status-inactive{% endif %}">
+                                            {{ periodo.estado }}
+                                        </span>
+                                        
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarPeriodoModal{{ periodo.id }}">
+                                            <i class="la la-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarPeriodoModal{{ periodo.id }}">
+                                            <i class="la la-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="la la-info-circle"></i> No hay periodos académicos registrados.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Agregar Periodo -->
+<div class="modal fade" id="modalAgregarPeriodo" tabindex="-1" role="dialog" aria-labelledby="modalAgregarPeriodoLabel">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'guardarPeriodo' %}" id="formPeriodo">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <h5 class="mb-3"><i class="la la-plus-circle"></i> Nuevo Periodo Académico</h5>
+                    
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Periodo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="nombre" required>
+                        <small class="form-text text-muted">Ejemplo: "2023-2024", "Primer Semestre 2024"</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="fecha_inicio">Fecha Inicio <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="fecha_inicio" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="fecha_fin">Fecha Fin <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="fecha_fin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="text-right mt-4">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Editar Periodo -->
+{% for periodo in periodos %}
+<div class="modal fade" id="editarPeriodoModal{{ periodo.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="la la-edit"></i> Editar Periodo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'editar_periodo' periodo.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nombre del Periodo</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ periodo.nombre }}" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fecha Inicio</label>
+                                <input type="date" class="form-control" name="fecha_inicio" value="{{ periodo.fecha_inicio|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fecha Fin</label>
+                                <input type="date" class="form-control" name="fecha_fin" value="{{ periodo.fecha_fin|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal Eliminar Periodo -->
+{% for periodo in periodos %}
+<div class="modal fade" id="eliminarPeriodoModal{{ periodo.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="la la-trash"></i> Confirmar Eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar el periodo académico <strong>"{{ periodo.nombre }}"</strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer y eliminará todos los grados, paralelos y estudiantes asociados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <a href="{% url 'eliminar_periodo' periodo.id %}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+$(document).ready(function() {
+    // Validación de fechas en el formulario
+    $('#formPeriodo').submit(function(e) {
+        const fechaInicio = new Date($('input[name="fecha_inicio"]').val());
+        const fechaFin = new Date($('input[name="fecha_fin"]').val());
+        
+        if (fechaFin <= fechaInicio) {
+            alert('La fecha de fin debe ser posterior a la fecha de inicio');
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    });
+    
+    // Ordenar por fecha más reciente primero
+    $('table').DataTable({
+        order: [[1, 'desc']],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+        }
+    });
+}); 
+</script>
+{% endblock %}

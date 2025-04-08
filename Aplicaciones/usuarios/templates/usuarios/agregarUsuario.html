@@ -1,230 +1,254 @@
 {% extends 'plantilla.html' %}
 
 {% block contenido %}
-<!-- Mensajes -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
 
-<!-- Agregar Usuario -->
+
 <div class="card mb-3">
-    <div class="card-body bg-light">
-        <h5 class="card-title">Gestión de Usuarios</h5>
-        <p class="card-text">Aquí puedes administrar los usuarios del sistema, agregando, editando o eliminando usuarios según sea necesario.</p>
-    </div>
+  <div class="card-body bg-light">
+    <h5 class="card-title">Gestión de Usuarios</h5>
+    <p class="card-text">Aquí puedes administrar los usuarios del sistema, agregando, editando o eliminando usuarios según sea necesario.</p>
+  </div>
 </div>
 
-<!-- Listar Usuarios -->
+
 <section id="listar-usuarios" class="row match-height">
-    <div class="col-sm-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Lista de Usuarios</h4>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarUsuario">Agregar Usuario</button>
-            </div>
-            <div class="card-content">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Email</th>
-                                    <th>Rol</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for usuario in usuarios %}
-                                    <tr>
-                                        <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
-                                        <td>{{ usuario.email }}</td>
-                                        <td>{{ usuario.id_rol.nombre_rol }}</td>
-                                        <td>
-                                            {% if usuario.activo %}
-                                                Activo
-                                            {% else %}
-                                                Desactivado
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarUsuarioModal{{ usuario.id }}">
-                                                Editar
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#eliminarUsuarioModal{{ usuario.id }}">
-                                                {% if usuario.activo %}
-                                                    Eliminar
-                                                {% else %}
-                                                    No se puede desactivar
-                                                {% endif %}
-                                            </button>
-                                        
-                                            <!-- Modal de Confirmación para desactivar -->
-                                            <div class="modal fade" id="eliminarUsuarioModal{{ usuario.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarUsuarioModalLabel{{ usuario.id }}" aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="eliminarUsuarioModalLabel{{ usuario.id }}">Confirmar Desactivación</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            ¿Estás seguro de que deseas desactivar al usuario <strong>{{ usuario.nombre }}</strong>? Esta acción no se puede deshacer.
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                                            <a href="{% url 'eliminarUsuario' usuario.id %}" class="btn btn-danger">Desactivar</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        
-                                    </tr>
-
-                                    <!-- Modal Editar Usuario -->
-                                    <div class="modal fade" id="editarUsuarioModal{{ usuario.id }}" tabindex="-1" role="dialog" aria-labelledby="editarUsuarioModalLabel{{ usuario.id }}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="editarUsuarioModalLabel{{ usuario.id }}">Editar Usuario: {{ usuario.nombre }}</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form method="POST" action="{% url 'editarUsuario' usuario.id %}" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="id" value="{{ usuario.id }}">
-
-                                                        <div class="form-group">
-                                                            <label for="nombre">Nombre <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="apellido">Apellido</label>
-                                                            <input type="text" class="form-control" id="apellido" name="apellido" value="{{ usuario.apellido|default:'' }}">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="email">Email <span class="text-danger">*</span></label>
-                                                            <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="username">Username <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
-                                                        </div>
-                                                        <!-- Contraseña opcional 
-                                                        <div class="form-group">
-                                                            <label for="password">Contraseña (opcional)</label>
-                                                            <input type="password" class="form-control" id="password" name="password">
-                                                        </div>
-                                                        -->
-                                                        <div class="form-group">
-                                                            <label for="id_rol">Rol <span class="text-danger">*</span></label>
-                                                            <select class="form-control" id="id_rol" name="id_rol" required>
-                                                                {% for rol in roles %}
-                                                                    <option value="{{ rol.id }}" {% if rol.id == usuario.id_rol_id %}selected{% endif %}>{{ rol.nombre_rol }}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="activo">Activo</label>
-                                                            <input type="checkbox" id="activo" name="activo" {% if usuario.activo %}checked{% endif %}>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="imagen">Imagen</label>
-                                                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="4" class="text-center">No hay usuarios registrados.</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+  <div class="col-sm-12">
+    <div class="card">
+      
+    
+      <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <h4 class="card-title mb-2 mb-md-0">Lista de Usuarios</h4>
+        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+            <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar usuario...">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarUsuario">
+                <i class="la la-plus"></i> Nuevo
+            </button>
         </div>
     </div>
+    
+
+  
+      <div class="card-content">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                 
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for usuario in usuarios %}
+                  <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+                 
+                    <td>{{ usuario.id_rol.nombre_rol }}</td>
+                    <td>
+                      {% if usuario.activo %} Activo {% else %} Desactivado {% endif %}
+                    </td>
+                    <td class="action-buttons">
+                      
+                      <!-- 💬 BOTÓN EDITAR -->
+                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarUsuarioModal{{ usuario.id }}">
+                        <i class="la la-edit"></i>
+                      </button>
+
+               
+                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarUsuarioModal{{ usuario.id }}">
+                        <i class="la la-trash"></i>
+                      </button>
+
+                  
+                      <div class="modal fade" id="eliminarUsuarioModal{{ usuario.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarUsuarioModalLabel{{ usuario.id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="eliminarUsuarioModalLabel{{ usuario.id }}">Confirmar Eliminación</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              ¿Estás seguro de que deseas eliminar al usuario <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>? Esta acción no se puede deshacer.
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              <a href="{% url 'eliminarUsuario' usuario.id %}" class="btn btn-danger">Eliminar</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+              
+                      <div class="modal fade" id="editarUsuarioModal{{ usuario.id }}" tabindex="-1" role="dialog" aria-labelledby="editarUsuarioModalLabel{{ usuario.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                          <div class="modal-content p-4">
+                            <div class="modal-header border-0">
+                              <h5 class="modal-title w-100 text-center font-weight-bold" id="editarUsuarioModalLabel{{ usuario.id }}">EDITAR USUARIO</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form method="POST" action="{% url 'editarUsuario' usuario.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ usuario.id }}">
+
+                               
+                                <div class="form-row">
+                                  <div class="form-group col-md-6">
+                                    <label for="username">CÉDULA</label>
+                                    <input type="text" class="form-control rounded-pill" id="username" name="username" value="{{ usuario.username }}" readonly>
+                                  </div>
+                                  <div class="form-group col-md-6">
+                                    <label for="email">CORREO ELECTRÓNICO</label>
+                                    <input type="email" class="form-control rounded-pill" id="email" name="email" value="{{ usuario.email }}" required>
+                                  </div>
+                                </div>
+
+                              
+                                <div class="form-row">
+                                  <div class="form-group col-md-6">
+                                    <label for="nombre">NOMBRE</label>
+                                    <input type="text" class="form-control rounded-pill" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
+                                  </div>
+                                  <div class="form-group col-md-6">
+                                    <label for="apellido">APELLIDO</label>
+                                    <input type="text" class="form-control rounded-pill" id="apellido" name="apellido" value="{{ usuario.apellido|default:'' }}">
+                                  </div>
+                                </div>
+
+                                
+                                <div class="form-row">
+                                  <div class="form-group col-md-6">
+                                    <label for="id_rol">ROL</label>
+                                    <select class="form-control rounded-pill" id="id_rol" name="id_rol" required>
+                                      {% for rol in roles %}
+                                        <option value="{{ rol.id }}" {% if rol.id == usuario.id_rol_id %}selected{% endif %}>{{ rol.nombre_rol }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                  <div class="form-group col-md-6">
+                                    <label for="activo">ACTIVO</label><br>
+                                    <input type="checkbox" id="activo" name="activo" {% if usuario.activo %}checked{% endif %} style="transform: scale(1.5); margin-top: 8px;">
+                                  </div>
+                                </div>
+
+                              
+                                <div class="form-group">
+                                  <label for="imagen">IMAGEN</label>
+                                  <input type="file" class="form-control-file" id="imagen" name="imagen" accept="image/*">
+                                </div>
+
+                                
+                                <div class="form-group text-center mt-4">
+                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR CAMBIOS</button>
+                                  <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center">No hay usuarios registrados.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 </section>
 
-<!-- Modal Agregar Usuario -->
+
 <div class="modal fade" id="modalAgregarUsuario" tabindex="-1" role="dialog" aria-labelledby="modalAgregarUsuarioLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalAgregarUsuarioLabel">Agregar Nuevo Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center font-weight-bold" id="modalAgregarUsuarioLabel">AGREGAR NUEVO USUARIO</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'guardarUsuario' %}">
+          {% csrf_token %}
+
+          
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="cedula">CÉDULA</label>
+              <input type="text" class="form-control rounded-pill" name="cedula" maxlength="10" minlength="10" required placeholder="Ingrese cédula">
             </div>
-            <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" action="{% url 'guardarUsuario' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="nombre">Nombre</label>
-                        <input type="text" class="form-control" name="nombre" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="apellido">Apellido</label>
-                        <input type="text" class="form-control" name="apellido">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" class="form-control" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" class="form-control" name="password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_rol">Rol</label>
-                        <select class="form-control" name="id_rol" required>
-                            <option value="" disabled selected>--Seleccione un rol--</option>
-                            {% for rol in roles %}
-                                <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="activo">Activo</label>
-                        <input type="checkbox" name="activo">
-                    </div>
-                    <div class="form-group">
-                        <label for="imagen">Imagen</label>
-                        <input type="file" class="form-control-file" name="imagen">
-                    </div>
-                    <div class="form-group text-right">
-                        <button type="submit" class="btn btn-primary">Agregar Usuario</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
+            <div class="form-group col-md-6">
+              <label for="email">CORREO ELECTRÓNICO</label>
+              <input type="email" class="form-control rounded-pill" name="email" required placeholder="correo@dominio.com">
             </div>
-        </div>
+          </div>
+
+       
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="nombre">NOMBRE</label>
+              <input type="text" class="form-control rounded-pill" name="nombre" required placeholder="Ingrese nombre">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="apellido">APELLIDO</label>
+              <input type="text" class="form-control rounded-pill" name="apellido" placeholder="Ingrese apellido">
+            </div>
+          </div>
+
+         
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="id_rol">ROL</label>
+              <select class="form-control rounded-pill" name="id_rol" required>
+                <option value="" disabled selected>--Seleccione un rol--</option>
+                {% for rol in roles %}
+                  <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="activo">ACTIVO</label><br>
+              <input type="checkbox" name="activo" checked style="transform: scale(1.5); margin-top: 8px;">
+            </div>
+          </div>
+
+        
+          <div class="form-group">
+            <label for="imagen">IMAGEN</label>
+            <input type="file" class="form-control-file" name="imagen" accept="image/*">
+          </div>
+
+          
+          <div class="alert alert-info text-center mt-3">
+            La contraseña se generará automáticamente y será enviada por correo electrónico.
+          </div>
+
+         
+          <div class="form-group text-center mt-4">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 {% endblock %}

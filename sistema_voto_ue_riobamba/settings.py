@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Aplicaciones.padron',
     'Aplicaciones.votacion',
     'Aplicaciones.usuarios',
+    'Aplicaciones.periodo'
     
 ]
 

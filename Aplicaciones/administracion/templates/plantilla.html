@@ -27,6 +27,11 @@
     <!-- END Page Level CSS-->
     <!-- BEGIN Custom CSS-->
     <!-- END Custom CSS-->
+    
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
   </head>
   <body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-chartbg" data-col="2-columns">
     <!-- fixed-top-->
@@ -97,13 +102,22 @@
                 </a>
             </li>
     
-            <!-- Usuarios con submenú -->
+            <!-- Typography -->
             <li class="nav-item">
-                <a href="#"><i class="ft-users"></i><span class="menu-title" data-i18n="">Usuarios</span></a>
-                <ul class="menu-content">
-                    <li><a class="menu-item" href="{% url 'agregarrol' %}">Agregar Rol</a></li>
-                    <li><a class="menu-item" href="{% url 'agregarUsuario' %}">Agregar Usuarios</a></li>
-                </ul>
+              <a href="#"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Periodo</span></a>
+              <ul class="menu-content">
+                
+                <li><a class="menu-item" href="{% url 'agregarPeriodo' %}">Agregar Periodo</a></li>
+               </ul>
+            </li>
+
+            <!-- Usuarios bmenú -->
+            <li class="nav-item">
+              <a href="#"><i class="ft-users"></i><span class="menu-title" data-i18n="">Usuarios</span></a>
+              <ul class="menu-content">
+                  <li><a class="menu-item" href="{% url 'agregarrol' %}">Agregar Rol</a></li>
+                  <li><a class="menu-item" href="{% url 'agregarUsuario' %}">Agregar Usuarios</a></li>
+              </ul>
             </li>
     
             <!-- Padrón con submenú -->
@@ -144,21 +158,30 @@
             </li>
     
             <!-- Tables -->
-              <li class="nav-item">
+            <li class="nav-item">
                   <a href="tables.html"><i class="ft-settings"></i><span class="menu-title" data-i18n="">Configuración</span></a>
             </li>
+
+       
+<li class="nav-item mt-4">
+  <a href="">
+      <i class="ft-power"></i><span class="menu-title">Cerrar Sesión</span>
+  </a>
+</li>
+
+
     
-            <!-- Form Elements -->
+            <!-- Form Elements 
             <li class="nav-item">
                 <a href="form-elements.html"><i class="ft-layout"></i><span class="menu-title" data-i18n="">Form Elements</span></a>
             </li>
-    
-            <!-- Documentation -->
+    --> 
+            <!-- Documentation 
             <li class="nav-item">
                 <a href="https://themeselection.com/demo/chameleon-admin-template/documentation">
                     <i class="ft-book"></i><span class="menu-title" data-i18n="">Documentation</span>
                 </a>
-            </li>
+            </li>-->
         </ul>
     </div>
     
