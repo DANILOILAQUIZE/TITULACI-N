@@ -21,4 +21,7 @@ urlpatterns = [
     path('usuarios/listarUsuarios/', views.listarUsuarios, name='listarUsuarios'),
     path('editarUsuario/<int:usuario_id>/', editarUsuario, name='editarUsuario'),
     path('eliminarUsuario/<int:id>/', views.eliminarUsuario, name='eliminarUsuario'),
+    
+   
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

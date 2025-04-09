@@ -1,30 +1,30 @@
 from django.urls import path
 from . import views
-from .views import generar_credenciales
-urlpatterns = [
-    # Vista principal
-    path('gestion-padron/', views.gestion_padron, name='gestion_padron'),
+from .views import (
+    GradoListView, agregar_grado, editar_grado, eliminar_grado,
+    ParaleloListView, agregar_paralelo, editar_paralelo, eliminar_paralelo
     
-    # Grados
-    path('grados/agregar/', views.agregar_grado, name='agregar_grado'),
-    path('grados/editar/<int:id>/', views.editar_grado, name='editar_grado'),
-    path('grados/eliminar/<int:id>/', views.eliminar_grado, name='eliminar_grado'),
-    
-    # Paralelos
-    path('paralelos/agregar/', views.agregar_paralelo, name='agregar_paralelo'),
-    path('paralelos/editar/<int:id>/', views.editar_paralelo, name='editar_paralelo'),
-    path('paralelos/eliminar/<int:id>/', views.eliminar_paralelo, name='eliminar_paralelo'),
-    path('paralelos/get-by-grado/', views.get_paralelos_by_grado, name='get_paralelos_by_grado'),
-    
-    # Estudiantes
-    path('estudiantes/agregar/', views.agregar_estudiante, name='agregar_estudiante'),
-    path('estudiantes/editar/<int:id>/', views.editar_estudiante, name='editar_estudiante'),
-    path('estudiantes/cambiar-estado/<int:id>/', views.cambiar_estado_estudiante, name='cambiar_estado_estudiante'),
-    path('estudiantes/importar-excel/', views.importar_estudiantes_excel, name='importar_estudiantes_excel'),
-    path('estudiantes/descargar-plantilla/', views.descargar_plantilla, name='descargar_plantilla'),
+)
 
-    #Contraseñas
+urlpatterns = [
+    path('grados/', GradoListView.as_view(), name='listar_grados'),
+    path('grados/agregar/', agregar_grado, name='agregar_grado'),
+    path('grados/editar/<int:id>/', editar_grado, name='editar_grado'),
+    path('grados/eliminar/<int:id>/', eliminar_grado, name='eliminar_grado'),
     
-    path('correo/generar-credenciales/', generar_credenciales, name='generar_credenciales'),
-    path('correo/agregarEmail/', views.agregarEmail, name='agregarEmail'),
+    # URLs para Paralelos
+    path('paralelos/', ParaleloListView.as_view(), name='listar_paralelos'),
+    path('paralelos/agregar/', agregar_paralelo, name='agregar_paralelo'),
+    path('paralelos/editar/<int:id>/', editar_paralelo, name='editar_paralelo'),
+    path('paralelos/eliminar/<int:id>/', eliminar_paralelo, name='eliminar_paralelo'),
+    
+    
+    path('padron/', views.gestion_padron, name='gestion_padron'),
+    path('padron/agregar/', views.agregar_estudiante, name='agregar_estudiante'),
+    path('padron/editar/<int:estudiante_id>/', views.editar_estudiante, name='editar_estudiante'),
+    path('padron/eliminar/<int:estudiante_id>/', views.eliminar_estudiante, name='eliminar_estudiante'),
+    path('padron/cargar-paralelos/', views.cargar_paralelos, name='cargar_paralelos'),
+    path('padron/exportar-excel/', views.exportar_padron_excel, name='exportar_padron_excel'),
+    path('padron/importar-excel/', views.importar_padron_excel, name='importar_padron_excel'),
+
 ]

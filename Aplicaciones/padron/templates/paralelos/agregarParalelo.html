@@ -1,0 +1,195 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+
+<div class="card mb-3">
+  <div class="card-body bg-light text-center">
+    <h5 class="card-title mb-4"><strong>Gestión Académica</strong></h5>
+    <p class="card-text mb-4">
+      Administración de grados académicos del sistema.
+    </p>
+    <nav class="d-flex justify-content-center gap-3">
+      <span class="text-muted">•</span>
+      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-dark {% if request.path == '/grados/' %} text-decoration-underline {% endif %}">GRADOS</a>
+      <span>&nbsp;&nbsp;</span>
+      <span class="text-muted">|</span>
+      <span>&nbsp;&nbsp;</span>
+      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-dark {% if request.path == '/paralelos/' %} text-decoration-underline {% endif %}">PARALELOS</a>
+      <span>&nbsp;&nbsp;</span>
+      <span class="text-muted">|</span>
+      <span>&nbsp;&nbsp;</span>
+      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-dark  text-decoration-underline ">PADRON</a>
+    </nav>
+  </div>
+</div>
+
+<section id="listar-paralelos" class="row match-height">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <h4 class="card-title mb-2 mb-md-0">Lista de Paralelos</h4>
+        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+          <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar paralelo..." id="buscarParalelo">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarParalelo">
+            <i class="la la-plus"></i> Nuevo 
+          </button>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="tablaParalelos">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Grado</th>
+                  <th>Período</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for paralelo in paralelos %}
+                  <tr>
+                    <td>{{ paralelo.nombre }}</td>
+                    <td>{{ paralelo.grado.nombre }}</td>
+                    <td>{{ paralelo.grado.periodo.nombre|default:"Sin período" }}</td>
+                    <td class="action-buttons">
+                      <!-- Botón Editar -->
+                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarParaleloModal{{ paralelo.id }}">
+                        <i class="la la-edit"></i>
+                      </button>
+
+                      <!-- Botón Eliminar -->
+                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarParaleloModal{{ paralelo.id }}">
+                        <i class="la la-trash"></i>
+                      </button>
+
+                      <!-- Modal Eliminar -->
+                      <div class="modal fade" id="eliminarParaleloModal{{ paralelo.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Confirmar Eliminación</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              ¿Estás seguro de eliminar el paralelo <strong>{{ paralelo.nombre }}</strong> del grado {{ paralelo.grado.nombre }}?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              <a href="{% url 'eliminar_paralelo' paralelo.id %}" class="btn btn-danger">Eliminar</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Modal Editar -->
+                      <div class="modal fade" id="editarParaleloModal{{ paralelo.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content p-4">
+                            <div class="modal-header border-0">
+                              <h5 class="modal-title w-100 text-center font-weight-bold">EDITAR PARALELO</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form method="POST" action="{% url 'editar_paralelo' paralelo.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                  <label for="nombre">LETRA DEL PARALELO</label>
+                                  <input type="text" class="form-control rounded-pill" name="nombre" value="{{ paralelo.nombre }}" required maxlength="5">
+                                </div>
+                                
+                                <div class="form-group">
+                                  <label for="grado">GRADO</label>
+                                  <select class="form-control rounded-pill" name="grado" required>
+                                    {% for grado in grados %}
+                                      <option value="{{ grado.id }}" {% if grado.id == paralelo.grado.id %}selected{% endif %}>
+                                        {{ grado.nombre }} ({{ grado.periodo.nombre|default:"Sin período" }})
+                                      </option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                                
+                                <div class="form-group text-center mt-4">
+                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                                  <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center">No hay paralelos registrados.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Agregar Paralelo -->
+<div class="modal fade" id="modalAgregarParalelo" tabindex="-1" role="dialog" aria-labelledby="modalAgregarParaleloLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center font-weight-bold" id="modalAgregarParaleloLabel">AGREGAR NUEVO PARALELO</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'agregar_paralelo' %}">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="nombre">LETRA DEL PARALELO</label>
+            <input type="text" class="form-control rounded-pill" name="nombre" required maxlength="5" placeholder="Ej: A, B, C">
+          </div>
+          
+          <div class="form-group">
+            <label for="grado">GRADO</label>
+            <select class="form-control rounded-pill" name="grado" required>
+              <option value="" disabled selected>-- Seleccione un grado --</option>
+              {% for grado in grados %}
+                <option value="{{ grado.id }}">{{ grado.nombre }} ({{ grado.periodo.nombre|default:"Sin período" }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="form-group text-center mt-4">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para buscar paralelos en la tabla
+  document.getElementById('buscarParalelo').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#tablaParalelos tbody tr');
+    
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+  });
+</script>
+
+{% endblock %}

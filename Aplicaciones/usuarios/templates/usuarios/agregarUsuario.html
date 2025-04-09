@@ -3,12 +3,24 @@
 {% block contenido %}
 
 
+
 <div class="card mb-3">
-  <div class="card-body bg-light">
-    <h5 class="card-title">Gestión de Usuarios</h5>
-    <p class="card-text">Aquí puedes administrar los usuarios del sistema, agregando, editando o eliminando usuarios según sea necesario.</p>
+  <div class="card-body bg-light text-center">
+    <h5 class="card-title mb-4"><strong>Gestión de Usuarios</strong></h5>
+    <p class="card-text mb-4">
+      Aquí puedes administrar los usuarios del sistema, agregando, editando o eliminando usuarios según sea necesario.
+  </p>
+    <nav class="d-flex justify-content-center gap-3">
+      <span class="text-muted">•</span>
+      <a href="{% url 'agregarrol' %}" class="text-decoration-none text-dark {% if request.path == '/agregarrol/' %} text-decoration-underline {% endif %}">IR A ROLES</a>
+      <span>&nbsp;&nbsp;</span>
+      <span class="text-muted">|</span>
+      <span>&nbsp;&nbsp;</span>
+      <a href="{% url 'agregarUsuario' %}" class="text-decoration-none text-dark {% if request.path == '/agregarUsuario/' %} text-decoration-underline {% endif %}">IR A USUARIOS</a>
+    </nav>
   </div>
 </div>
+
 
 
 <section id="listar-usuarios" class="row match-height">
@@ -147,8 +159,8 @@
                                 </div>
 
                                 
-                                <div class="form-group text-center mt-4">
-                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR CAMBIOS</button>
+                                <div class="form-group text-center mt-5">
+                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
                                   <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
                                 </div>
                               </form>

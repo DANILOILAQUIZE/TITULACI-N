@@ -1,36 +1,47 @@
 {% extends 'plantilla.html' %}
 
 {% block contenido %}
-<!-- Mensajes -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
 
-<!-- Descripción -->
+
 <div class="card mb-3">
-    <div class="card-body bg-light">
-        <h5 class="card-title">Gestión de Roles</h5>
-        <p class="card-text">Aquí puedes administrar los roles del sistema, agregando, editando o eliminando roles según sea necesario.
-            Tenga en cuenta que solo se permiten hasta 4 roles en total. Si ya hay 4 roles, no podrá agregar más.
-            <br>Los roles son importantes para definir los permisos y accesos de los usuarios en el sistema.
+    <div class="card-body bg-light text-center">
+        <h5 class="card-title mb-3"><strong>Gestión de Roles y Usuarios</strong></h5>
+        <p class="card-text mb-4">
+            Administra los roles y usuarios del sistema. Puedes agregar, editar o eliminar roles (máximo 4) y gestionar los usuarios asociados a cada uno.
+            <br>Los roles permiten definir los permisos y accesos dentro del sistema.
         </p>
+        <nav class="d-flex justify-content-center align-items-center gap-3">
+            <span class="text-muted"></span>
+            <a href="{% url 'agregarrol' %}" class="text-decoration-none fw-semibold text-dark {% if request.path == '/agregarrol/' %} text-decoration-underline {% endif %}">IR A ROLES</a>
+            <span>&nbsp;&nbsp;</span>
+            <span class="text-muted">|</span>
+            <span>&nbsp;&nbsp;</span> <!-- Espacio entre los enlaces -->
+            <a href="{% url 'agregarUsuario' %}" class="text-decoration-none fw-semibold text-dark {% if request.path == '/agregarUsuario/' %} text-decoration-underline {% endif %}">IR A USUARIOS</a>
+            <span class="text-muted">•</span>
+        </nav>
     </div>
 </div>
+
 
 <!-- Listar Roles -->
 <section id="listar-roles" class="row match-height">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Lista de Roles</h4>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarRol">Agregar Rol</button>
+            
+            <div class="card-header">
+                <div class="row w-100">
+                    <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
+                        <h4 class="card-title mb-0">Lista de Roles</h4>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+                            <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="BUSCAR TODO">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarRol">
+                                <i class="la la-plus"></i> Nuevo
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-content">
                 <div class="card-body">
@@ -49,14 +60,17 @@
                                     <tr>
                                         <td>{{ rol.nombre_rol }}</td>
                                         <td>{{ rol.descripcion|default:"Sin descripción" }}</td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editarRolModal{{ rol.id }}">
-                                                Editar
-                                            </button>
+                                        
+                                        <td class="action-buttons">
                                             
-                                            <!-- Botón para abrir el modal -->
-                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#eliminarRolModal{{ rol.id }}">
-                                                Eliminar
+                                            
+                                            
+
+                                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarRolModal{{ rol.id }}">
+                                                <i class="la la-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarRolModal{{ rol.id }}">
+                                                <i class="la la-trash"></i>
                                             </button>
 
                                             <!-- Modal de Confirmación -->
@@ -103,9 +117,9 @@
                                                             <label for="descripcion">Descripción</label>
                                                             <textarea class="form-control" name="descripcion" rows="3">{{ rol.descripcion }}</textarea>
                                                         </div>
-                                                        <div class="form-group text-right">
-                                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                        <div class="form-group text-center mt-4">
+                                                            <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                                                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -150,11 +164,9 @@
                         <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
                         <small class="form-text text-muted">Proporcione una descripción del rol, si lo desea.</small>
                     </div>
-                    <div class="form-group text-right">
-                        <!-- Deshabilitar el botón si ya hay 4 roles -->
-                        <button type="submit" class="btn btn-primary" id="btnAgregarRol" {% if cantidad_roles >= 4 %}disabled{% endif %}>
-                            Agregar Rol
-                        </button>
+                    <div class="form-group text-center mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
                     </div>
                 </form>
             </div>
@@ -164,7 +176,7 @@
 
 <script>
     // Si la cantidad de roles es 4 o más, deshabilita el botón de agregar rol
-    var cantidadRoles = {{ cantidad_roles }};
+    var cantidadRoles = "{{ cantidad_roles|escapejs }}";
     if (cantidadRoles >= 4) {
         document.getElementById('btnAgregarRol').disabled = true;
     }

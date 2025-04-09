@@ -1,0 +1,249 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+
+<div class="card mb-3">
+  <div class="card-body bg-light text-center">
+    <h5 class="card-title mb-4"><strong>Gestión Académica</strong></h5>
+    <p class="card-text mb-4">
+      Administración de grados académicos del sistema.
+    </p>
+    <nav class="d-flex justify-content-center gap-3">
+      <span class="text-muted">•</span>
+      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-dark {% if request.path == '/grados/' %} text-decoration-underline {% endif %}">GRADOS</a>
+      <span>&nbsp;&nbsp;</span>
+      <span class="text-muted">|</span>
+      <span>&nbsp;&nbsp;</span>
+      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-dark {% if request.path == '/paralelos/' %} text-decoration-underline {% endif %}">PARALELOS</a>
+      <span>&nbsp;&nbsp;</span>
+      <span class="text-muted">|</span>
+      <span>&nbsp;&nbsp;</span>
+      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-dark  text-decoration-underline ">PADRON</a>
+    </nav>
+  </div>
+</div>
+
+<section id="listar-grados" class="row match-height">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <h4 class="card-title mb-2 mb-md-0">Lista de Grados</h4>
+        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+          <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar grado..." id="buscarGrado">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarGrado">
+            <i class="la la-plus"></i> Nuevo 
+          </button>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="tablaGrados">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nombre</th>
+                  <th>Período</th>
+                  <th>Paralelos</th>
+                  <th>Estudiantes</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for grado in grados %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ grado.nombre }}</td>
+                    <td>{{ grado.periodo.nombre|default:"-" }}</td>
+                    <td>
+                      {% if grado.paralelos.count > 0 %}
+                        <div class="dropdown">
+                          <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            {{ grado.paralelos.count }} paralelo(s)
+                          </button>
+                          <div class="dropdown-menu">
+                            {% for paralelo in grado.paralelos.all %}
+                              <a class="dropdown-item" href="#">
+                                {{ paralelo.nombre }} ({{ paralelo.padronelectoral_set.count }} estudiantes)
+                              </a>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      {% else %}
+                        <span class="badge badge-warning">Sin paralelos</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="badge badge-info">{{ grado.padronelectoral_set.count }}</span>
+                    </td>
+                    <td class="action-buttons">
+                      <!-- Editar -->
+                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarGradoModal{{ grado.id }}">
+                        <i class="la la-edit"></i>
+                      </button>
+
+                      <!-- Eliminar -->
+                      {% if grado.padronelectoral_set.count == 0 %}
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarGradoModal{{ grado.id }}">
+                          <i class="la la-trash"></i>
+                        </button>
+                      {% else %}
+                        <button type="button" class="btn btn-danger btn-sm" disabled title="No se puede eliminar (tiene estudiantes)">
+                          <i class="la la-trash"></i>
+                        </button>
+                      {% endif %}
+
+                      <!-- Modal Eliminar -->
+                      <div class="modal fade" id="eliminarGradoModal{{ grado.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Confirmar Eliminación</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              ¿Estás seguro de eliminar el grado <strong>{{ grado.nombre }}</strong>?
+                              {% if grado.paralelos.count > 0 %}
+                                <div class="alert alert-warning mt-2">
+                                  <i class="la la-exclamation-triangle"></i> Se eliminarán también {{ grado.paralelos.count }} paralelos asociados.
+                                </div>
+                              {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              <a href="{% url 'eliminar_grado' grado.id %}" class="btn btn-danger">Eliminar</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Modal Editar -->
+                      <div class="modal fade" id="editarGradoModal{{ grado.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                          <div class="modal-content p-4">
+                            <div class="modal-header border-0">
+                              <h5 class="modal-title w-100 text-center font-weight-bold">EDITAR GRADO</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form method="POST" action="{% url 'editar_grado' grado.id %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                  <div class="form-group col-md-8">
+                                    <label for="nombre">NOMBRE DEL GRADO</label>
+                                    <input type="text" class="form-control rounded-pill" name="nombre" value="{{ grado.nombre }}" required>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="periodo">PERÍODO</label>
+                                    <select class="form-control rounded-pill" name="periodo">
+                                      <option value="">-- Sin período --</option>
+                                      {% for periodo in periodos %}
+                                        <option value="{{ periodo.id }}" {% if periodo.id == grado.periodo.id %}selected{% endif %}>
+                                          {{ periodo.nombre }}
+                                        </option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                </div>
+
+                                <div class="form-group text-center mt-4">
+                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                                    <i class="la la-save"></i> GUARDAR
+                                  </button>
+                                  <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                                    <i class="la la-times"></i> CANCELAR
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4">
+                      <i class="la la-folder-open" style="font-size: 2rem;"></i>
+                      <p class="mt-2">No hay grados registrados</p>
+                      <button class="btn btn-primary mt-2" data-toggle="modal" data-target="#modalAgregarGrado">
+                        <i class="la la-plus"></i> Crear primer grado
+                      </button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Agregar Grado -->
+<div class="modal fade" id="modalAgregarGrado" tabindex="-1" role="dialog" aria-labelledby="modalAgregarGradoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center font-weight-bold" id="modalAgregarGradoLabel">AGREGAR NUEVO GRADO</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'agregar_grado' %}">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group col-md-8">
+              <label for="nombre">NOMBRE DEL GRADO*</label>
+              <input type="text" class="form-control rounded-pill" name="nombre" required placeholder="Ej: 1ro Básica, 10mo, etc.">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="periodo">PERÍODO</label>
+              <select class="form-control rounded-pill" name="periodo">
+                <option value="">-- Seleccione --</option>
+                {% for periodo in periodos %}
+                  <option value="{{ periodo.id }}">{{ periodo.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="alert alert-info mt-3">
+            <i class="la la-info-circle"></i> Los paralelos se agregarán posteriormente en la edición del grado.
+          </div>
+
+          <div class="form-group text-center mt-4">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+              <i class="la la-save"></i> GUARDAR
+            </button>
+            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+              <i class="la la-times"></i> CANCELAR
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Búsqueda en tiempo real
+  document.getElementById('buscarGrado').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#tablaGrados tbody tr');
+    
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+  });
+</script>
+
+{% endblock %}

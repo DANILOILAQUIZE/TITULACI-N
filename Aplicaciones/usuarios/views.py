@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 
-from Aplicaciones.padron.models import PadrónElectoral
+from Aplicaciones.padron.models import PadronElectoral
 
 import random
 import string
@@ -18,7 +18,7 @@ from django.contrib.auth.hashers import make_password
 def dashboard(request):
     context = {
         'total_usuarios': Usuarios.objects.count(),
-        'total_estudiantes': PadrónElectoral.objects.count(),
+        'total_estudiantes': PadronElectoral.objects.count(),
     }
     return render(request, 'rol/dashboard.html', context)
 
@@ -115,8 +115,8 @@ def guardarUsuario(request):
         # Enviar la contraseña por correo electrónico
         try:
             send_mail(
-                'Credenciales de acceso',
-                f'Hola {nombre}, tu usuario ha sido creado.\n\nCédula (usuario): {cedula}\nContraseña: {password_aleatoria}\n\nPor favor, cambia tu contraseña al iniciar sesión.',
+                'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba',
+                f'Hola {nombre},{apellido} tu usuario ha sido creado no la pierdas.\n\nCédula (usuario): {cedula}\nContraseña: {password_aleatoria}\n\nPor favor, estas credenciales son del consejo electoral',
                 'darwin.ilaquize1102@utc.edu.ec',  # Remitente
                 [email],
                 fail_silently=False,
@@ -179,3 +179,5 @@ def eliminarUsuario(request, id):
 
     # Redirigir a la vista donde se listan/agregan usuarios
     return redirect('agregarUsuario')
+
+

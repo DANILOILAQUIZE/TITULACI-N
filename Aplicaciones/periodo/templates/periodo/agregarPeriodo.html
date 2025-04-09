@@ -2,6 +2,16 @@
 
 {% block contenido %}
 
+<div class="card mb-3">
+    <div class="card-body bg-light">
+        <h5 class="card-title">Gestión de Periodo Académico</h5>
+        <p class="card-text">
+            Aquí puedes administrar los periodos académicos del sistema, permitiendo agregar, editar o eliminar los periodos según sea necesario.
+            <br>Cada periodo académico debe contener información como el nombre, fecha de inicio y fecha de fin.
+            <br>Es importante mantener actualizada esta información para asegurar el correcto funcionamiento de las evaluaciones, inscripciones y planificación académica del sistema.
+        </p>
+    </div>
+</div>
 
 <!-- Gestión de Periodos Académicos -->
 <section id="periodos-academicos" class="row">
@@ -103,9 +113,9 @@
                         </div>
                     </div>
                     
-                    <div class="text-right mt-4">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    <div class="form-group text-center mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
                     </div>
                 </div>
             </form>
@@ -146,9 +156,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <div class="form-group text-center mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
                     </div>
                 </form>
             </div>

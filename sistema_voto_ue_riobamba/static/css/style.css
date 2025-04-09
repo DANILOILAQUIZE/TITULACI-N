@@ -107,7 +107,7 @@
 .modal-content {
     border-radius: 16px;
     border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     padding: 20px 25px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -192,3 +192,5 @@
 .row .form-group {
     margin-bottom: 15px;
 }
+
+
