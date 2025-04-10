@@ -23,197 +23,198 @@
     </div>
   </div>
 
-<section id="listar-padron" class="row match-height">
-  <div class="col-sm-12">
-    <div class="card">
-      <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-        <h4 class="card-title mb-2 mb-md-0">Padrón Electoral</h4>
-        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end gap-2">
-          <a href="{% url 'exportar_padron_excel' %}" class="btn btn-success">
-            <i class="la la-file-excel"></i> Exportar Excel
-          </a>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportarExcel">
-            <i class="la la-upload"></i> Importar Excel
-          </button>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarEstudiante">
-            <i class="la la-plus"></i> Nuevo 
+  <section id="listar-padron" class="row match-height">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+          <h4 class="card-title mb-2 mb-md-0">Padrón Electoral</h4>
+          <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end gap-2">
+            <a href="{% url 'exportar_padron_excel' %}" class="btn btn-success">
+              <i class="la la-file-excel"></i> Exportar Excel
+            </a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportarExcel">
+              <i class="la la-upload"></i> Importar Excel
+            </button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarEstudiante">
+              <i class="la la-plus"></i> Nuevo 
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div class="card-content">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="tablaPadron">
-              <thead class="thead-dark">
-                <tr>
-                  <th>Cédula</th>
-                  <th>Apellidos</th>
-                  <th>Nombres</th>
-                  <th>Grado/Paralelo</th>
-                  <th>Período</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for estudiante in padron %}
-                <tr class="{% if estudiante.estado == 'inactivo' %}table-secondary{% endif %}">
-                  <td>{{ estudiante.cedula }}</td>
-                  <td>{{ estudiante.apellidos }}</td>
-                  <td>{{ estudiante.nombre }}</td>
-                  <td>{{ estudiante.grado.nombre }}-{{ estudiante.paralelo.nombre }}</td>
-                  <td>{{ estudiante.periodo.nombre|default:"-" }}</td>
-                  <td>
-                    <span class="badge badge-{% if estudiante.estado == 'activo' %}success{% else %}danger{% endif %}">
-                      {{ estudiante.get_estado_display }}
-                    </span>
-                  </td>
-                  <td class="action-buttons">
-                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarEstudianteModal{{ estudiante.id }}">
-                      <i class="la la-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarEstudianteModal{{ estudiante.id }}">
-                      <i class="la la-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-
-                <!-- Modal Editar -->
-                <div class="modal fade" id="editarEstudianteModal{{ estudiante.id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content p-4">
-                      <div class="modal-header border-0">
-                        <h5 class="modal-title w-100 text-center font-weight-bold">EDITAR ESTUDIANTE</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <form method="POST" action="{% url 'editar_estudiante' estudiante.id %}">
-                          {% csrf_token %}
-                          <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <label>Cédula*</label>
-                              <input type="text" class="form-control" name="cedula" value="{{ estudiante.cedula }}" required>
+  
+        <div class="card-content">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" id="tablaPadron">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>Cédula</th>
+                    <th>Apellidos</th>
+                    <th>Nombres</th>
+                    <th>Grado</th>
+                    <th>Paralelo</th>
+                    <th>Período</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for estudiante in padron %}
+                  <tr class="{% if estudiante.estado == 'inactivo' %}table-secondary{% endif %}">
+                    <td>{{ estudiante.cedula }}</td>
+                    <td>{{ estudiante.apellidos }}</td>
+                    <td>{{ estudiante.nombre }}</td>
+                    <td>{{ estudiante.grado.nombre }}</td>
+                    <td>{{ estudiante.paralelo.nombre }}</td>
+                    <td>{{ estudiante.periodo.nombre|default:"-" }}</td>
+                    <td>{{ estudiante.correo }}</td>
+                    <td>{{ estudiante.telefono|default:"-" }}</td>
+                    <td>
+                      <span class="badge badge-{% if estudiante.estado == 'activo' %}success{% else %}danger{% endif %}">
+                        {{ estudiante.get_estado_display }}
+                      </span>
+                    </td>
+                    <td class="action-buttons">
+                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarEstudianteModal{{ estudiante.id }}">
+                        <i class="la la-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarEstudianteModal{{ estudiante.id }}">
+                        <i class="la la-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+  
+                  <!-- Modal Editar -->
+                  <div class="modal fade" id="editarEstudianteModal{{ estudiante.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content p-4">
+                        <div class="modal-header border-0">
+                          <h5 class="modal-title w-100 text-center font-weight-bold">EDITAR ESTUDIANTE</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form method="POST" action="{% url 'editar_estudiante' estudiante.id %}">
+                            {% csrf_token %}
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label>Cédula*</label>
+                                <input type="text" class="form-control" name="cedula" value="{{ estudiante.cedula }}" required>
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label>Correo Electrónico*</label>
+                                <input type="email" class="form-control" name="correo" value="{{ estudiante.correo }}" required>
+                              </div>
                             </div>
-                            <div class="form-group col-md-6">
-                              <label>Correo Electrónico*</label>
-                              <input type="email" class="form-control" name="correo" value="{{ estudiante.correo }}" required>
+  
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label>Nombres*</label>
+                                <input type="text" class="form-control" name="nombre" value="{{ estudiante.nombre }}" required>
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label>Apellidos*</label>
+                                <input type="text" class="form-control" name="apellidos" value="{{ estudiante.apellidos }}" required>
+                              </div>
                             </div>
-                          </div>
-
-                          <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <label>Nombres*</label>
-                              <input type="text" class="form-control" name="nombre" value="{{ estudiante.nombre }}" required>
+  
+                            <div class="form-row">
+                              <div class="form-group col-md-4">
+                                <label>Grado*</label>
+                                <select class="form-control select-grado" name="grado" required>
+                                  {% for grado in grados %}
+                                  <option value="{{ grado.id }}" {% if grado.id == estudiante.grado.id %}selected{% endif %}>
+                                    {{ grado.nombre }}
+                                  </option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="form-group col-md-4">
+                                <label>Paralelo*</label>
+                                <select class="form-control select-paralelo" name="paralelo" required>
+                                  {% for paralelo in estudiante.grado.paralelos.all %}
+                                  <option value="{{ paralelo.id }}" {% if paralelo.id == estudiante.paralelo.id %}selected{% endif %}>
+                                    {{ paralelo.nombre }}
+                                  </option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="form-group col-md-4">
+                                <label for="periodo">PERÍODO</label>
+                                <input type="text" class="form-control rounded-pill" name="periodo" value="{{ periodo_actual.nombre }}" readonly>
+                                <input type="hidden" name="periodo_id" value="{{ periodo_actual.id }}">
+                              </div>
                             </div>
-                            <div class="form-group col-md-6">
-                              <label>Apellidos*</label>
-                              <input type="text" class="form-control" name="apellidos" value="{{ estudiante.apellidos }}" required>
+  
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label>Teléfono</label>
+                                <input type="text" class="form-control" name="telefono" value="{{ estudiante.telefono|default:'' }}">
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label>Estado*</label>
+                                <select class="form-control" name="estado" required>
+                                  {% for estado in estudiante.ESTADOS %}
+                                  <option value="{{ estado.0 }}" {% if estado.0 == estudiante.estado %}selected{% endif %}>
+                                    {{ estado.1 }}
+                                  </option>
+                                  {% endfor %}
+                                </select>
+                              </div>
                             </div>
-                          </div>
-
-                          <div class="form-row">
-                            <div class="form-group col-md-4">
-                              <label>Grado*</label>
-                              <select class="form-control select-grado" name="grado" required>
-                                {% for grado in grados %}
-                                <option value="{{ grado.id }}" {% if grado.id == estudiante.grado.id %}selected{% endif %}>
-                                  {{ grado.nombre }}
-                                </option>
-                                {% endfor %}
-                              </select>
+  
+                            <div class="form-group text-center mt-4">
+                              <button type="submit" class="btn btn-primary px-4 mr-2">
+                                <i class="la la-save"></i> GUARDAR
+                              </button>
+                              <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">
+                                <i class="la la-times"></i> CANCELAR
+                              </button>
                             </div>
-                            <div class="form-group col-md-4">
-                              <label>Paralelo*</label>
-                              <select class="form-control select-paralelo" name="paralelo" required>
-                                {% for paralelo in estudiante.grado.paralelos.all %}
-                                <option value="{{ paralelo.id }}" {% if paralelo.id == estudiante.paralelo.id %}selected{% endif %}>
-                                  {{ paralelo.nombre }}
-                                </option>
-                                {% endfor %}
-                              </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                              <label>Período</label>
-                              <select class="form-control" name="periodo">
-                                <option value="">-- Sin período --</option>
-                                {% for periodo in periodos %}
-                                <option value="{{ periodo.id }}" {% if estudiante.periodo and periodo.id == estudiante.periodo.id %}selected{% endif %}>
-                                  {{ periodo.nombre }}
-                                </option>
-                                {% endfor %}
-                              </select>
-                            </div>
-                          </div>
-
-                          <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <label>Teléfono</label>
-                              <input type="text" class="form-control" name="telefono" value="{{ estudiante.telefono|default:'' }}">
-                            </div>
-                            <div class="form-group col-md-6">
-                              <label>Estado*</label>
-                              <select class="form-control" name="estado" required>
-                                {% for estado in estudiante.ESTADOS %}
-                                <option value="{{ estado.0 }}" {% if estado.0 == estudiante.estado %}selected{% endif %}>
-                                  {{ estado.1 }}
-                                </option>
-                                {% endfor %}
-                              </select>
-                            </div>
-                          </div>
-
-                          <div class="form-group text-center mt-4">
-                            <button type="submit" class="btn btn-primary px-4 mr-2">
-                              <i class="la la-save"></i> GUARDAR
-                            </button>
-                            <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">
-                              <i class="la la-times"></i> CANCELAR
-                            </button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Modal Eliminar -->
-                <div class="modal fade" id="eliminarEstudianteModal{{ estudiante.id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Confirmar Eliminación</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        ¿Estás seguro de eliminar a <strong>{{ estudiante.apellidos }} {{ estudiante.nombre }}</strong> del padrón electoral?
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <a href="{% url 'eliminar_estudiante' estudiante.id %}" class="btn btn-danger">Eliminar</a>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                {% empty %}
-                <tr>
-                  <td colspan="7" class="text-center py-4">
-                    <i class="la la-users" style="font-size: 2rem;"></i>
-                    <p class="mt-2">No hay estudiantes registrados en el padrón</p>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+  
+                  <!-- Modal Eliminar -->
+                  <div class="modal fade" id="eliminarEstudianteModal{{ estudiante.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Confirmar Eliminación</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          ¿Estás seguro de eliminar a <strong>{{ estudiante.apellidos }} {{ estudiante.nombre }}</strong> del padrón electoral?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                          <a href="{% url 'eliminar_estudiante' estudiante.id %}" class="btn btn-danger">Eliminar</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% empty %}
+                  <tr>
+                    <td colspan="10" class="text-center py-4">
+                      <i class="la la-users" style="font-size: 2rem;"></i>
+                      <p class="mt-2">No hay estudiantes registrados en el padrón</p>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
 <!-- Modal Agregar -->
 <div class="modal fade" id="modalAgregarEstudiante" tabindex="-1" role="dialog" aria-labelledby="modalAgregarEstudianteLabel" aria-hidden="true">
@@ -262,21 +263,17 @@
             </div>
             <div class="form-group col-md-4">
               <label>Paralelo*</label>
-              <select class="form-control select-paralelo" name="paralelo" required disabled>
+              <select class="form-control select-paralelo" name="paralelo" required >
                 <option value="">-- Seleccione grado primero --</option>
-                {% for paralelo in paralelos%}
-                <option value="{{ paralelo.id }}">{{ paralelo.nombre }}</option>
+                {% for paralelo in paralelos %}
+                  <option value="{{ paralelo.id }}">{{ paralelo.nombre }}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="form-group col-md-4">
-              <label>Período</label>
-              <select class="form-control" name="periodo">
-                <option value="">-- Sin período --</option>
-                {% for periodo in periodos %}
-                <option value="{{ periodo.id }}">{{ periodo.nombre }}</option>
-                {% endfor %}
-              </select>
+              <label for="periodo">PERÍODO</label>
+              <input type="text" class="form-control rounded-pill" name="periodo" value="{{ periodo_actual.nombre }}" readonly>
+              <input type="hidden" name="periodo_id" value="{{ periodo_actual.id }}">
             </div>
           </div>
 
@@ -341,44 +338,6 @@
   </div>
 </div>
 
-{% endblock %}
 
-{% block scripts %}
-<script>
-$(document).ready(function() {
-  // Carga dinámica de paralelos según grado seleccionado
-  $('.select-grado').change(function() {
-    const gradoId = $(this).val();
-    const paraleloSelect = $(this).closest('.form-row').find('.select-paralelo');
-    
-    if (gradoId) {
-      paraleloSelect.prop('disabled', false);
-      paraleloSelect.html('<option value="">Cargando...</option>');
-      
-      $.ajax({
-        url: '{% url "cargar_paralelos" %}',
-        data: { 'grado_id': gradoId },
-        success: function(data) {
-          let options = '<option value="">-- Seleccione --</option>';
-          data.paralelos.forEach(function(paralelo) {
-            options += `<option value="${paralelo.id}">${paralelo.nombre}</option>`;
-          });
-          paraleloSelect.html(options);
-        }
-      });
-    } else {
-      paraleloSelect.prop('disabled', true).html('<option value="">-- Seleccione grado primero --</option>');
-    }
-  });
 
-  // Inicializar DataTable
-  $('#tablaPadron').DataTable({
-    language: {
-      url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
-    },
-    dom: '<"top"lf>rt<"bottom"ip>',
-    responsive: true
-  });
-});
-</script>
 {% endblock %}

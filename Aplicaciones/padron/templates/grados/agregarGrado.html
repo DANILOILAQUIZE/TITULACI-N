@@ -140,14 +140,8 @@
                                   </div>
                                   <div class="form-group col-md-4">
                                     <label for="periodo">PERÍODO</label>
-                                    <select class="form-control rounded-pill" name="periodo">
-                                      <option value="">-- Sin período --</option>
-                                      {% for periodo in periodos %}
-                                        <option value="{{ periodo.id }}" {% if periodo.id == grado.periodo.id %}selected{% endif %}>
-                                          {{ periodo.nombre }}
-                                        </option>
-                                      {% endfor %}
-                                    </select>
+                                    <input type="text" class="form-control rounded-pill" name="periodo" value="{{ periodo_actual.nombre }}" readonly>
+                                    <input type="hidden" name="periodo_id" value="{{ periodo_actual.id }}">
                                   </div>
                                 </div>
 
@@ -206,12 +200,8 @@
             </div>
             <div class="form-group col-md-4">
               <label for="periodo">PERÍODO</label>
-              <select class="form-control rounded-pill" name="periodo">
-                <option value="">-- Seleccione --</option>
-                {% for periodo in periodos %}
-                  <option value="{{ periodo.id }}">{{ periodo.nombre }}</option>
-                {% endfor %}
-              </select>
+              <input type="text" class="form-control rounded-pill" name="periodo" value="{{ periodo_actual.nombre }}" readonly>
+              <input type="hidden" name="periodo_id" value="{{ periodo_actual.id }}">
             </div>
           </div>
 
@@ -232,7 +222,6 @@
     </div>
   </div>
 </div>
-
 <script>
   // Búsqueda en tiempo real
   document.getElementById('buscarGrado').addEventListener('input', function() {
