@@ -3,6 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from Aplicaciones.usuarios.views import editar_rol, eliminarrol, agregarUsuario, guardarUsuario, listarUsuarios, eliminarUsuario,editarUsuario
+
 urlpatterns = [
     
     path('rol/dashboard/', views.dashboard, name='dashboard'),

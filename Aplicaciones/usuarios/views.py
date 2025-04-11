@@ -131,6 +131,7 @@ def guardarUsuario(request):
     roles = Roles.objects.all()
     return render(request, 'usuarios/agregarUsuario.html', {'roles': roles})
 
+
 def listarUsuarios(request):
     roles = Roles.objects.all()
     usuarios = Usuarios.objects.all()  # Obtiene todos los usuarios
