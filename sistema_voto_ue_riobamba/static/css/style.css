@@ -194,3 +194,30 @@
 }
 
 
+
+.password-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.password-text {
+    flex: 1;
+}
+
+/*CONTRASEÑA USUARIOS*/
+.toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #666;
+}
+
+.toggle-password i {
+    font-size: 16px;
+}
+
+.toggle-password:hover {
+    color: #333;
+}

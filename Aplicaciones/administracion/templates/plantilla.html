@@ -27,9 +27,10 @@
     <!-- END Page Level CSS-->
     <!-- BEGIN Custom CSS-->
     <!-- END Custom CSS-->
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'js/script.js' %}">
 
 
   </head>
@@ -131,7 +132,7 @@
             <li class="nav-item">
                 <a href="#"><i class="ft-plus-circle"></i><span class="menu-title" data-i18n="">Candidatos</span></a>
                 <ul class="menu-content">
-                    <li><a class="menu-item" href="cards-basic.html">Básico</a></li>
+                    <li><a class="menu-item" href="{% url 'agregarLogin' %}">LOGIN</a></li>
                     <li><a class="menu-item" href="cards-advanced.html">Avanzado</a></li>
                 </ul>
             </li>

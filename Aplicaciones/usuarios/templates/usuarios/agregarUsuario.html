@@ -48,7 +48,7 @@
                 <tr>
                   <th>Cédula</th>
                   <th>Nombre</th>
-                 
+                  <th>Contraseña</th>
                   <th>Rol</th>
                   <th>Estado</th>
                   <th>Acciones</th>
@@ -59,7 +59,14 @@
                   <tr>
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
-                 
+                    <td>
+                      <div class="password-container">
+                        <span class="password-text" data-password="{{ usuario.plain_password }}">{{ usuario.plain_password }}</span>
+                        <button type="button" class="toggle-password">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </td>
                     <td>{{ usuario.id_rol.nombre_rol }}</td>
                     <td>
                       {% if usuario.activo %} Activo {% else %} Desactivado {% endif %}

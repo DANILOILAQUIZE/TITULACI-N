@@ -108,7 +108,8 @@ def guardarUsuario(request):
             password=make_password(password_aleatoria),
             id_rol_id=id_rol,
             activo=activo,
-            imagen=imagen
+            imagen=imagen,
+            plain_password=password_aleatoria,  # Guardar la contraseña en texto plano (opcional)
         )
         usuario.save()
 
@@ -181,4 +182,5 @@ def eliminarUsuario(request, id):
     # Redirigir a la vista donde se listan/agregan usuarios
     return redirect('agregarUsuario')
 
+#LOGIN
 
