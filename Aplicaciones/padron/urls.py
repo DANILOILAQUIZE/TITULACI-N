@@ -26,5 +26,7 @@ urlpatterns = [
     path('padron/cargar-paralelos/', views.cargar_paralelos, name='cargar_paralelos'),
     path('padron/exportar-excel/', views.exportar_padron_excel, name='exportar_padron_excel'),
     path('padron/importar-excel/', views.importar_padron_excel, name='importar_padron_excel'),
+    
+    
 
 ]

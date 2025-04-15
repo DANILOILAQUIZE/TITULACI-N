@@ -6,9 +6,17 @@ from django.contrib import messages
 from django.views.generic import ListView
 from .models import Grado, Periodo, Paralelo, PadronElectoral
 from django.db import IntegrityError
-
-
 from Aplicaciones.periodo.models import Periodo
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.db import transaction
+from .models import  Grado, Paralelo, Periodo, PadronElectoral
+from openpyxl import Workbook, load_workbook
+from openpyxl.utils import get_column_letter
+import io
+
+#CRUD GRADOS
 class GradoListView(ListView):
     model = Grado
     template_name = 'grados/agregarGrado.html'
@@ -107,7 +115,7 @@ def eliminar_grado(request, id):
     
     return redirect('listar_grados')
 
-#PARALELOS
+#CRUD PARALELOS
 class ParaleloListView(ListView):
     model = Paralelo
     template_name = 'paralelos/agregarParalelo.html'
@@ -191,15 +199,8 @@ def eliminar_paralelo(request, id):
     return redirect('listar_paralelos')
 
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
-from django.db import transaction
-from .models import  Grado, Paralelo, Periodo, PadronElectoral
-from openpyxl import Workbook, load_workbook
-from openpyxl.utils import get_column_letter
-import io
 
+# CRUD PADRON ELECTORAL
 ESTADOS = [
     ('activo', 'Activo'),
     ('inactivo', 'Inactivo'),
@@ -294,31 +295,78 @@ def editar_estudiante(request, estudiante_id):
     
     if request.method == 'POST':
         try:
-            estudiante.cedula = request.POST.get('cedula')
-            estudiante.nombre = request.POST.get('nombre')
-            estudiante.apellidos = request.POST.get('apellidos')
-            estudiante.correo = request.POST.get('correo')
-            estudiante.telefono = request.POST.get('telefono')
-            estudiante.estado = request.POST.get('estado')
-            
+            # Obtener datos del formulario
+            cedula = request.POST.get('cedula')
+            nombre = request.POST.get('nombre').upper()  # Consistente con agregar_estudiante
+            apellidos = request.POST.get('apellidos').upper()
+            correo = request.POST.get('correo')
+            telefono = request.POST.get('telefono')
+            estado = request.POST.get('estado')  # Campo crítico
             grado_id = request.POST.get('grado')
             paralelo_id = request.POST.get('paralelo')
-            periodo_id = request.POST.get('periodo')
-            
+            periodo_id = request.POST.get('periodo_id')  # Ajustado para consistencia
+
+            # Validación básica
+            if not all([cedula, nombre, apellidos, correo, grado_id, paralelo_id, estado]):
+                messages.error(request, 'Todos los campos obligatorios deben ser completados')
+                return redirect('gestion_padron')
+
+            # Validar el campo estado
+            if hasattr(PadronElectoral, 'ESTADOS'):  # Verificar si el modelo tiene ESTADOS definidos
+                estados_validos = [estado_val[0] for estado_val in PadronElectoral.ESTADOS]
+                if estado not in estados_validos:
+                    messages.error(request, f'El estado "{estado}" no es válido')
+                    return redirect('gestion_padron')
+            else:
+                # Si no hay ESTADOS definidos, asumir valores por defecto (ajusta según tu modelo)
+                estados_validos = ['activo', 'inactivo']
+                if estado not in estados_validos:
+                    messages.error(request, f'El estado "{estado}" no es válido')
+                    return redirect('gestion_padron')
+
+            # Asignar valores al estudiante
+            estudiante.cedula = cedula
+            estudiante.nombre = nombre
+            estudiante.apellidos = apellidos
+            estudiante.correo = correo
+            estudiante.telefono = telefono
+            estudiante.estado = estado  # Asignar el estado validado
             estudiante.grado = Grado.objects.get(id=grado_id)
             estudiante.paralelo = Paralelo.objects.get(id=paralelo_id)
-            
-            if periodo_id:
-                estudiante.periodo = Periodo.objects.get(id=periodo_id)
+
+            # Manejo del período (consistente con agregar_estudiante)
+            if not periodo_id:
+                periodo = Periodo.objects.order_by('-fecha_inicio').first()
+                if not periodo:
+                    messages.error(request, 'No hay períodos definidos en el sistema')
+                    return redirect('gestion_padron')
+                estudiante.periodo = periodo
             else:
-                estudiante.periodo = None
-                
+                estudiante.periodo = Periodo.objects.get(id=periodo_id)
+
+            # Guardar cambios
             estudiante.save()
             messages.success(request, 'Estudiante actualizado exitosamente!')
+        
+        except Grado.DoesNotExist:
+            messages.error(request, 'El grado seleccionado no existe')
+        except Paralelo.DoesNotExist:
+            messages.error(request, 'El paralelo seleccionado no existe')
+        except Periodo.DoesNotExist:
+            messages.error(request, 'El período seleccionado no existe')
         except Exception as e:
             messages.error(request, f'Error al actualizar estudiante: {str(e)}')
+        
+        return redirect('gestion_padron')
+
+    return render(request, 'editar_estudiante.html', {
+        'estudiante': estudiante,
+        'grados': Grado.objects.all(),
+        'paralelos': Paralelo.objects.all(),
+        'periodo_actual': Periodo.objects.order_by('-fecha_inicio').first(),
+        'ESTADOS': getattr(PadronElectoral, 'ESTADOS', [('activo', 'Activo'), ('inactivo', 'Inactivo')])
+    })
     
-    return redirect('gestion_padron')
 
 def eliminar_estudiante(request, estudiante_id):
     estudiante = get_object_or_404(PadronElectoral, id=estudiante_id)
@@ -341,7 +389,7 @@ def cargar_paralelos(request):
     return JsonResponse(data)
 
 
-# Exportar e importar Padrón Electoral a Excel
+# FORMATO PADORN ELECTORAL
 def exportar_padron_excel(request):
     # Crear el libro de trabajo y la hoja
     wb = Workbook()
@@ -384,6 +432,7 @@ def exportar_padron_excel(request):
     
     return response
 
+# CARGAR EL PADRON ELECTORAL DESDE UN ARCHIVO EXCEL
 def importar_padron_excel(request):
     if request.method == 'POST' and request.FILES.get('archivo_excel'):
         archivo = request.FILES['archivo_excel']
@@ -392,19 +441,29 @@ def importar_padron_excel(request):
             wb = load_workbook(archivo)
             ws = wb.active
             
+            # Obtener el período actual automáticamente
+            periodo_actual = Periodo.objects.order_by('-fecha_inicio').first()
+            if not periodo_actual:
+                messages.error(request, 'No hay períodos definidos en el sistema')
+                return redirect('gestion_padron')
+            
             with transaction.atomic():
                 for row in ws.iter_rows(min_row=2, values_only=True):
-                    # Asumimos el formato: Cédula | Nombres | Apellidos | Correo | Grado | Paralelo | Teléfono
-                    cedula, nombre, apellidos, grado_nombre, paralelo_nombre,Periodo, correo, telefono = row[:8]
+                    # Asumimos el formato: Cédula | Nombres | Apellidos | Grado | Paralelo | Correo | Teléfono
+                    cedula, nombre, apellidos, grado_nombre, paralelo_nombre, correo, telefono = row[:7]
                     
                     # Validar campos obligatorios
-                    if not all([cedula, nombre, apellidos,  grado_nombre, paralelo_nombre,Periodo,correo]):
+                    if not all([cedula, nombre, apellidos, grado_nombre, paralelo_nombre, correo]):
                         continue
                     
+                    # Convertir nombre y apellidos a mayúsculas (como en agregar_estudiante)
+                    nombre = str(nombre).upper()
+                    apellidos = str(apellidos).upper()
+                    
                     # Obtener o crear grado y paralelo
-                    grado, _ = Grado.objects.get_or_create(nombre=grado_nombre.strip())
+                    grado, _ = Grado.objects.get_or_create(nombre=str(grado_nombre).strip())
                     paralelo, _ = Paralelo.objects.get_or_create(
-                        nombre=paralelo_nombre.strip(),
+                        nombre=str(paralelo_nombre).strip(),
                         grado=grado
                     )
                     
@@ -416,10 +475,9 @@ def importar_padron_excel(request):
                             'apellidos': apellidos,
                             'grado': grado,
                             'paralelo': paralelo,
-                            'periodo': Periodo,
+                            'periodo': periodo_actual,  # Usar el período actual
                             'correo': correo,
                             'telefono': telefono if telefono else None,
-                            
                             'estado': 'activo'
                         }
                     )
