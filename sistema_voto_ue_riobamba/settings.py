@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'Aplicaciones.usuarios',
     'Aplicaciones.periodo',
     'Aplicaciones.autenticacion',
+    'Aplicaciones.configuracion',
     
 ]
 
@@ -70,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Aplicaciones.configuracion.context_processors.logo_config',  # Añadir el context processor aquí
             ],
         },
     },
