@@ -8,3 +8,4 @@ class LogoConfig(models.Model):
 
     def __str__(self):
         return self.iniciales
+
