@@ -17,3 +17,4 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(Usuarios, CustomUserAdmin)
+admin.site.register(Roles,)

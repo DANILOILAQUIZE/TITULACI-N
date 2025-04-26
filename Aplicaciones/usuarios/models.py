@@ -18,7 +18,7 @@ class Usuarios(AbstractUser):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(unique=True)
-    id_rol = models.ForeignKey(Roles, on_delete=models.PROTECT)
+    id_rol = models.ForeignKey(Roles,  on_delete=models.CASCADE, null=True, blank=True)
     activo = models.BooleanField(default=True)
     imagen = models.ImageField(upload_to='perfil/', blank=True, null=True)
     periodo = models.ForeignKey(Periodo, on_delete=models.SET_NULL, null=True, blank=True)
