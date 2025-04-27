@@ -1,0 +1,228 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+
+
+
+<div class="card mb-3">
+    <div class="card-body bg-light text-center">
+      <h5 class="card-title mb-4"><strong>Gestión Electoral</strong></h5>
+      <p class="card-text mb-4">
+        Administración de listas y cargos para elecciones estudiantiles.
+      </p>
+      <nav class="d-flex justify-content-center gap-3">
+        <span class="text-muted">•</span>
+        <a href="" class="text-decoration-none text-dark {% if request.path == '/listas/' %} text-decoration-underline {% endif %}">LISTAS</a>
+        <span>&nbsp;&nbsp;</span>
+        <span class="text-muted">|</span>
+        <span>&nbsp;&nbsp;</span>
+        <a href="" class="text-decoration-none text-dark {% if request.path == '/cargos/' %} text-decoration-underline {% endif %}">CARGOS</a>
+      </nav>
+    </div>
+  </div>
+  
+  <!-- Sección de Listas -->
+  <section id="listar-listas" class="row match-height">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+          <h4 class="card-title mb-2 mb-md-0">Listas Electorales</h4>
+          <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
+            <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar lista..." id="buscarLista">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarLista">
+              <i class="la la-plus"></i> Nueva Lista
+            </button>
+          </div>
+        </div>
+  
+        <div class="card-content">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="tablaListas">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Frase</th>
+                    <th>Período</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for lista in listas %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ lista.nombre_lista }}</td>
+                      <td>{{ lista.frase|default:"-" }}</td>
+                      <td>{{ lista.periodo.nombre }}</td>
+                      <td>
+                        {% if lista.imagen %}
+                          <img src="{{ lista.imagen.url }}" alt="{{ lista.nombre_lista }}" style="max-height: 50px;">
+                        {% else %}
+                          <span class="badge badge-secondary">Sin imagen</span>
+                        {% endif %}
+                      </td>
+                      <td class="action-buttons">
+                        <!-- Editar -->
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarListaModal{{ lista.id }}">
+                          <i class="la la-edit"></i>
+                        </button>
+  
+                        <!-- Eliminar -->
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarListaModal{{ lista.id }}">
+                          <i class="la la-trash"></i>
+                        </button>
+  
+                        <!-- Modal Eliminar -->
+                        <div class="modal fade" id="eliminarListaModal{{ lista.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Confirmar Eliminación</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                ¿Estás seguro de eliminar la lista <strong>{{ lista.nombre_lista }}</strong>?
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <a href="{% url 'eliminar_lista' lista.id %}" class="btn btn-danger">Eliminar</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+  
+                        <!-- Modal Editar -->
+                        <div class="modal fade" id="editarListaModal{{ lista.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content p-4">
+                              <div class="modal-header border-0">
+                                <h5 class="modal-title w-100 text-center font-weight-bold">EDITAR LISTA</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form method="POST" action="{% url 'editar_lista' lista.id %}" enctype="multipart/form-data">
+                                  {% csrf_token %}
+                                  <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                      <label for="nombre_lista">NOMBRE DE LA LISTA</label>
+                                      <input type="text" class="form-control rounded-pill" name="nombre_lista" value="{{ lista.nombre_lista }}" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                <label for="periodo">PERÍODO</label>
+                                <input type="text" class="form-control rounded-pill" name="periodo" value="{{ periodo_actual.nombre }}" readonly>
+                                <input type="hidden" name="periodo_id" value="{{ periodo_actual.id }}">
+                              </div>
+                                  </div>
+  
+                                  <div class="form-group">
+                                    <label for="frase">FRASE O LEMA</label>
+                                    <input type="text" class="form-control rounded-pill" name="frase" value="{{ lista.frase|default:'' }}" placeholder="Opcional">
+                                  </div>
+  
+                                  <div class="form-group">
+                                    <label for="imagen">IMAGEN (Logo o símbolo)</label>
+                                    <div class="custom-file">
+                                      <input type="file" class="custom-file-input" id="imagen{{ lista.id }}" name="imagen">
+                                      <label class="custom-file-label" for="imagen{{ lista.id }}">{% if lista.imagen %}Cambiar imagen{% else %}Seleccionar imagen{% endif %}</label>
+                                    </div>
+                                    {% if lista.imagen %}
+                                      <small class="form-text text-muted">Imagen actual: <a href="{{ lista.imagen.url }}" target="_blank">{{ lista.imagen.name }}</a></small>
+                                    {% endif %}
+                                  </div>
+  
+                                  <div class="form-group text-center mt-4">
+                                    <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                                      <i class="la la-save"></i> GUARDAR
+                                    </button>
+                                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                                      <i class="la la-times"></i> CANCELAR
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="6" class="text-center py-4">
+                        <i class="la la-folder-open" style="font-size: 2rem;"></i>
+                        <p class="mt-2">No hay listas registradas</p>
+                        <button class="btn btn-primary mt-2" data-toggle="modal" data-target="#modalAgregarLista">
+                          <i class="la la-plus"></i> Crear primera lista
+                        </button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Modal Agregar Lista -->
+  <div class="modal fade" id="modalAgregarLista" tabindex="-1" role="dialog" aria-labelledby="modalAgregarListaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content p-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100 text-center font-weight-bold" id="modalAgregarListaLabel">AGREGAR NUEVA LISTA</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="nombre_lista">NOMBRE DE LA LISTA*</label>
+                <input type="text" class="form-control rounded-pill" name="nombre_lista" required placeholder="Ej: Lista A, Futuro Estudiantil, etc.">
+              </div>
+              <div class="form-group col-md-6">
+                <label for="periodo">PERÍODO*</label>
+                <select class="form-control rounded-pill" name="periodo" required>
+                  {% for periodo in periodos %}
+                    <option value="{{ periodo.id }}" {% if periodo.id == periodo_actual.id %}selected{% endif %}>{{ periodo.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="frase">FRASE O LEMA</label>
+              <input type="text" class="form-control rounded-pill" name="frase" placeholder="Opcional">
+            </div>
+  
+            <div class="form-group">
+              <label for="imagen">IMAGEN (Logo o símbolo)</label>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="imagen" name="imagen">
+                <label class="custom-file-label" for="imagen">Seleccionar imagen (opcional)</label>
+              </div>
+            </div>
+  
+            <div class="form-group text-center mt-4">
+              <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                <i class="la la-save"></i> GUARDAR
+              </button>
+              <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                <i class="la la-times"></i> CANCELAR
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
