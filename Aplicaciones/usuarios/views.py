@@ -118,7 +118,7 @@ def guardarUsuario(request):
             send_mail(
                 'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba',
                 f'Hola {nombre},{apellido} tu usuario ha sido creado no la pierdas.\n\nCédula (usuario): {cedula}\nContraseña: {password_aleatoria}\n\nPor favor, estas credenciales son del consejo electoral',
-                'darwin.ilaquize1102@utc.edu.ec',  # Remitente
+                'riobamba@aplicacionesutc.com',  # Remitente
                 [email],
                 fail_silently=False,
             )
