@@ -23,24 +23,41 @@ def listar_listas(request):
 
 def agregar_lista(request):
     if request.method == 'POST':
-        nombre_lista = request.POST.get('nombre_lista')
-        frase = request.POST.get('frase', '')
+        # Obtener datos del formulario
+        nombre_lista = request.POST.get('nombre_lista', '').strip()
+        frase = request.POST.get('frase', '').strip()
         periodo_id = request.POST.get('periodo')
         imagen = request.FILES.get('imagen')
+        color = request.POST.get('color', '').strip()
+        
+        # Validaciones
+        if not nombre_lista:
+            messages.error(request, 'El nombre de la lista no puede estar vacío')
+            return redirect('listar_listas')
         
         try:
+            # Obtener periodo
             periodo = Periodo.objects.get(id=periodo_id)
             
-            lista = Lista.objects.create(
-                nombre_lista=nombre_lista,
-                frase=frase,
-                periodo=periodo,
-                imagen=imagen
-            )
+            # Crear lista con color personalizado
+            lista_data = {
+                'nombre_lista': nombre_lista,
+                'frase': frase,
+                'periodo': periodo,
+                'imagen': imagen
+            }
+            
+            # Agregar color solo si se proporciona
+            if color:
+                lista_data['color'] = color
+            
+            lista = Lista.objects.create(**lista_data)
             
             messages.success(request, f'Lista {lista.nombre_lista} creada exitosamente')
             return redirect('listar_listas')
         
+        except Periodo.DoesNotExist:
+            messages.error(request, 'Periodo seleccionado no es válido')
         except Exception as e:
             messages.error(request, f'Error al crear la lista: {str(e)}')
     
@@ -65,7 +82,14 @@ def editar_lista(request, lista_id):
             # Actualizar campos
             lista.nombre_lista = nombre_lista
             lista.frase = frase
-            lista.color = color
+            
+            # Asegurarse de que el color no sea vacío
+            if color and color.strip():
+                lista.color = color.strip()
+            else:
+                # Si no se proporciona color, mantener el color existente
+                # Si no hay color existente, usar 'azul' como predeterminado
+                lista.color = lista.color or 'azul'
             
             # Actualizar periodo si es diferente
             if periodo_id:

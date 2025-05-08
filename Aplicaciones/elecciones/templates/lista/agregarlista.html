@@ -172,7 +172,8 @@
 
                 <div class="form-group">
                   <label for="color">COLOR REPRESENTATIVO</label>
-                  <input type="text" class="form-control rounded-pill" id="color{{ lista.id }}" name="color" value="{{ lista.color|default:'azul' }}" placeholder="Ej: azul, rojo, #007bff">
+                  <input type="text" class="form-control rounded-pill" id="color{{ lista.id }}" name="color" value="{{ lista.color }}" placeholder="Ej: azul, rojo, #007bff">
+                  <small class="form-text text-muted">Color actual: {{ lista.color|default:"Sin color" }}</small>
                 </div>
 
                 <div class="form-group text-center mt-4">
