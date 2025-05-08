@@ -1,31 +1,5 @@
-<!-- Modal para editar rol -->
-<div class="modal fade" id="editarRolModal{{ rol.id }}" tabindex="-1" role="dialog" aria-labelledby="editarRolModalLabel{{ rol.id }}" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editarRolModalLabel{{ rol.id }}">Editar Rol: {{ rol.nombre_rol }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Formulario de Edición -->
-                <form method="POST" action="{% url 'editarrol' rol.id %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="nombre_rol">Nombre del Rol <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="nombre_rol" name="nombre_rol" value="{{ rol.nombre_rol }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción (Opcional)</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ rol.descripcion }}</textarea>
-                    </div>
-            </div>
-            <div class="form-group text-center mt-4">
-                <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-                <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+
+{% endblock %}

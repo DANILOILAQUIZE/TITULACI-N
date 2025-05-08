@@ -9,6 +9,7 @@ class Lista(models.Model):
     frase = models.CharField(max_length=255, null=True, blank=True)  
     imagen = models.ImageField(upload_to='listas/', null=True, blank=True)  
     periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)  
+    color = models.CharField(max_length=20, default='azul', help_text='Color representativo de la lista (nombre o código hexadecimal)')
 
     def __str__(self):
         return f"{self.nombre_lista} ({self.periodo.nombre})"
