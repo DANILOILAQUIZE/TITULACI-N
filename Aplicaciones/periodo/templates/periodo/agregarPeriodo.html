@@ -39,7 +39,7 @@
                     
                     {% if periodos.exists %}
                     <div class="table-responsive">
-                        <table class="table table-custom">
+                        <table id="tablaPeriodos" class="table table-custom">
                             <thead>
                                 <tr>
                                     <th>nombre</th>
@@ -199,20 +199,46 @@ $(document).ready(function() {
         const fechaFin = new Date($('input[name="fecha_fin"]').val());
         
         if (fechaFin <= fechaInicio) {
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
             e.preventDefault();
-            return false;
-        }
-        return true;
-    });
-    
-    // Ordenar por fecha más reciente primero
-    $('table').DataTable({
-        order: [[1, 'desc']],
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+            alert('La fecha de fin debe ser posterior a la fecha de inicio');
         }
     });
-}); 
+
+    // Inicializar DataTables de manera robusta
+    function initDataTables() {
+        var $table = $('#tablaPeriodos');
+        if ($table.length) {
+            try {
+                $table.DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                    },
+                    responsive: true,
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
+                    columnDefs: [
+                        { orderable: false, targets: 5 },
+                        { width: '10%', targets: 5 }
+                    ],
+                    order: [[0, 'asc']],
+                    scrollX: true
+                });
+                console.log('DataTables inicializado correctamente');
+            } catch (error) {
+                console.error('Error al inicializar DataTables:', error);
+            }
+        } else {
+            console.warn('No se encontró la tabla para inicializar DataTables');
+        }
+    }
+
+    // Intentar inicializar DataTables
+    initDataTables();
+
+    // Intentar de nuevo después de un breve retraso
+    setTimeout(initDataTables, 500);
+});
 </script>
+
+
 {% endblock %}
