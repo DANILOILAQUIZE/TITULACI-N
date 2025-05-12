@@ -91,8 +91,8 @@
                         </select>
                     </div>
                     <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_principal">CÉDULA</label>
-                        <input type="text" class="form-control rounded-pill" id="cedula_principal" name="cedula_principal" placeholder="Ingrese cédula" value="{% if candidato_principal %}{{ candidato_principal.padron.cedula }}{% endif %}">
+                        <label for="cedula_principal">CÉDULA/NOMBRE</label>
+                        <input type="text" class="form-control rounded-pill" id="cedula_principal" name="cedula_principal" placeholder="Ingrese cédula o nombre" value="{% if candidato_principal %}{{ candidato_principal.padron.cedula }}{% endif %}">
                     </div>
                     <div class="form-group col-md-4 mb-2">
                         <label for="nombre_candidato_principal">NOMBRE COMPLETO</label>
@@ -118,7 +118,7 @@
                         </select>
                     </div>
                     <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_suplente">CÉDULA</label>
+                        <label for="cedula_suplente">CÉDULA/NOMBRE</label>
                         <input type="text" class="form-control rounded-pill" id="cedula_suplente" name="cedula_suplente" placeholder="Ingrese cédula" value="{% if candidato_suplente %}{{ candidato_suplente.padron.cedula }}{% endif %}">
                     </div>
                     <div class="form-group col-md-4 mb-2">
@@ -145,8 +145,8 @@
                         </select>
                     </div>
                     <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_alterno">CÉDULA</label>
-                        <input type="text" class="form-control rounded-pill" id="cedula_alterno" name="cedula_alterno" placeholder="Ingrese cédula" value="{% if candidato_alterno %}{{ candidato_alterno.padron.cedula }}{% endif %}">
+                        <label for="cedula_alterno">CÉDULA/NOMBRE</label>
+                        <input type="text" class="form-control rounded-pill" id="cedula_alterno" name="cedula_alterno" placeholder="Ingrese cédula o nombre" value="{% if candidato_alterno %}{{ candidato_alterno.padron.cedula }}{% endif %}">
                     </div>
                     <div class="form-group col-md-4 mb-2">
                         <label for="nombre_candidato_alterno">NOMBRE COMPLETO</label>
@@ -180,31 +180,75 @@ document.addEventListener('DOMContentLoaded', function () {
     const nombreCandidatoAlterno = document.getElementById('nombre_candidato_alterno');
 
     function buscarNombre(busqueda, campoNombre) {
-        const url = `/buscar_nombre_por_cedula/?cedula=${busqueda}`;
-        fetch(url)
+        fetch(`/buscar_nombre_por_cedula/?cedula=${busqueda}`)
             .then(response => response.json())
             .then(data => {
-                campoNombre.value = data.nombre || '';
-                if (!data.nombre) {
-                    alert('No se encontró un nombre para esta cédula');
+                if (data.nombre) {
+                    campoNombre.value = data.nombre;
+                    // Obtener el campo de cédula correspondiente
+                    const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
+                                       campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
+                                       campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
+                    if (campoCedula) {
+                        campoCedula.value = data.cedula;
+                    }
+                } else {
+                    campoNombre.value = '';
+                    alert('No se encontró ninguna persona con esa búsqueda');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ocurrió un error al buscar el nombre');
+                campoNombre.value = '';
+                alert('Error al realizar la búsqueda');
             });
     }
 
-    cedulaPrincipal.addEventListener('change', function () {
-        buscarNombre(this.value, nombreCandidatoPrincipal);
+    // Función para manejar la búsqueda
+    function manejarBusqueda(input, campoNombre) {
+        const valor = input.value.trim();
+        
+        // Si es un número, buscar cuando tenga 9 dígitos
+        if (/^\d+$/.test(valor)) {
+            if (valor.length >= 9) {
+                buscarNombre(valor, campoNombre);
+            }
+        }
+        // Si es texto, buscar cuando tenga al menos 3 caracteres
+        else if (valor.length >= 3) {
+            buscarNombre(valor, campoNombre);
+        }
+        
+        // Si el campo está vacío, limpiar el nombre
+        if (valor.length === 0) {
+            campoNombre.value = '';
+        }
+    }
+
+    // Búsqueda mientras se escribe
+    cedulaPrincipal.addEventListener('input', function() {
+        manejarBusqueda(this, nombreCandidatoPrincipal);
     });
 
-    cedulaSuplente.addEventListener('change', function () {
-        buscarNombre(this.value, nombreCandidatoSuplente);
+    cedulaSuplente.addEventListener('input', function() {
+        manejarBusqueda(this, nombreCandidatoSuplente);
     });
 
-    cedulaAlterno.addEventListener('change', function () {
-        buscarNombre(this.value, nombreCandidatoAlterno);
+    cedulaAlterno.addEventListener('input', function() {
+        manejarBusqueda(this, nombreCandidatoAlterno);
+    });
+
+    // Búsqueda cuando el campo pierde el foco
+    cedulaPrincipal.addEventListener('change', function() {
+        manejarBusqueda(this, nombreCandidatoPrincipal);
+    });
+
+    cedulaSuplente.addEventListener('change', function() {
+        manejarBusqueda(this, nombreCandidatoSuplente);
+    });
+
+    cedulaAlterno.addEventListener('change', function() {
+        manejarBusqueda(this, nombreCandidatoAlterno);
     });
 });
 

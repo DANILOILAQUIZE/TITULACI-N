@@ -73,7 +73,7 @@
                     </td>
                     <td class="action-buttons">
                       
-                      <!-- 💬 BOTÓN EDITAR -->
+                      
                       <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarUsuarioModal{{ usuario.id }}">
                         <i class="la la-edit"></i>
                       </button>
@@ -270,57 +270,24 @@
   </div>
 </div>
 
+{% endblock contenido %}
+
+{% block javascript %}
 <script>
-    // Función para inicializar DataTables de manera segura
-    function initDataTables() {
-        // Verificar si jQuery está disponible
-        if (typeof jQuery === 'undefined') {
-            console.error('jQuery no está cargado');
-            return;
-        }
-
-        // Usar jQuery.ready para asegurar que el DOM esté completamente cargado
-        jQuery(function($) {
-            console.log('jQuery version:', $.fn.jquery);
-            console.log('DataTables available:', !!$.fn.DataTable);
-
-            var $table = $('table');
-            console.log('Table exists:', $table.length > 0);
-
-            if ($table.length && $.fn.DataTable) {
-                try {
-                    $table.DataTable({
-                        language: {
-                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                        },
-                        responsive: true,
-                        pageLength: 10,
-                        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
-                        columnDefs: [
-                            { orderable: false, targets: 5 }, // Deshabilitar ordenación en columna de acciones
-                            { width: '10%', targets: 5 } // Ajustar ancho de columna de acciones
-                        ],
-                        order: [[1, 'asc']], // Ordenar por nombre por defecto
-                        scrollX: true // Habilitar scroll horizontal
-                    });
-                    console.log('DataTables initialized successfully');
-                } catch (error) {
-                    console.error('Error initializing DataTables:', error);
-                }
-            } else {
-                console.warn('DataTables initialization failed');
-                console.warn('$ type:', typeof $);
-                console.warn('$.fn.DataTable:', $.fn.DataTable);
-                console.warn('Table length:', $table.length);
-            }
-        });
-    }
-
-    // Intentar inicializar DataTables
-    initDataTables();
-
-    // Si falla la primera vez, intentar de nuevo después de un breve retraso
-    setTimeout(initDataTables, 500);
+$(document).ready(function() {
+    $('.table').DataTable({
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+        },
+        pageLength: 10,
+        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
+        columnDefs: [
+            { orderable: false, targets: -1 },
+            { width: '100px', targets: -1 }
+        ],
+        order: [[1, 'asc']]
+    });
+});
 </script>
-
-{% endblock %}
+{% endblock javascript %}

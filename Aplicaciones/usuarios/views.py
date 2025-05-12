@@ -83,35 +83,61 @@ def generar_contraseña_aleatoria(longitud=8):
 
 def guardarUsuario(request):
     if request.method == 'POST':
-        cedula = request.POST['cedula']  # Ahora se usa como username
-        nombre = request.POST['nombre']
-        apellido = request.POST['apellido']
-        email = request.POST['email']
-        id_rol = request.POST['id_rol']
-        activo = request.POST.get('activo', 'off') == 'on'
-        imagen = request.FILES.get('imagen')
+        print('Método POST recibido')
+        print('POST data:', request.POST)
+        print('FILES:', request.FILES)
+        
+        try:
+            cedula = request.POST['cedula']  # Ahora se usa como username
+            nombre = request.POST['nombre']
+            apellido = request.POST['apellido']
+            email = request.POST['email']
+            id_rol = request.POST['id_rol']
+            activo = request.POST.get('activo', 'off') == 'on'
+            imagen = request.FILES.get('imagen')
+            
+            print('Datos extraídos correctamente:')
+            print(f'Cédula: {cedula}')
+            print(f'Nombre: {nombre}')
+            print(f'Apellido: {apellido}')
+            print(f'Email: {email}')
+            print(f'Rol ID: {id_rol}')
+            print(f'Activo: {activo}')
+            print(f'Imagen: {imagen}')
 
-        # Verificar si la cédula (username) ya está registrada
-        if Usuarios.objects.filter(username=cedula).exists():
-            messages.error(request, 'La cédula ya está registrada como nombre de usuario.')
+            # Verificar si la cédula (username) ya está registrada
+            if Usuarios.objects.filter(username=cedula).exists():
+                messages.error(request, 'La cédula ya está registrada como nombre de usuario.')
+                return redirect('agregarUsuario')
+
+            # Generar contraseña aleatoria
+            password_aleatoria = generar_contraseña_aleatoria()
+            print(f'Contraseña generada: {password_aleatoria}')
+
+            # Crear usuario
+            usuario = Usuarios(
+                username=cedula,
+                nombre=nombre,
+                apellido=apellido,
+                email=email,
+                password=make_password(password_aleatoria),
+                id_rol_id=id_rol,
+                activo=activo,
+                imagen=imagen,
+                plain_password=password_aleatoria,  # Guardar la contraseña en texto plano (opcional)
+            )
+            print('Usuario creado, intentando guardar...')
+            usuario.save()
+            print('Usuario guardado exitosamente')
+            
+        except KeyError as e:
+            print(f'Error: Campo faltante en el formulario - {str(e)}')
+            messages.error(request, f'Error: Falta el campo {str(e)} en el formulario.')
             return redirect('agregarUsuario')
-
-        # Generar contraseña aleatoria
-        password_aleatoria = generar_contraseña_aleatoria()
-
-        # Crear usuario
-        usuario = Usuarios(
-            username=cedula,
-            nombre=nombre,
-            apellido=apellido,
-            email=email,
-            password=make_password(password_aleatoria),
-            id_rol_id=id_rol,
-            activo=activo,
-            imagen=imagen,
-            plain_password=password_aleatoria,  # Guardar la contraseña en texto plano (opcional)
-        )
-        usuario.save()
+        except Exception as e:
+            print(f'Error inesperado: {str(e)}')
+            messages.error(request, f'Error inesperado: {str(e)}')
+            return redirect('agregarUsuario')
 
         # Enviar la contraseña por correo electrónico
         try:

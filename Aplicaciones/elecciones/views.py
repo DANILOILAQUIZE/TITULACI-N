@@ -345,40 +345,40 @@ def eliminar_cargo(request, cargo_id):
 
 #APARTADO DE CANDIDATOS
 def buscar_nombre_por_cedula(request):
-    cedula = request.GET.get('cedula', '').strip()
-    nombre = request.GET.get('nombre', '').strip()
+    busqueda = request.GET.get('cedula', '').strip()
     
     try:
-        if cedula:
-            padron = PadronElectoral.objects.get(cedula=cedula)
-        elif nombre:
-            # Buscar por nombre completo (nombre y apellidos)
-            padron = PadronElectoral.objects.get(
-                Q(nombre__icontains=nombre) | Q(apellidos__icontains=nombre)
-            )
-        else:
-            return JsonResponse({'nombre': None}, status=400)
+        # Si la búsqueda es numérica, buscar por cédula que comience con esos números
+        if busqueda.isdigit():
+            padron = PadronElectoral.objects.filter(cedula__startswith=busqueda).first()
+            if padron:
+                return JsonResponse({
+                    'nombre': f'{padron.nombre} {padron.apellidos}',
+                    'cedula': padron.cedula,
+                    'grado': padron.grado.nombre,
+                    'paralelo': padron.paralelo.nombre
+                })
         
-        return JsonResponse({
-            'nombre': f'{padron.nombre} {padron.apellidos}',
-            'cedula': padron.cedula,
-            'grado': padron.grado.nombre,
-            'paralelo': padron.paralelo.nombre
-        })
-    except PadronElectoral.DoesNotExist:
+        # Si no es numérica o no se encontró por cédula, buscar por nombre o apellido
+        if len(busqueda) >= 3:
+            padron = PadronElectoral.objects.filter(
+                Q(nombre__icontains=busqueda) | 
+                Q(apellidos__icontains=busqueda)
+            ).first()
+            
+            if padron:
+                return JsonResponse({
+                    'nombre': f'{padron.nombre} {padron.apellidos}',
+                    'cedula': padron.cedula,
+                    'grado': padron.grado.nombre,
+                    'paralelo': padron.paralelo.nombre
+                })
+        
         return JsonResponse({'nombre': None}, status=404)
-    except PadronElectoral.MultipleObjectsReturned:
-        # Si hay múltiples resultados, devolver el primero
-        padrones = PadronElectoral.objects.filter(
-            Q(nombre__icontains=nombre) | Q(apellidos__icontains=nombre)
-        )
-        padron = padrones.first()
-        return JsonResponse({
-            'nombre': f'{padron.nombre} {padron.apellidos}',
-            'cedula': padron.cedula,
-            'grado': padron.grado.nombre,
-            'paralelo': padron.paralelo.nombre
-        })
+        
+    except Exception as e:
+        print(f'Error en búsqueda: {str(e)}')
+        return JsonResponse({'nombre': None}, status=400)
 
 def listar_candidatos(request):
     # Obtener candidatos ordenados por periodo y lista
