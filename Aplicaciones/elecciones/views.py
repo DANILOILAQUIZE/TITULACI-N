@@ -16,11 +16,32 @@ def listar_listas(request):
     listas = Lista.objects.filter(periodo=periodo_actual)
     periodos = Periodo.objects.all()
     
+    # Obtener todos los candidatos de cada lista con sus cargos
+    listas_con_candidatos = []
+    for lista in listas:
+        # Buscar el presidente
+        presidente = Candidato.objects.filter(
+            lista=lista,
+            cargo__nombre_cargo__icontains='presidente'
+        ).first()
+        
+        # Obtener todos los candidatos de la lista ordenados por cargo
+        candidatos = Candidato.objects.filter(
+            lista=lista
+        ).select_related('cargo').order_by('cargo__nombre_cargo')
+        
+        # Agregar la lista, presidente y candidatos
+        listas_con_candidatos.append({
+            'lista': lista,
+            'presidente': presidente,
+            'candidatos': candidatos
+        })
+    
     # Convertir mensajes a JSON
     messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
     
     return render(request, 'lista/agregarlista.html', {
-        'listas': listas,
+        'listas': listas_con_candidatos,
         'periodo_actual': periodo_actual,
         'periodos': periodos,
         'messages_json': json.dumps(messages_list)
@@ -156,6 +177,9 @@ def editar_lista(request, lista_id):
     return redirect('listar_listas')
 
 def eliminar_lista(request, lista_id):
+    if request.method != 'POST':
+        return redirect('listar_listas')
+        
     try:
         # Obtener la lista
         lista = get_object_or_404(Lista, id=lista_id)
@@ -173,20 +197,12 @@ def eliminar_lista(request, lista_id):
         nombre_lista = lista.nombre_lista
         lista.delete()
         
-        return JsonResponse({
-            'status': 'success', 
-            'message': f'Lista {nombre_lista} y {candidatos_count} candidatos eliminados exitosamente'
-        })
-    
-    except Exception as e:
-        import traceback
-        print(f"Error al eliminar lista: {str(e)}")
-        traceback.print_exc()
+        messages.success(request, f'Lista {nombre_lista} y {candidatos_count} candidatos eliminados exitosamente')
         
-        return JsonResponse({
-            'status': 'error', 
-            'message': f'No se pudo eliminar la lista. Error: {str(e)}'
-        })
+    except Exception as e:
+        messages.error(request, f'No se pudo eliminar la lista. Error: {str(e)}')
+        
+    return redirect('listar_listas')
 
 #APARTADO DE CARGOS
 def listar_cargos(request):
@@ -385,6 +401,19 @@ def listar_candidatos(request):
     })
 
 def agregar_candidato(request):
+    # Obtener el ID de la lista si se pasa como parámetro
+    lista_id = request.GET.get('lista')
+    lista_preseleccionada = None
+    candidatos_existentes = None
+    
+    if lista_id:
+        try:
+            lista_preseleccionada = Lista.objects.get(id=lista_id)
+            # Obtener los candidatos existentes de la lista
+            candidatos_existentes = Candidato.objects.filter(lista=lista_preseleccionada)
+        except Lista.DoesNotExist:
+            pass
+    
     if request.method == 'POST':
         # Campos para candidato principal
         cargo_principal_id = request.POST.get('cargo_principal')
@@ -478,7 +507,9 @@ def agregar_candidato(request):
     return render(request, 'candidatos/agregarcandidato.html', {
         'listas': listas,
         'cargos': cargos,
-        'periodos': periodos
+        'periodos': periodos,
+        'lista_preseleccionada': lista_preseleccionada,
+        'candidatos_existentes': candidatos_existentes
     })
 
 def editar_candidato(request, candidato_id=None):
