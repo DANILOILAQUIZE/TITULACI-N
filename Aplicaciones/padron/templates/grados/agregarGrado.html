@@ -1,5 +1,105 @@
 {% extends 'plantilla.html' %}
 
+{% block scripts %}
+<script>
+    // Función para inicializar DataTables de manera segura
+    function initDataTables() {
+        // Usar jQuery.ready para asegurar que el DOM esté completamente cargado
+        jQuery(function($) {
+            var $table = $('#tablaGrados');
+
+            // Verificar si DataTables está disponible
+            if (!$.fn.DataTable) {
+                console.error('DataTables no está cargado');
+                return;
+            }
+
+            // Destruir cualquier instancia de DataTable existente
+            if ($.fn.DataTable.isDataTable($table)) {
+                $table.DataTable().destroy();
+            }
+
+            // Inicializar DataTable
+            $table.DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                },
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
+                columnDefs: [
+                    { orderable: false, targets: [3, 4, 5] },
+                    { searchable: false, targets: [3, 4, 5] }
+                ],
+                order: [[1, 'asc']],
+                scrollX: true,
+                drawCallback: function() {
+                    console.log('DataTable renderizada');
+                }
+            });
+
+            console.log('DataTables inicializada correctamente');
+        });
+    }
+
+    // Inicializar DataTables cuando el documento esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDataTables);
+    } else {
+        initDataTables();
+    }
+</script>
+
+<script>
+    // Función para mostrar mensajes con Izitoast
+    function showMessage(type, message) {
+        iziToast[type]({
+            title: '',
+            message: message,
+            position: 'topRight',
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnHover: true
+        });
+    }
+
+    // Verificar si hay mensajes de Django para mostrar
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            var messagesJson = '{{ messages_json|default:"[]" }}';
+            console.log('Mensajes recibidos:', messagesJson);
+            
+            var messages = messagesJson ? JSON.parse(messagesJson) : [];
+            
+            messages.forEach(function(msg) {
+                var toastType = msg.tags || 'info';
+                
+                // Mapear tags de Django a tipos de iziToast
+                var toastMapping = {
+                    'success': 'success',
+                    'error': 'error',
+                    'warning': 'warning',
+                    'info': 'info'
+                };
+                
+                var finalType = toastMapping[toastType] || 'info';
+                
+                iziToast[finalType]({
+                    title: '',
+                    message: msg.message,
+                    position: 'topRight',
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnHover: true
+                });
+            });
+        } catch (error) {
+            console.error('Error al procesar mensajes:', error);
+        }
+    });
+</script>
+{% endblock scripts %}
+
 {% block contenido %}
 
 <div class="card mb-3">
@@ -236,53 +336,5 @@
 </script>
 
 
-<script>
-    // Función para inicializar DataTables de manera segura
-    function initDataTables() {
-        // Verificar si jQuery está disponible
-        if (typeof jQuery === 'undefined') {
-            console.error('jQuery no está cargado');
-            return;
-        }
 
-        // Usar jQuery.ready para asegurar que el DOM esté completamente cargado
-        jQuery(function($) {
-            console.log('jQuery version:', $.fn.jquery);
-            console.log('DataTables available:', !!$.fn.DataTable);
-
-            var $table = $('#tablaGrados');
-            console.log('Table exists:', $table.length > 0);
-
-            if ($table.length && $.fn.DataTable) {
-                try {
-                    $table.DataTable({
-                        language: {
-                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                        },
-                        responsive: true,
-                        pageLength: 10,
-                        lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
-                        columnDefs: [
-                            { orderable: false, targets: 5 } // Deshabilitar ordenación en columna de acciones
-                        ]
-                    });
-                    console.log('DataTables initialized successfully');
-                } catch (error) {
-                    console.error('Error initializing DataTables:', error);
-                }
-            } else {
-                console.warn('DataTables initialization failed');
-                console.warn('$ type:', typeof $);
-                console.warn('$.fn.DataTable:', $.fn.DataTable);
-                console.warn('Table length:', $table.length);
-            }
-        });
-    }
-
-    // Intentar inicializar DataTables
-    initDataTables();
-
-    // Si falla la primera vez, intentar de nuevo después de un breve retraso
-    setTimeout(initDataTables, 500);
-</script>
 {% endblock %}

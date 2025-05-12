@@ -1,5 +1,180 @@
 {% extends "plantilla.html" %}
 {% load static %}
 {% block contenido %}
+<style>
+.preview-image {
+    width: 100px;
+    margin-top: 5px;
+}
+</style>
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header bg-primary text-white py-2">
+            <h4 class="mb-0">Agregar Candidato</h4>
+        </div>
+        <div class="card-body py-3">
+            <form method="POST" enctype="multipart/form-data" class="p-2">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-2">
+                        <label for="lista">LISTA</label>
+                        <select class="form-control rounded-pill" id="lista" name="lista" required>
+                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>--Seleccione una lista--</option>
+                            {% for lista in listas %}
+                            <option value="{{ lista.id }}" {% if candidato_principal and candidato_principal.lista.id == lista.id %}selected{% endif %}>{{ lista.nombre_lista }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6 mb-2">
+                        <label for="periodo">PERIODO</label>
+                        <select class="form-control rounded-pill" id="periodo" name="periodo" required>
+                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>--Seleccione un periodo--</option>
+                            {% for periodo in periodos %}
+                            <option value="{{ periodo.id }}" {% if candidato_principal and candidato_principal.periodo.id == periodo.id %}selected{% endif %}>{{ periodo.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
+                <!-- CANDIDATO PRINCIPAL -->
+                <h5 class="mt-3">Candidato Principal</h5>
+                <div class="form-row">
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cargo_principal">CARGO</label>
+                        <select class="form-control rounded-pill" id="cargo_principal" name="cargo_principal" required>
+                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>--Seleccione un cargo--</option>
+                            {% for cargo in cargos %}
+                            <option value="{{ cargo.id }}" {% if candidato_principal and candidato_principal.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cedula_principal">CÉDULA</label>
+                        <input type="text" class="form-control rounded-pill" id="cedula_principal" name="cedula_principal" placeholder="Ingrese cédula" value="{% if candidato_principal %}{{ candidato_principal.padron.cedula }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="nombre_candidato_principal">NOMBRE COMPLETO</label>
+                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_principal" name="nombre_candidato_principal" required readonly value="{% if candidato_principal %}{{ candidato_principal.nombre_candidato }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="imagen_principal">IMAGEN</label>
+                        <input type="file" class="form-control-file" id="imagen_principal" name="imagen_principal" accept="image/*" onchange="previewImage(event, 'preview_principal')">
+                        <img id="preview_principal" src="{% if candidato_principal and candidato_principal.imagen %}{{ candidato_principal.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_principal or not candidato_principal.imagen %}d-none{% endif %}">
+                    </div>
+                </div>
+
+                <!-- CANDIDATO SUPLENTE -->
+                <h5 class="mt-3">Candidato Suplente</h5>
+                <div class="form-row">
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cargo_suplente">CARGO</label>
+                        <select class="form-control rounded-pill" id="cargo_suplente" name="cargo_suplente" required>
+                            <option value="" disabled {% if not candidato_suplente %}selected{% endif %}>--Seleccione un cargo--</option>
+                            {% for cargo in cargos %}
+                            <option value="{{ cargo.id }}" {% if candidato_suplente and candidato_suplente.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cedula_suplente">CÉDULA</label>
+                        <input type="text" class="form-control rounded-pill" id="cedula_suplente" name="cedula_suplente" placeholder="Ingrese cédula" value="{% if candidato_suplente %}{{ candidato_suplente.padron.cedula }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="nombre_candidato_suplente">NOMBRE COMPLETO</label>
+                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_suplente" name="nombre_candidato_suplente" required readonly value="{% if candidato_suplente %}{{ candidato_suplente.nombre_candidato }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="imagen_suplente">IMAGEN</label>
+                        <input type="file" class="form-control-file" id="imagen_suplente" name="imagen_suplente" accept="image/*" onchange="previewImage(event, 'preview_suplente')">
+                        <img id="preview_suplente" src="{% if candidato_suplente and candidato_suplente.imagen %}{{ candidato_suplente.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_suplente or not candidato_suplente.imagen %}d-none{% endif %}">
+                    </div>
+                </div>
+
+                <!-- CANDIDATO ALTERNO -->
+                <h5 class="mt-3">Candidato Alterno (opcional)</h5>
+                <div class="form-row">
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cargo_alterno">CARGO</label>
+                        <select class="form-control rounded-pill" id="cargo_alterno" name="cargo_alterno">
+                            <option value="" disabled {% if not candidato_alterno %}selected{% endif %}>--Seleccione un cargo--</option>
+                            {% for cargo in cargos %}
+                            <option value="{{ cargo.id }}" {% if candidato_alterno and candidato_alterno.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="cedula_alterno">CÉDULA</label>
+                        <input type="text" class="form-control rounded-pill" id="cedula_alterno" name="cedula_alterno" placeholder="Ingrese cédula" value="{% if candidato_alterno %}{{ candidato_alterno.padron.cedula }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="nombre_candidato_alterno">NOMBRE COMPLETO</label>
+                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_alterno" name="nombre_candidato_alterno" required readonly value="{% if candidato_alterno %}{{ candidato_alterno.nombre_candidato }}{% endif %}">
+                    </div>
+                    <div class="form-group col-md-4 mb-2">
+                        <label for="imagen_alterno">IMAGEN</label>
+                        <input type="file" class="form-control-file" id="imagen_alterno" name="imagen_alterno" accept="image/*" onchange="previewImage(event, 'preview_alterno')">
+                        <img id="preview_alterno" src="{% if candidato_alterno and candidato_alterno.imagen %}{{ candidato_alterno.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_alterno or not candidato_alterno.imagen %}d-none{% endif %}">
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="form-group text-center mt-2 mb-2">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
+                    <a href="{% url 'listar_candidatos' %}" class="btn btn-secondary rounded-pill px-4">CANCELAR</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cedulaPrincipal = document.getElementById('cedula_principal');
+    const nombreCandidatoPrincipal = document.getElementById('nombre_candidato_principal');
+    const cedulaSuplente = document.getElementById('cedula_suplente');
+    const nombreCandidatoSuplente = document.getElementById('nombre_candidato_suplente');
+    const cedulaAlterno = document.getElementById('cedula_alterno');
+    const nombreCandidatoAlterno = document.getElementById('nombre_candidato_alterno');
+
+    function buscarNombre(busqueda, campoNombre) {
+        const url = `/buscar_nombre_por_cedula/?cedula=${busqueda}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                campoNombre.value = data.nombre || '';
+                if (!data.nombre) {
+                    alert('No se encontró un nombre para esta cédula');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al buscar el nombre');
+            });
+    }
+
+    cedulaPrincipal.addEventListener('change', function () {
+        buscarNombre(this.value, nombreCandidatoPrincipal);
+    });
+
+    cedulaSuplente.addEventListener('change', function () {
+        buscarNombre(this.value, nombreCandidatoSuplente);
+    });
+
+    cedulaAlterno.addEventListener('change', function () {
+        buscarNombre(this.value, nombreCandidatoAlterno);
+    });
+});
+
+// Función para vista previa de imagen
+function previewImage(event, idPreview) {
+    const reader = new FileReader();
+    reader.onload = function () {
+        const output = document.getElementById(idPreview);
+        output.src = reader.result;
+        output.classList.remove('d-none');
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
 {% endblock %}

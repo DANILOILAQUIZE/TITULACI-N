@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
+from django.db.models import Q
+from django.utils import timezone
 import json
-
-from .models import Lista, Cargo, Candidato, models
+from .models import Candidato, Lista, Cargo
 from Aplicaciones.periodo.models import Periodo
 from Aplicaciones.padron.models import PadronElectoral
 
@@ -27,25 +27,46 @@ def listar_listas(request):
     })
 
 def agregar_lista(request):
+    periodos = Periodo.objects.all()
+    
     if request.method == 'POST':
-      
         nombre_lista = request.POST.get('nombre_lista', '').strip()
         frase = request.POST.get('frase', '').strip()
         periodo_id = request.POST.get('periodo')
         imagen = request.FILES.get('imagen')
         color = request.POST.get('color', '').strip()
         
-     
+        # Validaciones
         if not nombre_lista:
             messages.error(request, 'El nombre de la lista no puede estar vacío')
-            messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
-            return redirect('listar_listas')
+            return render(request, 'lista/agregarlista.html', {
+                'periodos': periodos,
+                'errors': {'nombre_lista': 'El nombre de la lista es obligatorio'}
+            })
+        
+        if not periodo_id:
+            messages.error(request, 'Debe seleccionar un periodo')
+            return render(request, 'lista/agregarlista.html', {
+                'periodos': periodos,
+                'errors': {'periodo': 'Seleccione un periodo válido'}
+            })
         
         try:
-          
             periodo = Periodo.objects.get(id=periodo_id)
             
-         
+            # Verificar si ya existe una lista con el mismo nombre en el periodo
+            lista_existente = Lista.objects.filter(
+                nombre_lista__iexact=nombre_lista, 
+                periodo=periodo
+            ).exists()
+            
+            if lista_existente:
+                messages.error(request, f'Ya existe una lista con el nombre {nombre_lista} en este periodo')
+                return render(request, 'lista/agregarlista.html', {
+                    'periodos': periodos,
+                    'errors': {'nombre_lista': 'Lista duplicada'}
+                })
+            
             lista_data = {
                 'nombre_lista': nombre_lista,
                 'frase': frase,
@@ -60,16 +81,25 @@ def agregar_lista(request):
             lista = Lista.objects.create(**lista_data)
             
             messages.success(request, f'Lista {lista.nombre_lista} creada exitosamente')
-            messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
             return redirect('listar_listas')
         
         except Periodo.DoesNotExist:
             messages.error(request, 'Periodo seleccionado no es válido')
+            return render(request, 'lista/agregarlista.html', {
+                'periodos': periodos,
+                'errors': {'periodo': 'Periodo no válido'}
+            })
         except Exception as e:
             messages.error(request, f'Error al crear la lista: {str(e)}')
+            return render(request, 'lista/agregarlista.html', {
+                'periodos': periodos,
+                'errors': {'general': str(e)}
+            })
     
-    messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
-    return redirect('listar_listas')
+    # GET request
+    return render(request, 'lista/agregarlista.html', {
+        'periodos': periodos
+    })
 
 def editar_lista(request, lista_id):
     lista = get_object_or_404(Lista, id=lista_id)
@@ -293,3 +323,358 @@ def eliminar_cargo(request, cargo_id):
         # Mensaje de método no permitido
         messages.error(request, 'Método no permitido')
         return redirect('listar_cargos')
+
+
+
+
+#APARTADO DE CANDIDATOS
+def buscar_nombre_por_cedula(request):
+    cedula = request.GET.get('cedula', '').strip()
+    nombre = request.GET.get('nombre', '').strip()
+    
+    try:
+        if cedula:
+            padron = PadronElectoral.objects.get(cedula=cedula)
+        elif nombre:
+            # Buscar por nombre completo (nombre y apellidos)
+            padron = PadronElectoral.objects.get(
+                Q(nombre__icontains=nombre) | Q(apellidos__icontains=nombre)
+            )
+        else:
+            return JsonResponse({'nombre': None}, status=400)
+        
+        return JsonResponse({
+            'nombre': f'{padron.nombre} {padron.apellidos}',
+            'cedula': padron.cedula,
+            'grado': padron.grado.nombre,
+            'paralelo': padron.paralelo.nombre
+        })
+    except PadronElectoral.DoesNotExist:
+        return JsonResponse({'nombre': None}, status=404)
+    except PadronElectoral.MultipleObjectsReturned:
+        # Si hay múltiples resultados, devolver el primero
+        padrones = PadronElectoral.objects.filter(
+            Q(nombre__icontains=nombre) | Q(apellidos__icontains=nombre)
+        )
+        padron = padrones.first()
+        return JsonResponse({
+            'nombre': f'{padron.nombre} {padron.apellidos}',
+            'cedula': padron.cedula,
+            'grado': padron.grado.nombre,
+            'paralelo': padron.paralelo.nombre
+        })
+
+def listar_candidatos(request):
+    # Obtener candidatos ordenados por periodo y lista
+    candidatos = Candidato.objects.select_related('lista', 'cargo', 'periodo').order_by('periodo__nombre', 'lista__nombre_lista')
+    
+    # Obtener datos para el formulario
+    listas = Lista.objects.all()
+    cargos = Cargo.objects.all()
+    periodos = Periodo.objects.all()
+    
+    # Convertir mensajes a JSON para manejar en frontend
+    messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
+    
+    return render(request, 'candidatos/listarcandidatos.html', {
+        'candidatos': candidatos,
+        'listas': listas,
+        'cargos': cargos,
+        'periodos': periodos,
+        'messages_json': json.dumps(messages_list)
+    })
+
+def agregar_candidato(request):
+    if request.method == 'POST':
+        # Campos para candidato principal
+        cargo_principal_id = request.POST.get('cargo_principal')
+        cedula_principal = request.POST.get('cedula_principal', '').strip()
+        nombre_principal = request.POST.get('nombre_candidato_principal', '').strip()
+        imagen_principal = request.FILES.get('imagen_principal')
+        
+        # Campos para candidato suplente
+        cargo_suplente_id = request.POST.get('cargo_suplente')
+        cedula_suplente = request.POST.get('cedula_suplente', '').strip()
+        nombre_suplente = request.POST.get('nombre_candidato_suplente', '').strip()
+        imagen_suplente = request.FILES.get('imagen_suplente')
+        
+        # Campos para candidato alterno (opcional)
+        cargo_alterno_id = request.POST.get('cargo_alterno')
+        cedula_alterno = request.POST.get('cedula_alterno', '').strip()
+        nombre_alterno = request.POST.get('nombre_candidato_alterno', '').strip()
+        imagen_alterno = request.FILES.get('imagen_alterno')
+        
+        # Campos comunes
+        lista_id = request.POST.get('lista')
+        periodo_id = request.POST.get('periodo')
+        
+        # Validaciones básicas
+        if not (nombre_principal and nombre_suplente):
+            messages.error(request, 'Los nombres de los candidatos no pueden estar vacíos')
+            return redirect('agregar_candidato')
+        
+        try:
+            lista = Lista.objects.get(id=lista_id)
+            cargo_principal = Cargo.objects.get(id=cargo_principal_id)
+            cargo_suplente = Cargo.objects.get(id=cargo_suplente_id)
+            periodo = Periodo.objects.get(id=periodo_id)
+            
+            # Buscar en el padrón electoral
+            try:
+                padron_principal = PadronElectoral.objects.get(cedula=cedula_principal)
+                padron_suplente = PadronElectoral.objects.get(cedula=cedula_suplente)
+                padron_alterno = None
+                
+                # Validar candidato alterno si se proporciona
+                if cargo_alterno_id and cedula_alterno and nombre_alterno:
+                    padron_alterno = PadronElectoral.objects.get(cedula=cedula_alterno)
+            except PadronElectoral.DoesNotExist as e:
+                messages.error(request, f'Cédula no encontrada en el padrón electoral: {str(e)}')
+                return redirect('agregar_candidato')
+            
+            # Crear candidatos
+            candidato_principal = Candidato.objects.create(
+                nombre_candidato=nombre_principal,
+                lista=lista,
+                cargo=cargo_principal,
+                periodo=periodo,
+                imagen=imagen_principal,
+                padron=padron_principal
+            )
+            
+            candidato_suplente = Candidato.objects.create(
+                nombre_candidato=nombre_suplente,
+                lista=lista,
+                cargo=cargo_suplente,
+                periodo=periodo,
+                imagen=imagen_suplente,
+                padron=padron_suplente
+            )
+            
+            # Candidato alterno (opcional)
+            if cargo_alterno_id and nombre_alterno and padron_alterno:
+                cargo_alterno = Cargo.objects.get(id=cargo_alterno_id)
+                candidato_alterno = Candidato.objects.create(
+                    nombre_candidato=nombre_alterno,
+                    lista=lista,
+                    cargo=cargo_alterno,
+                    periodo=periodo,
+                    imagen=imagen_alterno,
+                    padron=padron_alterno
+                )
+            
+            messages.success(request, 'Candidatos agregados exitosamente')
+            return redirect('listar_candidatos')
+        
+        except (Lista.DoesNotExist, Cargo.DoesNotExist, Periodo.DoesNotExist) as e:
+            messages.error(request, f'Error al crear candidatos: {str(e)}')
+            return redirect('agregar_candidato')
+    
+    # GET request
+    listas = Lista.objects.all()
+    cargos = Cargo.objects.all()
+    periodos = Periodo.objects.all()
+    
+    return render(request, 'candidatos/agregarcandidato.html', {
+        'listas': listas,
+        'cargos': cargos,
+        'periodos': periodos
+    })
+
+def editar_candidato(request, candidato_id=None):
+    if request.method == 'POST':
+        # Campos para candidato principal
+        cargo_principal_id = request.POST.get('cargo_principal')
+        cedula_principal = request.POST.get('cedula_principal', '').strip()
+        nombre_principal = request.POST.get('nombre_candidato_principal', '').strip()
+        imagen_principal = request.FILES.get('imagen_principal')
+        
+        # Campos para candidato suplente
+        cargo_suplente_id = request.POST.get('cargo_suplente')
+        cedula_suplente = request.POST.get('cedula_suplente', '').strip()
+        nombre_suplente = request.POST.get('nombre_candidato_suplente', '').strip()
+        imagen_suplente = request.FILES.get('imagen_suplente')
+        
+        # Campos para candidato alterno (opcional)
+        cargo_alterno_id = request.POST.get('cargo_alterno')
+        cedula_alterno = request.POST.get('cedula_alterno', '').strip()
+        nombre_alterno = request.POST.get('nombre_candidato_alterno', '').strip()
+        imagen_alterno = request.FILES.get('imagen_alterno')
+        
+        # Campos comunes
+        lista_id = request.POST.get('lista')
+        periodo_id = request.POST.get('periodo')
+        
+        # Validaciones básicas
+        if not (nombre_principal and nombre_suplente):
+            messages.error(request, 'Los nombres de los candidatos no pueden estar vacíos')
+            return redirect('agregar_candidato')
+        
+        try:
+            lista = Lista.objects.get(id=lista_id)
+            cargo_principal = Cargo.objects.get(id=cargo_principal_id)
+            cargo_suplente = Cargo.objects.get(id=cargo_suplente_id)
+            periodo = Periodo.objects.get(id=periodo_id)
+            
+            # Buscar en el padrón electoral
+            try:
+                padron_principal = PadronElectoral.objects.get(cedula=cedula_principal)
+                padron_suplente = PadronElectoral.objects.get(cedula=cedula_suplente)
+                padron_alterno = None
+                
+                # Validar candidato alterno si se proporciona
+                if cargo_alterno_id and cedula_alterno and nombre_alterno:
+                    padron_alterno = PadronElectoral.objects.get(cedula=cedula_alterno)
+            except PadronElectoral.DoesNotExist as e:
+                messages.error(request, f'Cédula no encontrada en el padrón electoral: {str(e)}')
+                return redirect('agregar_candidato')
+            
+            # Si se proporciona un candidato_id, es una edición
+            if candidato_id:
+                try:
+                    # Obtener candidato existente
+                    candidato_actual = Candidato.objects.get(id=candidato_id)
+                    # Obtener otros candidatos relacionados
+                    otros_candidatos = Candidato.objects.filter(
+                        lista=candidato_actual.lista,
+                        periodo=candidato_actual.periodo
+                    ).exclude(id=candidato_id)
+                    
+                    # Actualizar candidato principal
+                    candidato_actual.nombre_candidato = nombre_principal
+                    candidato_actual.lista = lista
+                    candidato_actual.cargo = cargo_principal
+                    candidato_actual.periodo = periodo
+                    candidato_actual.padron = padron_principal
+                    if imagen_principal:
+                        candidato_actual.imagen = imagen_principal
+                    candidato_actual.save()
+                    
+                    # Actualizar o crear suplente
+                    if otros_candidatos.exists():
+                        candidato_suplente = otros_candidatos[0]
+                        candidato_suplente.nombre_candidato = nombre_suplente
+                        candidato_suplente.cargo = cargo_suplente
+                        candidato_suplente.padron = padron_suplente
+                        if imagen_suplente:
+                            candidato_suplente.imagen = imagen_suplente
+                        candidato_suplente.save()
+                    else:
+                        candidato_suplente = Candidato.objects.create(
+                            nombre_candidato=nombre_suplente,
+                            lista=lista,
+                            cargo=cargo_suplente,
+                            periodo=periodo,
+                            imagen=imagen_suplente,
+                            padron=padron_suplente
+                        )
+                    
+                    # Actualizar o crear alterno
+                    if cargo_alterno_id and nombre_alterno and padron_alterno:
+                        cargo_alterno = Cargo.objects.get(id=cargo_alterno_id)
+                        if len(otros_candidatos) > 1:
+                            candidato_alterno = otros_candidatos[1]
+                            candidato_alterno.nombre_candidato = nombre_alterno
+                            candidato_alterno.cargo = cargo_alterno
+                            candidato_alterno.padron = padron_alterno
+                            if imagen_alterno:
+                                candidato_alterno.imagen = imagen_alterno
+                            candidato_alterno.save()
+                        else:
+                            candidato_alterno = Candidato.objects.create(
+                                nombre_candidato=nombre_alterno,
+                                lista=lista,
+                                cargo=cargo_alterno,
+                                periodo=periodo,
+                                imagen=imagen_alterno,
+                                padron=padron_alterno
+                            )
+                    
+                except Candidato.DoesNotExist:
+                    messages.error(request, 'Candidato no encontrado')
+                    return redirect('listar_candidatos')
+            else:
+                # Crear nuevos candidatos
+                candidato_principal = Candidato.objects.create(
+                    nombre_candidato=nombre_principal,
+                    lista=lista,
+                    cargo=cargo_principal,
+                    periodo=periodo,
+                    imagen=imagen_principal,
+                    padron=padron_principal
+                )
+                
+                candidato_suplente = Candidato.objects.create(
+                    nombre_candidato=nombre_suplente,
+                    lista=lista,
+                    cargo=cargo_suplente,
+                    periodo=periodo,
+                    imagen=imagen_suplente,
+                    padron=padron_suplente
+                )
+                
+                # Candidato alterno (opcional)
+                if cargo_alterno_id and nombre_alterno and padron_alterno:
+                    cargo_alterno = Cargo.objects.get(id=cargo_alterno_id)
+                    candidato_alterno = Candidato.objects.create(
+                        nombre_candidato=nombre_alterno,
+                        lista=lista,
+                        cargo=cargo_alterno,
+                        periodo=periodo,
+                        imagen=imagen_alterno,
+                        padron=padron_alterno
+                    )
+            
+            messages.success(request, 'Candidatos actualizados exitosamente')
+            return redirect('listar_candidatos')
+        
+        except (Lista.DoesNotExist, Cargo.DoesNotExist, Periodo.DoesNotExist) as e:
+            messages.error(request, f'Error al actualizar candidatos: {str(e)}')
+            return redirect('agregar_candidato')
+    
+    # GET request
+    listas = Lista.objects.all()
+    cargos = Cargo.objects.all()
+    periodos = Periodo.objects.all()
+    
+    # Si se proporciona candidato_id, cargar sus datos
+    candidato_principal = None
+    candidato_suplente = None
+    candidato_alterno = None
+    
+    if candidato_id:
+        # Obtener el candidato principal por ID
+        try:
+            candidato_principal = get_object_or_404(Candidato, id=candidato_id)
+            # Obtener otros candidatos de la misma lista y periodo
+            otros_candidatos = Candidato.objects.filter(
+                lista=candidato_principal.lista,
+                periodo=candidato_principal.periodo
+            ).exclude(id=candidato_id).order_by('id')
+            
+            # Asignar suplente y alterno si existen
+            candidato_suplente = otros_candidatos[0] if otros_candidatos else None
+            candidato_alterno = otros_candidatos[1] if len(otros_candidatos) > 1 else None
+        except Candidato.DoesNotExist:
+            messages.error(request, 'Candidato no encontrado')
+            return redirect('listar_candidatos')
+    
+    return render(request, 'candidatos/agregarcandidato.html', {
+        'candidato_principal': candidato_principal,
+        'candidato_suplente': candidato_suplente,
+        'candidato_alterno': candidato_alterno,
+        'listas': listas,
+        'cargos': cargos,
+        'periodos': periodos
+    })
+
+def eliminar_candidato(request, candidato_id):
+    try:
+        candidato = get_object_or_404(Candidato, id=candidato_id)
+        nombre_candidato = candidato.nombre_candidato
+        candidato.delete()
+        messages.success(request, f'Candidato {nombre_candidato} eliminado exitosamente')
+    except Exception as e:
+        messages.error(request, f'Error al eliminar candidato: {str(e)}')
+    
+    return redirect('listar_candidatos')
