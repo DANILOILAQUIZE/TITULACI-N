@@ -36,13 +36,17 @@
                                     {{ proceso.get_estado_display }}
                                 </span>
                             </td>
-                            <td class="text-center">
-                                <a href="{% url 'editar_proceso' proceso.id %}" class="btn btn-warning btn-sm rounded-pill">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                                <a href="{% url 'eliminar_proceso' proceso.id %}" class="btn btn-danger btn-sm rounded-pill">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </a>
+                            <td>
+                                <div class="d-flex justify-content-center" style="gap: 8px;">
+                                    <!-- Editar -->
+                                    <a href="{% url 'editar_proceso' proceso.id %}" class="btn btn-info p-0" style="font-size: 0.75rem; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="la la-edit"></i>
+                                    </a>
+                                    <!-- Eliminar -->
+                                    <a href="{% url 'eliminar_proceso' proceso.id %}" class="btn btn-danger p-0" style="font-size: 0.75rem; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="la la-trash"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
