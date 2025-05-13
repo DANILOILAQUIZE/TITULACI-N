@@ -5,12 +5,17 @@ class Periodo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
+    ESTADOS = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo')
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='activo')
 
     def __str__(self):
         return self.nombre
     
     @property
-    def estado(self):
+    def estado_actual(self):
         hoy = date.today()
         if hoy < self.fecha_inicio:
             return 'Pendiente'

@@ -1,0 +1,69 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Procesos Electorales</h4>
+            <a href="{% url 'iniciar_proceso' %}" class="btn btn-light rounded-pill">
+                <i class="la la-plus"></i> Nuevo Proceso
+            </a>
+        </div>
+        <div class="card-body">
+            {% if procesos %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Período</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proceso in procesos %}
+                        <tr>
+                            <td>{{ proceso.nombre }}</td>
+                            <td>{{ proceso.periodo.nombre }}</td>
+                            <td>{{ proceso.fecha|date:'d/m/Y' }} {{ proceso.hora_inicio|time:'H:i' }}</td>
+                            <td>{{ proceso.fecha|date:'d/m/Y' }} {{ proceso.hora_fin|time:'H:i' }}</td>
+                            <td>
+                                <span class="badge {% if proceso.estado == 'activo' %}badge-success{% elif proceso.estado == 'pendiente' %}badge-warning{% else %}badge-secondary{% endif %}">
+                                    {{ proceso.get_estado_display }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_proceso' proceso.id %}" class="btn btn-warning btn-sm rounded-pill">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="{% url 'eliminar_proceso' proceso.id %}" class="btn btn-danger btn-sm rounded-pill">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">No hay procesos electorales registrados</p>
+                <a href="{% url 'iniciar_proceso' %}" class="btn btn-primary rounded-pill">
+                    <i class="la la-plus"></i> Crear Proceso Electoral
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

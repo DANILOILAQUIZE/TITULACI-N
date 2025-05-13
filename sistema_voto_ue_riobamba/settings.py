@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'Aplicaciones.periodo',
     'Aplicaciones.autenticacion',
     'Aplicaciones.configuracion',
+    'Aplicaciones.resultados',
     
 ]
 
@@ -115,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-ec'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Guayaquil'
 
 USE_I18N = True
 
@@ -145,12 +146,12 @@ AUTH_USER_MODEL = 'usuarios.Usuarios'  # Esto debe estar definido
 
 #CORREO ELECTRONICO
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.aplicacionesutc.com'  # o el servidor que te dé tu proveedor
+EMAIL_HOST = 'mail.aplicacionesutc.com'  
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True  # Usa SSL en lugar de TLS si usas el puerto 465
 EMAIL_USE_TLS = False  # TLS es para el puerto 587
 EMAIL_HOST_USER = 'riobamba@aplicacionesutc.com'
-EMAIL_HOST_PASSWORD = '&Ms&AFbeZf9L'  # asegúrate de que sea la contraseña correcta
+EMAIL_HOST_PASSWORD = '&Ms&AFbeZf9L'  
 DEFAULT_FROM_EMAIL = 'riobamba@aplicacionesutc.com'
 
 
@@ -158,4 +159,4 @@ DEFAULT_FROM_EMAIL = 'riobamba@aplicacionesutc.com'
 
 
 
-#OPCIONES PARA ENVIO MASIVO ZOHO MAIL
+

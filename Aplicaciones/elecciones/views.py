@@ -49,16 +49,26 @@ def listar_listas(request):
 
 def agregar_lista(request):
     periodos = Periodo.objects.all()
+    print("\nIntentando agregar nueva lista...")
     
     if request.method == 'POST':
+        print("Método POST recibido")
         nombre_lista = request.POST.get('nombre_lista', '').strip()
         frase = request.POST.get('frase', '').strip()
         periodo_id = request.POST.get('periodo')
         imagen = request.FILES.get('imagen')
         color = request.POST.get('color', '').strip()
         
+        print(f"Datos recibidos:")
+        print(f"- Nombre lista: {nombre_lista}")
+        print(f"- Frase: {frase}")
+        print(f"- Periodo ID: {periodo_id}")
+        print(f"- Imagen: {imagen}")
+        print(f"- Color: {color}")
+        
         # Validaciones
         if not nombre_lista:
+            print("Error: Nombre de lista vacío")
             messages.error(request, 'El nombre de la lista no puede estar vacío')
             return render(request, 'lista/agregarlista.html', {
                 'periodos': periodos,
@@ -66,6 +76,7 @@ def agregar_lista(request):
             })
         
         if not periodo_id:
+            print("Error: Periodo no seleccionado")
             messages.error(request, 'Debe seleccionar un periodo')
             return render(request, 'lista/agregarlista.html', {
                 'periodos': periodos,
@@ -74,6 +85,7 @@ def agregar_lista(request):
         
         try:
             periodo = Periodo.objects.get(id=periodo_id)
+            print(f"Periodo encontrado: {periodo}")
             
             # Verificar si ya existe una lista con el mismo nombre en el periodo
             lista_existente = Lista.objects.filter(
@@ -82,6 +94,7 @@ def agregar_lista(request):
             ).exists()
             
             if lista_existente:
+                print(f"Error: Lista {nombre_lista} ya existe en el periodo {periodo}")
                 messages.error(request, f'Ya existe una lista con el nombre {nombre_lista} en este periodo')
                 return render(request, 'lista/agregarlista.html', {
                     'periodos': periodos,
@@ -99,18 +112,22 @@ def agregar_lista(request):
             if color:
                 lista_data['color'] = color
             
+            print("Intentando crear lista con datos:", lista_data)
             lista = Lista.objects.create(**lista_data)
+            print(f"Lista creada exitosamente con ID: {lista.id}")
             
             messages.success(request, f'Lista {lista.nombre_lista} creada exitosamente')
             return redirect('listar_listas')
-        
+            
         except Periodo.DoesNotExist:
+            print(f"Error: No se encontró el periodo con ID {periodo_id}")
             messages.error(request, 'Periodo seleccionado no es válido')
             return render(request, 'lista/agregarlista.html', {
                 'periodos': periodos,
                 'errors': {'periodo': 'Periodo no válido'}
             })
         except Exception as e:
+            print(f"Error al crear la lista: {str(e)}")
             messages.error(request, f'Error al crear la lista: {str(e)}')
             return render(request, 'lista/agregarlista.html', {
                 'periodos': periodos,

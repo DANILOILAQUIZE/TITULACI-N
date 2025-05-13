@@ -1,0 +1,101 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Papeleta de Votación - {{ proceso.nombre }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'registrar_voto' proceso.id %}">
+                {% csrf_token %}
+                
+                {% if listas_con_candidatos %}
+                <div class="row">
+                    {% for item in listas_con_candidatos %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="lista_{{ item.lista.id }}" name="tipo_voto" value="lista" class="custom-control-input" data-lista="{{ item.lista.id }}">
+                                    <label class="custom-control-label" for="lista_{{ item.lista.id }}">
+                                        <h5 class="mb-0">Lista {{ item.lista.nombre_lista }}</h5>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% for candidato in item.candidatos %}
+                                <div class="d-flex align-items-center mb-2">
+                                    {% if candidato.imagen %}
+                                    <img src="{{ candidato.imagen.url }}" alt="{{ candidato.nombre_candidato }}" class="rounded-circle mr-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-secondary mr-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="la la-user text-white"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ candidato.cargo.nombre_cargo }}</strong><br>
+                                        {{ candidato.nombre_candidato }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="voto_blanco" name="tipo_voto" value="blanco" class="custom-control-input">
+                            <label class="custom-control-label" for="voto_blanco">
+                                <h5>Voto en Blanco</h5>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="voto_nulo" name="tipo_voto" value="nulo" class="custom-control-input">
+                            <label class="custom-control-label" for="voto_nulo">
+                                <h5>Voto Nulo</h5>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="lista" id="lista_seleccionada">
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                        <i class="la la-check-circle"></i> Confirmar Voto
+                    </button>
+                    <a href="{% url 'lista_procesos' %}" class="btn btn-secondary btn-lg rounded-pill ml-2">
+                        <i class="la la-times-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="tipo_voto"]');
+    const listaSeleccionada = document.getElementById('lista_seleccionada');
+
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'lista') {
+                listaSeleccionada.value = this.dataset.lista;
+            } else {
+                listaSeleccionada.value = '';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

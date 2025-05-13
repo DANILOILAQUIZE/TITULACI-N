@@ -21,10 +21,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Aplicaciones.padron.urls')),
     path('', include('Aplicaciones.elecciones.urls')),
-    path('', include('Aplicaciones.votacion.urls')),
+    path('votacion/', include('Aplicaciones.votacion.urls')),
     path('', include('Aplicaciones.administracion.urls')),
     path('', include('Aplicaciones.usuarios.urls')),
     path('', include('Aplicaciones.periodo.urls')),
     path('',include('Aplicaciones.autenticacion.urls')),
     path('', include('Aplicaciones.configuracion.urls')),
+    path('resultados/', include('Aplicaciones.resultados.urls')),
 ]

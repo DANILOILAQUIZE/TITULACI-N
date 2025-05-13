@@ -14,7 +14,6 @@
         </div>
         <div class="card-body py-3">
             {% if candidatos_existentes %}
-            <!-- Mostrar candidatos existentes -->
             <div class="table-responsive p-2">
                 <table class="table table-bordered">
                     <thead>
@@ -54,7 +53,6 @@
             </div>
             {% endif %}
 
-            <!-- Formulario para agregar nuevo candidato -->
             <form method="POST" enctype="multipart/form-data" class="p-2">
                 {% csrf_token %}
                 <div class="form-row">

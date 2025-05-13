@@ -1,0 +1,51 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ titulo }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Proceso Electoral</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proceso in procesos %}
+                        <tr>
+                            <td>{{ proceso.nombre }}</td>
+                            <td>{{ proceso.created_at|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if proceso.estado == 'activo' %}
+                                    <span class="badge badge-success">Activo</span>
+                                {% elif proceso.estado == 'finalizado' %}
+                                    <span class="badge badge-secondary">Finalizado</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ proceso.estado|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'resultados_votacion' proceso.id %}" class="btn btn-primary btn-sm">
+                                    <i class="ft-bar-chart-2"></i> Ver Resultados
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No hay procesos electorales registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
