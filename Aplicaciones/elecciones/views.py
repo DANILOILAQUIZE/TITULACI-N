@@ -91,6 +91,9 @@ def listar_listas(request):
 def agregar_lista(request):
     periodos = Periodo.objects.all()
     print("\nIntentando agregar nueva lista...")
+    print(f"Método de solicitud: {request.method}")
+    print(f"POST data: {request.POST}")
+    print(f"FILES data: {request.FILES}")
     
     if request.method == 'POST':
         print("Método POST recibido")
@@ -107,7 +110,7 @@ def agregar_lista(request):
         print(f"- Imagen: {imagen}")
         print(f"- Color: {color}")
         
-        # Validaciones
+        # Validar que no haya campos vacíos
         if not nombre_lista:
             print("Error: Nombre de lista vacío")
             messages.error(request, 'El nombre de la lista no puede estar vacío')
@@ -154,11 +157,19 @@ def agregar_lista(request):
                 lista_data['color'] = color
             
             print("Intentando crear lista con datos:", lista_data)
-            lista = Lista.objects.create(**lista_data)
-            print(f"Lista creada exitosamente con ID: {lista.id}")
-            
-            messages.success(request, f'Lista {lista.nombre_lista} creada exitosamente')
-            return redirect('listar_listas')
+            try:
+                lista = Lista.objects.create(**lista_data)
+                print(f"Lista creada exitosamente con ID: {lista.id}")
+                
+                messages.success(request, f'Lista {lista.nombre_lista} creada exitosamente')
+                return redirect('listar_listas')
+            except Exception as e:
+                print(f"Error al crear lista: {str(e)}")
+                messages.error(request, f'Error al crear lista: {str(e)}')
+                return render(request, 'lista/agregarlista.html', {
+                    'periodos': periodos,
+                    'errors': {'general': str(e)}
+                })
             
         except Periodo.DoesNotExist:
             print(f"Error: No se encontró el periodo con ID {periodo_id}")
@@ -459,6 +470,20 @@ def listar_candidatos(request):
     })
 
 def agregar_candidato(request):
+    print('\n' + '='*50)
+    print('DEPURACIÓN: Vista de Agregar Candidato')
+    print('='*50)
+    print(f'Método de solicitud: {request.method}')
+    print(f'GET parameters: {request.GET}')
+    print(f'POST parameters: {request.POST}')
+    print(f'FILES: {request.FILES}')
+    print('\n' + '='*50)
+    print('DEPURACIÓN: Vista de Agregar Candidato')
+    print('='*50)
+    print(f'Método de solicitud: {request.method}')
+    print(f'GET parameters: {request.GET}')
+    print(f'POST parameters: {request.POST}')
+    print(f'FILES: {request.FILES}')
     # Obtener el ID de la lista si se pasa como parámetro
     lista_id = request.GET.get('lista')
     lista_preseleccionada = None
@@ -520,23 +545,35 @@ def agregar_candidato(request):
                 return redirect('agregar_candidato')
             
             # Crear candidatos
-            candidato_principal = Candidato.objects.create(
-                nombre_candidato=nombre_principal,
-                lista=lista,
-                cargo=cargo_principal,
-                periodo=periodo,
-                imagen=imagen_principal,
-                padron=padron_principal
-            )
-            
-            candidato_suplente = Candidato.objects.create(
-                nombre_candidato=nombre_suplente,
-                lista=lista,
-                cargo=cargo_suplente,
-                periodo=periodo,
-                imagen=imagen_suplente,
-                padron=padron_suplente
-            )
+            try:
+                candidato_principal = Candidato.objects.create(
+                    nombre_candidato=nombre_principal,
+                    lista=lista,
+                    cargo=cargo_principal,
+                    periodo=periodo,
+                    imagen=imagen_principal,
+                    padron=padron_principal
+                )
+                print(f'Candidato principal creado: {candidato_principal.id}')
+                
+                candidato_suplente = Candidato.objects.create(
+                    nombre_candidato=nombre_suplente,
+                    lista=lista,
+                    cargo=cargo_suplente,
+                    periodo=periodo,
+                    imagen=imagen_suplente,
+                    padron=padron_suplente
+                )
+                print(f'Candidato suplente creado: {candidato_suplente.id}')
+            except Exception as e:
+                print(f'ERROR al crear candidatos: {str(e)}')
+                messages.error(request, f'Error al crear candidatos: {str(e)}')
+                return render(request, 'candidatos/agregarcandidato.html', {
+                    'listas': Lista.objects.all(),
+                    'cargos': Cargo.objects.all(),
+                    'periodos': Periodo.objects.all(),
+                    'errors': {'general': str(e)}
+                })
             
             # Candidato alterno (opcional)
             if cargo_alterno_id and nombre_alterno and padron_alterno:
