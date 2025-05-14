@@ -7,6 +7,47 @@ import json
 from .models import Candidato, Lista, Cargo
 from Aplicaciones.periodo.models import Periodo
 from Aplicaciones.padron.models import PadronElectoral
+from django.db.models import Q
+
+def buscar_cedula_por_nombre(request):
+    nombre = request.GET.get('nombre', '').strip()
+    
+    if not nombre:
+        return JsonResponse({'error': 'Nombre no proporcionado'}, status=400)
+    
+    try:
+        # Imprimir todos los registros para depuración
+        print(f"Buscando registros con nombre: {nombre}")
+        
+        # Buscar en PadronElectoral usando búsqueda parcial insensitive a mayúsculas
+        padrones = PadronElectoral.objects.filter(
+            Q(nombre__icontains=nombre) | 
+            Q(apellidos__icontains=nombre)
+        )
+        
+        # Imprimir número de registros encontrados
+        print(f"Registros encontrados: {padrones.count()}")
+        
+        # Si hay registros, tomar el primero
+        padron = padrones.first()
+        
+        if padron:
+            # Imprimir detalles del registro encontrado
+            print(f"Registro encontrado - Cédula: {padron.cedula}, Nombre: {padron.nombre} {padron.apellidos}")
+            return JsonResponse({
+                'cedula': padron.cedula,
+                'nombre': f'{padron.nombre} {padron.apellidos}'
+            })
+        else:
+            # Imprimir mensaje si no se encuentra ningún registro
+            print(f"No se encontraron registros para: {nombre}")
+            return JsonResponse({'error': 'No se encontró ninguna persona'}, status=404)
+    
+    except Exception as e:
+        # Imprimir cualquier error que ocurra
+        print(f"Error en buscar_cedula_por_nombre: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 def listar_listas(request):
     periodo_actual = Periodo.objects.get(

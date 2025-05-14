@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('buscar_nombre_por_cedula/', views.buscar_nombre_por_cedula, name='buscar_nombre_por_cedula'),
+    path('buscar_cedula_por_nombre/', views.buscar_cedula_por_nombre, name='buscar_cedula_por_nombre'),
     path('listas/', views.listar_listas, name='listar_listas'),
     path('lista/nueva/', views.agregar_lista, name='nueva_lista'),
     path('lista/editar/<int:lista_id>/', views.editar_lista, name='editar_lista'),

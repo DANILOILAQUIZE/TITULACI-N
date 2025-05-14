@@ -52,7 +52,7 @@ https://templatemo.com/tm-557-grad-school
         </li>
         <li><a href="#section4">Beneficios</a></li>
         <li><a href="#section6">Contacto</a></li>
-        <li><a href="#section6">Login</a></li>
+        <li><a href="{% url 'agregarLogin' %}">Login</a></li>
       </ul>
     </nav>
   </header>
@@ -88,7 +88,7 @@ https://templatemo.com/tm-557-grad-school
               <div class="content-hide">
                 <p>Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet. Donec maximus elementum ex. Cras convallis ex rhoncus, laoreet libero eu, vehicula libero.</p>
                 <p class="hidden-sm">Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet.</p>
-                <div class="scroll-to-section"><a href="#section2">More Info.</a></div>
+              
             </div>
             </div>
           </div>
@@ -102,7 +102,7 @@ https://templatemo.com/tm-557-grad-school
               <div class="content-hide">
                 <p>Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet. Donec maximus elementum ex. Cras convallis ex rhoncus, laoreet libero eu, vehicula libero.</p>
                 <p class="hidden-sm">Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet.</p>
-                <div class="scroll-to-section"><a href="#section3">Details</a></div>
+               
             </div>
             </div>
           </div>
@@ -116,7 +116,7 @@ https://templatemo.com/tm-557-grad-school
               <div class="content-hide">
                 <p>Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet. Donec maximus elementum ex. Cras convallis ex rhoncus, laoreet libero eu, vehicula libero.</p>
                 <p class="hidden-sm">Curabitur id eros vehicula, tincidunt libero eu, lobortis mi. In mollis eros a posuere imperdiet.</p>
-                <div class="scroll-to-section"><a href="#section4">Read More</a></div>
+               
             </div>
             </div>
           </div>
@@ -249,6 +249,29 @@ https://templatemo.com/tm-557-grad-school
       </div>
     </div>
   </section>
+
+  <!-- Login Section -->
+  <section class="section login" data-section="section7">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="section-heading">
+            <h2>Iniciar Sesión</h2>
+          </div>
+        </div>
+        <div class="col-md-6 offset-md-3">
+          <div class="login-form">
+              <form action="{% url 'agregarLogin' %}" method="get">
+              <div class="form-group">
+                <a href="{% url 'agregarLogin' %}" class="btn btn-primary btn-block">Ir al Login</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Login Section -->
 
   <section class="section courses" data-section="section4">
     <div class="container-fluid">
@@ -500,7 +523,7 @@ https://templatemo.com/tm-557-grad-school
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
     <script src="{% static 'plantillas/assets/vendor_informativo/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plantillas/assets/vendor_informativo/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'plantillas/assets/vendor_informativo/bootstrap/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'plantillas/assets/assets_informativo/js/isotope.min.js' %}"></script>
     <script src="{% static 'plantillas/assets/assets_informativo/js/owl-carousel.js' %}"></script>

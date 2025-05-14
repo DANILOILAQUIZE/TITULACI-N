@@ -178,28 +178,58 @@ document.addEventListener('DOMContentLoaded', function () {
     const nombreCandidatoAlterno = document.getElementById('nombre_candidato_alterno');
 
     function buscarNombre(busqueda, campoNombre) {
-        fetch(`/buscar_nombre_por_cedula/?cedula=${busqueda}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.nombre) {
-                    campoNombre.value = data.nombre;
-                    // Obtener el campo de cédula correspondiente
-                    const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
-                                       campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
-                                       campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
-                    if (campoCedula) {
-                        campoCedula.value = data.cedula;
+        // Si el campo está vacío, limpiar todo
+        if (!busqueda) {
+            campoNombre.value = '';
+            const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
+                               campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
+                               campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
+            if (campoCedula) {
+                campoCedula.value = '';
+            }
+            return;
+        }
+
+        // Determinar si la búsqueda es por cédula o por nombre
+        const esCedula = /^[0-9]+$/.test(busqueda);
+
+        // Solo buscar si es cédula o si el nombre tiene al menos 3 caracteres
+        if (esCedula || busqueda.length >= 6) {
+            const url = esCedula 
+                ? `/buscar_nombre_por_cedula/?cedula=${busqueda}` 
+                : `/buscar_cedula_por_nombre/?nombre=${busqueda}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.nombre && data.cedula) {
+                        // Obtener el campo de cédula correspondiente
+                        const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
+                                           campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
+                                           campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
+                        
+                        // Establecer valores
+                        if (esCedula) {
+                            campoNombre.value = data.nombre;
+                            if (campoCedula) campoCedula.value = busqueda;
+                        } else {
+                            // Mostrar nombre completo al buscar por nombre
+                            campoNombre.value = data.nombre;
+                            if (campoCedula) campoCedula.value = data.cedula;
+                        }
+                    } else {
+                        campoNombre.value = '';
+                        if (!esCedula) {
+                            alert('No se encontró ninguna persona con ese nombre');
+                        }
                     }
-                } else {
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     campoNombre.value = '';
-                    alert('No se encontró ninguna persona con esa búsqueda');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                campoNombre.value = '';
-                alert('Error al realizar la búsqueda');
-            });
+                    alert('Error al realizar la búsqueda');
+                });
+        }
     }
 
     // Función para manejar la búsqueda
@@ -225,15 +255,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Búsqueda mientras se escribe
     cedulaPrincipal.addEventListener('input', function() {
-        manejarBusqueda(this, nombreCandidatoPrincipal);
+        buscarNombre(this.value, nombreCandidatoPrincipal);
     });
 
     cedulaSuplente.addEventListener('input', function() {
-        manejarBusqueda(this, nombreCandidatoSuplente);
+        buscarNombre(this.value, nombreCandidatoSuplente);
     });
 
     cedulaAlterno.addEventListener('input', function() {
-        manejarBusqueda(this, nombreCandidatoAlterno);
+        buscarNombre(this.value, nombreCandidatoAlterno);
+    });
+
+    // Permitir borrado manual
+    cedulaPrincipal.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+            nombreCandidatoPrincipal.value = '';
+        }
+    });
+
+    cedulaSuplente.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+            nombreCandidatoSuplente.value = '';
+        }
+    });
+
+    cedulaAlterno.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+            nombreCandidatoAlterno.value = '';
+        }
     });
 
     // Búsqueda cuando el campo pierde el foco

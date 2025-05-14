@@ -128,6 +128,11 @@ USE_TZ = True
 
 #STATIC PARA IMPORTAR ARCHIVOS CSS Y JS
 STATIC_URL = '/static/'
+
+# Ignorar archivos .map en desarrollo
+STATICFILES_IGNORE_PATTERNS = [
+    '*.map',
+]
 STATICFILES_DIRS = (os.path.join(BASE_DIR / 'sistema_voto_ue_riobamba/static'),)
 
 #MEDIA PARA IMAGENES
