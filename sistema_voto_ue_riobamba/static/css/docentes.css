@@ -1,0 +1,141 @@
+/* Estilos para la sección de docentes */
+.docentes {
+  background-color: #f8f9fa;
+  padding: 80px 0;
+}
+
+.docentes .section-heading {
+  margin-bottom: 40px;
+}
+
+.docentes-carousel .owl-nav {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.docentes-carousel .owl-prev,
+.docentes-carousel .owl-next {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #f5a425 !important;
+  color: white !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.docentes-carousel .owl-prev {
+  left: -20px;
+}
+
+.docentes-carousel .owl-next {
+  right: -20px;
+}
+
+.docentes-carousel .owl-prev:hover,
+.docentes-carousel .owl-next:hover {
+  background-color: #172238 !important;
+}
+
+.docente-card {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 15px;
+}
+
+.docente-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.docente-header {
+  position: relative;
+  background: linear-gradient(135deg, #172238 0%, #3c5f9b 100%);
+  padding: 20px;
+  text-align: center;
+}
+
+.docente-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 5px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.docente-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.docente-specialty {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f5a425;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.docente-body {
+  padding: 30px 20px 20px;
+  text-align: center;
+}
+
+.docente-name {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #172238;
+  font-size: 1.5rem;
+}
+
+.docente-title {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.docente-description {
+  margin-bottom: 20px;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.docente-stats {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #172238;
+  font-size: 1.2rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #777;
+}

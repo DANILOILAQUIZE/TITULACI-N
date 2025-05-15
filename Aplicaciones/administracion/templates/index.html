@@ -25,6 +25,10 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/cards.css' %}">
     <link rel="stylesheet" href="{% static 'css/features.css' %}">
+    <link rel="stylesheet" href="{% static 'css/docentes.css' %}">
+    <link rel="stylesheet" href="{% static 'css/autoridades.css' %}">
+    <link rel="stylesheet" href="{% static 'css/honor.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact-custom.css' %}">
 <!--
     
 TemplateMo 557 Grad School
@@ -131,70 +135,191 @@ https://templatemo.com/tm-557-grad-school
   <section class="section autoridades" data-section="section-autoridades">
     <div class="container">
       <div class="row">
-        <div class="col-md-12 text-center mb-2">
+        <div class="col-md-12 text-center mb-5">
           <div class="section-heading">
             <h2 class="gradient-text">Nuestras Autoridades</h2>
             <div class="line-dec"></div>
+            <p class="subtitle">Conoce a quienes lideran nuestra institución educativa</p>
           </div>
         </div>
       </div>
+      
       <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-6">
-          <div class="authority-card">
-            <div class="authority-banner">
-              <div class="authority-image">
-                <img src="{% static 'images/rector.jpg' %}" alt="Foto del Rector">
-              </div>
-            </div>
-            <div class="authority-content">
-              <div class="authority-bio">
-                <h3 class="authority-name">MSc. Julio Marti</h3>
-                <span class="authority-title">Rector</span>
-                <p class="authority-quote">"Liderando la excelencia educativa con visión y compromiso"</p>
-              </div>
-              <div class="authority-info">
-                <div class="info-item">
-                  <i class="fa fa-calendar"></i>
-                  <span>Período: 2023 - 2027</span>
+        <!-- Rector -->
+        <div class="col-lg-4 col-md-6">
+          <div class="authority-container">
+            <div class="authority-badge">Rector</div>
+            <div class="authority-card">
+              <!-- Parte frontal de la tarjeta -->
+              <div class="authority-front">
+                <div class="authority-image-container">
+                  <img src="{% static 'images/rector.jpg' %}" alt="Foto del Rector" class="authority-image">
                 </div>
-                <div class="info-item">
-                  <i class="fa fa-graduation-cap"></i>
-                  <span>Doctor en Ciencias de la Educación</span>
+                <div class="authority-info-front">
+                  <h3 class="authority-name">MSc. Julio Marti</h3>
+                  <span class="authority-title">Rector</span>
+                  <p class="authority-quote">Liderando la excelencia educativa con visión y compromiso</p>
                 </div>
               </div>
-              <div class="authority-social">
-                <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
-                <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+              
+              <!-- Parte trasera de la tarjeta -->
+              <div class="authority-back">
+                <div class="authority-bio">
+                  <h3>Perfil Profesional</h3>
+                  <div class="authority-details">
+                    <p>Doctor en Ciencias de la Educación con más de 20 años de experiencia en gestión educativa. Especialista en liderazgo institucional y desarrollo de proyectos educativos innovadores.</p>
+                  </div>
+                </div>
+                
+                <div class="authority-achievements">
+                  <h4>Logros Destacados</h4>
+                  <ul class="achievement-list">
+                    <li>Implementación del modelo educativo integral</li>
+                    <li>Reconocimiento nacional a la excelencia académica</li>
+                    <li>Desarrollo del programa de innovación tecnológica</li>
+                  </ul>
+                </div>
+                
+                <div class="authority-info">
+                  <div class="info-item">
+                    <i class="fa fa-calendar"></i>
+                    <span>Período: 2023 - 2027</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-graduation-cap"></i>
+                    <span>Doctor en Ciencias de la Educación</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-briefcase"></i>
+                    <span>20+ años de experiencia</span>
+                  </div>
+                </div>
+                
+                <div class="authority-social">
+                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-5 col-md-6">
-          <div class="authority-card">
-            <div class="authority-banner">
-              <div class="authority-image">
-                <img src="{% static 'images/vicerectora.jpg' %}" alt="Foto del Vicerrector">
+        
+        <!-- Vicerrectora -->
+        <div class="col-lg-4 col-md-6">
+          <div class="authority-container">
+            <div class="authority-badge">Vicerrectora</div>
+            <div class="authority-card">
+              <!-- Parte frontal de la tarjeta -->
+              <div class="authority-front">
+                <div class="authority-image-container">
+                  <img src="{% static 'images/vicerectora.jpg' %}" alt="Foto de la Vicerrectora" class="authority-image">
+                </div>
+                <div class="authority-info-front">
+                  <h3 class="authority-name">MSc. Carina Borja</h3>
+                  <span class="authority-title">Vicerrectora</span>
+                  <p class="authority-quote">Impulsando la innovación educativa hacia el futuro</p>
+                </div>
+              </div>
+              
+              <!-- Parte trasera de la tarjeta -->
+              <div class="authority-back">
+                <div class="authority-bio">
+                  <h3>Perfil Profesional</h3>
+                  <div class="authority-details">
+                    <p>Máster en Gestión Educativa con especialización en innovación pedagógica. Experta en desarrollo curricular y formación docente con enfoque en metodologías activas.</p>
+                  </div>
+                </div>
+                
+                <div class="authority-achievements">
+                  <h4>Logros Destacados</h4>
+                  <ul class="achievement-list">
+                    <li>Desarrollo del programa de capacitación docente</li>
+                    <li>Implementación de metodologías activas de aprendizaje</li>
+                    <li>Coordinación del proyecto de transformación digital</li>
+                  </ul>
+                </div>
+                
+                <div class="authority-info">
+                  <div class="info-item">
+                    <i class="fa fa-calendar"></i>
+                    <span>Período: 2023 - 2027</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-graduation-cap"></i>
+                    <span>Máster en Gestión Educativa</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-briefcase"></i>
+                    <span>15+ años de experiencia</span>
+                  </div>
+                </div>
+                
+                <div class="authority-social">
+                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
+                </div>
               </div>
             </div>
-            <div class="authority-content">
-              <div class="authority-bio">
-                <h3 class="authority-name">MSc. Carina Borja</h3>
-                <span class="authority-title">Vicerrector</span>
-                <p class="authority-quote">"Impulsando la innovación educativa hacia el futuro"</p>
-              </div>
-              <div class="authority-info">
-                <div class="info-item">
-                  <i class="fa fa-calendar"></i>
-                  <span>Período: 2023 - 2027</span>
+          </div>
+        </div>
+        
+        <!-- Inspector General -->
+        <div class="col-lg-4 col-md-6">
+          <div class="authority-container">
+            <div class="authority-badge">Inspector General</div>
+            <div class="authority-card">
+              <!-- Parte frontal de la tarjeta -->
+              <div class="authority-front">
+                <div class="authority-image-container">
+                  <img src="{% static 'images/voto.jpeg' %}" alt="Foto del Inspector General" class="authority-image">
                 </div>
-                <div class="info-item">
-                  <i class="fa fa-graduation-cap"></i>
-                  <span>Máster en Gestión Educativa</span>
+                <div class="authority-info-front">
+                  <h3 class="authority-name">Lic. Roberto Mendez</h3>
+                  <span class="authority-title">Inspector General</span>
+                  <p class="authority-quote">Fomentando la disciplina y los valores institucionales</p>
                 </div>
               </div>
-              <div class="authority-social">
-                <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
-                <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+              
+              <!-- Parte trasera de la tarjeta -->
+              <div class="authority-back">
+                <div class="authority-bio">
+                  <h3>Perfil Profesional</h3>
+                  <div class="authority-details">
+                    <p>Licenciado en Ciencias de la Educación con especialización en gestión educativa. Experto en convivencia escolar y resolución de conflictos en entornos educativos.</p>
+                  </div>
+                </div>
+                
+                <div class="authority-achievements">
+                  <h4>Logros Destacados</h4>
+                  <ul class="achievement-list">
+                    <li>Implementación del código de convivencia institucional</li>
+                    <li>Desarrollo del programa de mediación escolar</li>
+                    <li>Coordinación del sistema de seguimiento estudiantil</li>
+                  </ul>
+                </div>
+                
+                <div class="authority-info">
+                  <div class="info-item">
+                    <i class="fa fa-calendar"></i>
+                    <span>Período: 2023 - 2027</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-graduation-cap"></i>
+                    <span>Licenciado en Ciencias de la Educación</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fa fa-briefcase"></i>
+                    <span>12+ años de experiencia</span>
+                  </div>
+                </div>
+                
+                <div class="authority-social">
+                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
+                </div>
               </div>
             </div>
           </div>
@@ -205,88 +330,288 @@ https://templatemo.com/tm-557-grad-school
   <!-- ***** Autoridades Area End ***** -->
 
   <!-- ***** Cuadro de Honor Start ***** -->
-  <section class="section honor-board" data-section="section-honor">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 text-center mb-2">
-          <div class="section-heading">
-            <h2 class="gradient-text">Cuadro de Honor</h2>
-            <div class="line-dec"></div>
-            <p class="honor-subtitle">Excelencia y Dedicación Estudiantil</p>
-          </div>
+<section class="section honor-board" data-section="section-honor">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center mb-5">
+        <div class="section-heading">
+          <h2 class="gradient-text">Cuadro de Honor</h2>
+          <div class="line-dec"></div>
+          <p class="honor-subtitle">Reconociendo la Excelencia y Dedicación de Nuestros Estudiantes</p>
         </div>
       </div>
-      <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6">
-          <div class="honor-card">
-            <div class="honor-ribbon">1er Lugar</div>
-            <div class="honor-image">
-              <img src="{% static 'images/estudiante1.jpg' %}" alt="Estudiante 1">
-              <div class="honor-overlay">
-                <div class="honor-details">
-                  <h4>Mejor Promedio Académico</h4>
-                  <p>9.8/10</p>
-                </div>
+    </div>
+    
+    <!-- Filtros de categorías -->
+    <div class="honor-filter-container">
+      <div class="honor-filter-tabs">
+        <div class="honor-filter active" data-filter="all">Todos</div>
+        <div class="honor-filter" data-filter="academic">Académico</div>
+        <div class="honor-filter" data-filter="leadership">Liderazgo</div>
+        <div class="honor-filter" data-filter="sports">Deportes</div>
+        <div class="honor-filter" data-filter="arts">Arte y Cultura</div>
+      </div>
+    </div>
+    
+    <!-- Cuadro de Honor con Timeline -->
+    <div class="honor-timeline-container">
+      <!-- Línea central del timeline -->
+      <div class="honor-timeline-line"></div>
+      
+      <!-- Estudiantes en el timeline -->
+      <div class="honor-timeline">
+        <!-- Estudiante 1 -->
+        <div class="honor-timeline-item" data-category="academic">
+          <div class="honor-timeline-badge">
+            <div class="honor-position">1</div>
+          </div>
+          <div class="honor-timeline-panel">
+            <div class="honor-timeline-header">
+              <div class="honor-timeline-image">
+                <img src="{% static 'images/estudiante1.jpg' %}" alt="Ana María Rodríguez">
+                <div class="honor-shine"></div>
+              </div>
+              <div class="honor-timeline-title">
+                <h3>Ana María Rodríguez</h3>
+                <p>3ro Bachillerato "A"</p>
+                <div class="honor-timeline-category">Excelencia Académica</div>
               </div>
             </div>
-            <div class="honor-content">
-              <h3 class="student-name">Nombre del Estudiante 1</h3>
-              <p class="student-course">3ro Bachillerato "A"</p>
-              <div class="achievement-badges">
-                <span class="badge"><i class="fa fa-star"></i> Excelencia</span>
-                <span class="badge"><i class="fa fa-trophy"></i> Mejor Promedio</span>
+            <div class="honor-timeline-body">
+              <div class="honor-timeline-stats">
+                <div class="honor-stat">
+                  <div class="honor-stat-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="honor-stat-circle-fill" stroke-dasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <text x="18" y="20.35" class="honor-stat-text">9.8</text>
+                    </svg>
+                  </div>
+                  <span>Promedio</span>
+                </div>
+                <div class="honor-badges">
+                  <span class="honor-badge academic"><i class="fa fa-star"></i></span>
+                  <span class="honor-badge trophy"><i class="fa fa-trophy"></i></span>
+                </div>
               </div>
+              <div class="honor-timeline-quote">
+                <p>"El esfuerzo constante es la clave del éxito académico"</p>
+              </div>
+              <button class="honor-timeline-btn">Ver Logros</button>
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="honor-card">
-            <div class="honor-ribbon">Destacado</div>
-            <div class="honor-image">
-              <img src="{% static 'images/estudiante2.jpg' %}" alt="Estudiante 2">
-              <div class="honor-overlay">
-                <div class="honor-details">
-                  <h4>Liderazgo Estudiantil</h4>
-                  <p>Presidente Estudiantil</p>
-                </div>
+        
+        <!-- Estudiante 2 -->
+        <div class="honor-timeline-item" data-category="leadership">
+          <div class="honor-timeline-badge">
+            <div class="honor-position">2</div>
+          </div>
+          <div class="honor-timeline-panel">
+            <div class="honor-timeline-header">
+              <div class="honor-timeline-image">
+                <img src="{% static 'images/estudiante2.jpg' %}" alt="Carlos Mendoza">
+                <div class="honor-shine"></div>
+              </div>
+              <div class="honor-timeline-title">
+                <h3>Carlos Mendoza</h3>
+                <p>2do Bachillerato "B"</p>
+                <div class="honor-timeline-category">Liderazgo Estudiantil</div>
               </div>
             </div>
-            <div class="honor-content">
-              <h3 class="student-name">Nombre del Estudiante 2</h3>
-              <p class="student-course">2do Bachillerato "B"</p>
-              <div class="achievement-badges">
-                <span class="badge"><i class="fa fa-users"></i> Liderazgo</span>
-                <span class="badge"><i class="fa fa-heart"></i> Servicio</span>
+            <div class="honor-timeline-body">
+              <div class="honor-timeline-stats">
+                <div class="honor-stat">
+                  <div class="honor-stat-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="honor-stat-circle-fill" stroke-dasharray="95, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <text x="18" y="20.35" class="honor-stat-text">9.5</text>
+                    </svg>
+                  </div>
+                  <span>Promedio</span>
+                </div>
+                <div class="honor-badges">
+                  <span class="honor-badge leadership"><i class="fa fa-users"></i></span>
+                  <span class="honor-badge heart"><i class="fa fa-heart"></i></span>
+                </div>
               </div>
+              <div class="honor-timeline-quote">
+                <p>"Un buen líder inspira a otros a alcanzar su máximo potencial"</p>
+              </div>
+              <button class="honor-timeline-btn">Ver Logros</button>
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="honor-card">
-            <div class="honor-ribbon">Destacado</div>
-            <div class="honor-image">
-              <img src="{% static 'images/estudiante3.jpg' %}" alt="Estudiante 3">
-              <div class="honor-overlay">
-                <div class="honor-details">
-                  <h4>Desempeño Integral</h4>
-                  <p>Excelencia Deportiva</p>
-                </div>
+        
+        <!-- Estudiante 3 -->
+        <div class="honor-timeline-item" data-category="sports">
+          <div class="honor-timeline-badge">
+            <div class="honor-position">3</div>
+          </div>
+          <div class="honor-timeline-panel">
+            <div class="honor-timeline-header">
+              <div class="honor-timeline-image">
+                <img src="{% static 'images/estudiante3.jpg' %}" alt="Valentina Torres">
+                <div class="honor-shine"></div>
+              </div>
+              <div class="honor-timeline-title">
+                <h3>Valentina Torres</h3>
+                <p>3ro Bachillerato "C"</p>
+                <div class="honor-timeline-category">Excelencia Deportiva</div>
               </div>
             </div>
-            <div class="honor-content">
-              <h3 class="student-name">Nombre del Estudiante 3</h3>
-              <p class="student-course">3ro Bachillerato "C"</p>
-              <div class="achievement-badges">
-                <span class="badge"><i class="fa fa-running"></i> Deportes</span>
-                <span class="badge"><i class="fa fa-book"></i> Académico</span>
+            <div class="honor-timeline-body">
+              <div class="honor-timeline-stats">
+                <div class="honor-stat">
+                  <div class="honor-stat-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="honor-stat-circle-fill" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <text x="18" y="20.35" class="honor-stat-text">9.2</text>
+                    </svg>
+                  </div>
+                  <span>Promedio</span>
+                </div>
+                <div class="honor-badges">
+                  <span class="honor-badge sports"><i class="fa fa-running"></i></span>
+                  <span class="honor-badge academic"><i class="fa fa-book"></i></span>
+                </div>
               </div>
+              <div class="honor-timeline-quote">
+                <p>"La disciplina deportiva fortalece tanto el cuerpo como la mente"</p>
+              </div>
+              <button class="honor-timeline-btn">Ver Logros</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Estudiante 4 -->
+        <div class="honor-timeline-item" data-category="academic">
+          <div class="honor-timeline-badge">
+            <div class="honor-position">4</div>
+          </div>
+          <div class="honor-timeline-panel">
+            <div class="honor-timeline-header">
+              <div class="honor-timeline-image">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Mateo Herrera">
+                <div class="honor-shine"></div>
+              </div>
+              <div class="honor-timeline-title">
+                <h3>Mateo Herrera</h3>
+                <p>3ro Bachillerato "B"</p>
+                <div class="honor-timeline-category">Innovación Tecnológica</div>
+              </div>
+            </div>
+            <div class="honor-timeline-body">
+              <div class="honor-timeline-stats">
+                <div class="honor-stat">
+                  <div class="honor-stat-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="honor-stat-circle-fill" stroke-dasharray="90, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <text x="18" y="20.35" class="honor-stat-text">9.0</text>
+                    </svg>
+                  </div>
+                  <span>Promedio</span>
+                </div>
+                <div class="honor-badges">
+                  <span class="honor-badge tech"><i class="fa fa-laptop-code"></i></span>
+                  <span class="honor-badge innovation"><i class="fa fa-lightbulb"></i></span>
+                </div>
+              </div>
+              <div class="honor-timeline-quote">
+                <p>"La tecnología es la herramienta que transforma ideas en soluciones"</p>
+              </div>
+              <button class="honor-timeline-btn">Ver Logros</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Estudiante 5 -->
+        <div class="honor-timeline-item" data-category="arts">
+          <div class="honor-timeline-badge">
+            <div class="honor-position">5</div>
+          </div>
+          <div class="honor-timeline-panel">
+            <div class="honor-timeline-header">
+              <div class="honor-timeline-image">
+                <img src="{% static 'images/rector.jpg' %}" alt="Camila Paz">
+                <div class="honor-shine"></div>
+              </div>
+              <div class="honor-timeline-title">
+                <h3>Camila Paz</h3>
+                <p>1ro Bachillerato "A"</p>
+                <div class="honor-timeline-category">Arte y Cultura</div>
+              </div>
+            </div>
+            <div class="honor-timeline-body">
+              <div class="honor-timeline-stats">
+                <div class="honor-stat">
+                  <div class="honor-stat-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="honor-stat-circle-fill" stroke-dasharray="88, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <text x="18" y="20.35" class="honor-stat-text">8.8</text>
+                    </svg>
+                  </div>
+                  <span>Promedio</span>
+                </div>
+                <div class="honor-badges">
+                  <span class="honor-badge arts"><i class="fa fa-paint-brush"></i></span>
+                  <span class="honor-badge culture"><i class="fa fa-music"></i></span>
+                </div>
+              </div>
+              <div class="honor-timeline-quote">
+                <p>"El arte es la expresión más pura del alma humana"</p>
+              </div>
+              <button class="honor-timeline-btn">Ver Logros</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
-  <!-- ***** Cuadro de Honor End ***** -->
+  </div>
+  
+  <!-- Modal de logros detallados -->
+  <div class="honor-achievement-modal">
+    <div class="honor-modal-content">
+      <div class="honor-modal-close"><i class="fa fa-times"></i></div>
+      <div class="honor-modal-header">
+        <div class="honor-modal-image">
+          <img src="" alt="Estudiante">
+        </div>
+        <div class="honor-modal-title">
+          <h3 class="honor-modal-name"></h3>
+          <p class="honor-modal-course"></p>
+          <div class="honor-modal-category"></div>
+        </div>
+      </div>
+      <div class="honor-modal-body">
+        <div class="honor-modal-section">
+          <h4><i class="fa fa-award"></i> Logros Destacados</h4>
+          <ul class="honor-achievement-list">
+            <!-- Los items se cargarán dinámicamente con JavaScript -->
+          </ul>
+        </div>
+        <div class="honor-modal-section">
+          <h4><i class="fa fa-chart-line"></i> Rendimiento Académico</h4>
+          <div class="honor-modal-chart">
+            <canvas id="studentPerformanceChart"></canvas>
+          </div>
+        </div>
+        <div class="honor-modal-section">
+          <h4><i class="fa fa-comment"></i> Testimonio</h4>
+          <div class="honor-modal-quote">
+            <p class="honor-quote-text"></p>
+            <div class="honor-quote-signature"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ***** Cuadro de Honor End ***** -->
 
   <!-- ***** Misión y Visión Start ***** -->
   <section class="section mision-vision" data-section="section3">
@@ -395,9 +720,9 @@ https://templatemo.com/tm-557-grad-school
 
   <!-- ***** Sección Docentes Start ***** -->
   <section class="section docentes" data-section="section4">
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
-        <div class="col-md-12 text-center mb-2">
+        <div class="col-md-12 text-center mb-4">
           <div class="section-heading">
             <h2 class="gradient-text">Nuestro Equipo Docente</h2>
             <div class="line-dec"></div>
@@ -439,7 +764,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
         
@@ -475,7 +799,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
         
@@ -511,7 +834,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
         
@@ -547,7 +869,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
         
@@ -583,7 +904,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
         
@@ -619,7 +939,6 @@ https://templatemo.com/tm-557-grad-school
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
@@ -633,20 +952,22 @@ https://templatemo.com/tm-557-grad-school
       <div class="row">
         <div class="col-md-6 align-self-center">
           <div class="left-content">
-            <span>our presentation is for you</span>
-            <h4>Watch the video to learn more <em>about Grad School</em></h4>
-            <p>You are NOT allowed to redistribute this template ZIP file on any template collection website. However, you can use this template to convert into a specific theme for any kind of CMS platform such as WordPress. You may <a rel="nofollow" href="https://templatemo.com/contact" target="_parent">contact TemplateMo</a> for details.
-            <br><br>Suspendisse tincidunt, magna ut finibus rutrum, libero dolor euismod odio, nec interdum quam felis non ante.</p>
-            <div class="main-button"><a rel="nofollow" href="https://fb.com/templatemo" target="_parent">External URL</a></div>
+            <span>Innovación Educativa</span>
+            <h4>Conoce nuestro <em>Proyecto Educativo Digital</em></h4>
+            <p>En la Unidad Educativa Riobamba estamos comprometidos con la innovación tecnológica y la transformación digital de la educación. Nuestro sistema de votación electrónica es solo una muestra de cómo integramos la tecnología para mejorar la experiencia educativa.
+            <br><br>Descubre cómo nuestros estudiantes participan activamente en proyectos tecnológicos que fomentan el pensamiento crítico, la colaboración y las habilidades digitales esenciales para el futuro.</p>
+            <div class="main-button"><a href="#section6" class="scroll-to-section">Contáctanos</a></div>
           </div>
         </div>
         <div class="col-md-6">
           <article class="video-item">
             <div class="video-caption">
-              <h4>Power HTML Template</h4>
+              <h4>Innovación Educativa UE Riobamba</h4>
             </div>
             <figure>
-              <a href="https://www.youtube.com/watch?v=r9LtOG6pNUw" class="play"><img src="assets/images/main-thumb.png"></a>
+              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="play">
+                <img src="static/images/video-thumbnail.jpg" alt="Video Institucional" onerror="this.src='static/images/courses-01.jpg'">
+              </a>
             </figure>
           </article>
         </div>
@@ -659,35 +980,46 @@ https://templatemo.com/tm-557-grad-school
       <div class="row">
         <div class="col-md-12">
           <div class="section-heading">
-            <h2>Let’s Keep In Touch</h2>
+            <h2>Comunícate con Nosotros</h2>
           </div>
         </div>
         <div class="col-md-6">
-        
-        <!-- Do you need a working HTML contact-form script?
-                	
-                    Please visit https://templatemo.com/contact page -->
-                    
           <form id="contact" action="" method="post">
             <div class="row">
               <div class="col-md-6">
-                  <fieldset>
-                    <input name="name" type="text" class="form-control" id="name" placeholder="Your Name" required="">
-                  </fieldset>
-                </div>
-                <div class="col-md-6">
-                  <fieldset>
-                    <input name="email" type="text" class="form-control" id="email" placeholder="Your Email" required="">
-                  </fieldset>
-                </div>
-              <div class="col-md-12">
                 <fieldset>
-                  <textarea name="message" rows="6" class="form-control" id="message" placeholder="Your message..." required=""></textarea>
+                  <input name="name" type="text" class="form-control" id="name" placeholder="Nombre completo" required="">
+                </fieldset>
+              </div>
+              <div class="col-md-6">
+                <fieldset>
+                  <input name="email" type="text" class="form-control" id="email" placeholder="Correo electrónico" required="">
+                </fieldset>
+              </div>
+              <div class="col-md-6">
+                <fieldset>
+                  <select name="tipo" class="form-control" id="tipo" required="">
+                    <option value="" disabled selected>Tipo de consulta</option>
+                    <option value="admision">Admisiones</option>
+                    <option value="academico">Información académica</option>
+                    <option value="votacion">Sistema de votación</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </fieldset>
+              </div>
+              <div class="col-md-6">
+                <fieldset>
+                  <input name="phone" type="text" class="form-control" id="phone" placeholder="Número telefónico">
                 </fieldset>
               </div>
               <div class="col-md-12">
                 <fieldset>
-                  <button type="submit" id="form-submit" class="button">Send Message Now</button>
+                  <textarea name="message" rows="6" class="form-control" id="message" placeholder="Escribe tu mensaje aquí..." required=""></textarea>
+                </fieldset>
+              </div>
+              <div class="col-md-12">
+                <fieldset>
+                  <button type="submit" id="form-submit" class="button">Enviar Mensaje</button>
                 </fieldset>
               </div>
             </div>
@@ -695,7 +1027,23 @@ https://templatemo.com/tm-557-grad-school
         </div>
         <div class="col-md-6">
           <div id="map">
-            <iframe src="https://maps.google.com/maps?q=Av.+L%C3%BAcio+Costa,+Rio+de+Janeiro+-+RJ,+Brazil&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="422px" frameborder="0" style="border:0" allowfullscreen></iframe>
+            <iframe src="https://maps.google.com/maps?q=Unidad+Educativa+Riobamba,+Ecuador&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="422px" frameborder="0" style="border:0" allowfullscreen></iframe>
+          </div>
+          <div class="contact-info mt-4">
+            <div class="row">
+              <div class="col-md-4 text-center">
+                <i class="fa fa-map-marker fa-2x"></i>
+                <p>Av. Principal s/n<br>Riobamba, Ecuador</p>
+              </div>
+              <div class="col-md-4 text-center">
+                <i class="fa fa-phone fa-2x"></i>
+                <p>+593 91 11 30 63</p>
+              </div>
+              <div class="col-md-4 text-center">
+                <i class="fa fa-envelope fa-2x"></i>
+                <p>info@ueriobamba.edu.ec</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -729,8 +1077,14 @@ https://templatemo.com/tm-557-grad-school
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <!-- CDN para animaciones avanzadas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="{% static 'js/cards.js' %}"></script>
     <script src="{% static 'js/features.js' %}"></script>
+    <script src="{% static 'js/docentes.js' %}"></script>
+    <script src="{% static 'js/autoridades.js' %}"></script>
+    <script src="{% static 'js/honor.js' %}"></script>
+    <script src="{% static 'js/contact-custom.js' %}"></script>
     <script src="{% static 'plantillas/assets/assets_informativo/js/custom.js' %}"></script>
     <script>
         //according to loftblog tut
