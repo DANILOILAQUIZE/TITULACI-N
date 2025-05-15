@@ -1,0 +1,9 @@
+/* Estilos simples para el contenido oculto */
+.content-hide {
+  display: none;
+}
+
+/* Asegurarse de que el título siempre sea visible */
+.content-show {
+  display: block !important;
+}

@@ -22,6 +22,9 @@
     <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/templatemo-grad-school.css' %}">
     <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/owl.css' %}">
     <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/lightbox.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/features.css' %}">
 <!--
     
 TemplateMo 557 Grad School
@@ -65,11 +68,14 @@ https://templatemo.com/tm-557-grad-school
 
       <div class="video-overlay header-text">
           <div class="caption">
-              <h6>Unidad Educativa Riobamba</h6>
-              <h2><em>Votación</em> Electrónica</h2>
-              <div class="main-button">
-                  <div class="scroll-to-section"><a href="#section2">EMITIR VOTO</a></div>
-              </div>
+            <!--
+            <p class="text-white">"Somos del RIOBAMBA, por mil títulos y mil glorias sin par, somos de la ciencia espartanos y nuestro ejemplo en el tiempo y en el espacio existirá"</p>
+            <p class="text-white font-weight-bold">¡Riobamba, Siempre A!</p>
+            -->
+            <h2><em>Votación</em> Electrónica</h2>
+            <div class="main-button">
+                <div class="scroll-to-section"><a href="#section2">EMITIR VOTO</a></div>
+            </div>
           </div>
       </div>
   </section>
@@ -120,289 +126,506 @@ https://templatemo.com/tm-557-grad-school
     </div>
   </section>
 
-  <section class="section why-us" data-section="section2">
+
+  <!-- ***** Autoridades Area Start ***** -->
+  <section class="section autoridades" data-section="section-autoridades">
     <div class="container">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 text-center mb-2">
           <div class="section-heading">
-            <h2>¿Por qué nuestro Sistema de Votación?</h2>
+            <h2 class="gradient-text">Nuestras Autoridades</h2>
+            <div class="line-dec"></div>
           </div>
         </div>
-        <div class="col-md-12">
-          <div id='tabs'>
-            <ul>
-              <li><a href='#tabs-1'>Tecnología Segura</a></li>
-              <li><a href='#tabs-2'>Accesibilidad Universal</a></li>
-              <li><a href='#tabs-3'>Resultados Instantáneos</a></li>
-            </ul>
-            <section class='tabs-content'>
-              <article id='tabs-1'>
-                <div class="row">
-                  <div class="col-md-6">
-                    <img src="{% static 'images/voto1.png' %}" alt="">
-                  </div>
-                  <div class="col-md-6">
-                    <h4>Tecnología Segura</h4>
-                    <p>Nuestro sistema de votación electrónica utiliza tecnologías de vanguardia para garantizar la integridad, confidencialidad y transparencia del proceso electoral. Diseñado específicamente para entornos educativos.</p>
-                  </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-6">
+          <div class="authority-card">
+            <div class="authority-banner">
+              <div class="authority-image">
+                <img src="{% static 'images/rector.jpg' %}" alt="Foto del Rector">
+              </div>
+            </div>
+            <div class="authority-content">
+              <div class="authority-bio">
+                <h3 class="authority-name">MSc. Julio Marti</h3>
+                <span class="authority-title">Rector</span>
+                <p class="authority-quote">"Liderando la excelencia educativa con visión y compromiso"</p>
+              </div>
+              <div class="authority-info">
+                <div class="info-item">
+                  <i class="fa fa-calendar"></i>
+                  <span>Período: 2023 - 2027</span>
                 </div>
-              </article>
-              <article id='tabs-2'>
-                <div class="row">
-                  <div class="col-md-6">
-                    <img src="{% static 'images/voto.jpeg' %}" alt="">
-                  </div>
-                  <div class="col-md-6">
-                    <h4>Accesibilidad Universal</h4>
-                    <p>Sistema diseñado para ser inclusivo y accesible para todos los miembros de la comunidad educativa. Interfaz intuitiva y adaptable a diferentes dispositivos.</p> 
-                    <p>Permite la participación democrática de manera simple y eficiente.</p>
-                  </div>
+                <div class="info-item">
+                  <i class="fa fa-graduation-cap"></i>
+                  <span>Doctor en Ciencias de la Educación</span>
                 </div>
-              </article>
-              <article id='tabs-3'>
-                <div class="row">
-                  <div class="col-md-6">
-                    <img src="{% static 'images/resultado.jpeg' %}" alt="">
-                  </div>
-                  <div class="col-md-6">
-                    <h4>Resultados Instantáneos</h4>
-                    <p>Obtén resultados electorales en tiempo real con total transparencia. Nuestro sistema procesa los votos de manera inmediata, eliminando la espera y proporcionando una experiencia electoral moderna.</p>
-                  </div>
+              </div>
+              <div class="authority-social">
+                <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
+                <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5 col-md-6">
+          <div class="authority-card">
+            <div class="authority-banner">
+              <div class="authority-image">
+                <img src="{% static 'images/vicerectora.jpg' %}" alt="Foto del Vicerrector">
+              </div>
+            </div>
+            <div class="authority-content">
+              <div class="authority-bio">
+                <h3 class="authority-name">MSc. Carina Borja</h3>
+                <span class="authority-title">Vicerrector</span>
+                <p class="authority-quote">"Impulsando la innovación educativa hacia el futuro"</p>
+              </div>
+              <div class="authority-info">
+                <div class="info-item">
+                  <i class="fa fa-calendar"></i>
+                  <span>Período: 2023 - 2027</span>
                 </div>
-              </article>
-            </section>
+                <div class="info-item">
+                  <i class="fa fa-graduation-cap"></i>
+                  <span>Máster en Gestión Educativa</span>
+                </div>
+              </div>
+              <div class="authority-social">
+                <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
+                <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- ***** Autoridades Area End ***** -->
 
-  <section class="section coming-soon" data-section="section3">
+  <!-- ***** Cuadro de Honor Start ***** -->
+  <section class="section honor-board" data-section="section-honor">
     <div class="container">
       <div class="row">
-        <div class="col-md-7 col-xs-12">
-          <div class="continer centerIt">
-            <div>
-              <h4>Take <em>any online course</em> and win $326 for your next class</h4>
-              <div class="counter">
-
-                <div class="days">
-                  <div class="value">00</div>
-                  <span>Days</span>
+        <div class="col-md-12 text-center mb-2">
+          <div class="section-heading">
+            <h2 class="gradient-text">Cuadro de Honor</h2>
+            <div class="line-dec"></div>
+            <p class="honor-subtitle">Excelencia y Dedicación Estudiantil</p>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-6">
+          <div class="honor-card">
+            <div class="honor-ribbon">1er Lugar</div>
+            <div class="honor-image">
+              <img src="{% static 'images/estudiante1.jpg' %}" alt="Estudiante 1">
+              <div class="honor-overlay">
+                <div class="honor-details">
+                  <h4>Mejor Promedio Académico</h4>
+                  <p>9.8/10</p>
                 </div>
-
-                <div class="hours">
-                  <div class="value">00</div>
-                  <span>Hours</span>
-                </div>
-
-                <div class="minutes">
-                  <div class="value">00</div>
-                  <span>Minutes</span>
-                </div>
-
-                <div class="seconds">
-                  <div class="value">00</div>
-                  <span>Seconds</span>
-                </div>
-
+              </div>
+            </div>
+            <div class="honor-content">
+              <h3 class="student-name">Nombre del Estudiante 1</h3>
+              <p class="student-course">3ro Bachillerato "A"</p>
+              <div class="achievement-badges">
+                <span class="badge"><i class="fa fa-star"></i> Excelencia</span>
+                <span class="badge"><i class="fa fa-trophy"></i> Mejor Promedio</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-5">
-          <div class="right-content">
-            <div class="top-content">
-              <h6>Register your free account and <em>get immediate</em> access to online courses</h6>
-            </div>
-            <form id="contact" action="" method="get">
-              <div class="row">
-                <div class="col-md-12">
-                  <fieldset>
-                    <input name="name" type="text" class="form-control" id="name" placeholder="Your Name" required="">
-                  </fieldset>
-                </div>
-                <div class="col-md-12">
-                  <fieldset>
-                    <input name="email" type="text" class="form-control" id="email" placeholder="Your Email" required="">
-                  </fieldset>
-                </div>
-                <div class="col-md-12">
-                  <fieldset>
-                    <input name="phone-number" type="text" class="form-control" id="phone-number" placeholder="Your Phone Number" required="">
-                  </fieldset>
-                </div>
-                <div class="col-md-12">
-                  <fieldset>
-                    <button type="submit" id="form-submit" class="button">Get it now</button>
-                  </fieldset>
+        <div class="col-lg-4 col-md-6">
+          <div class="honor-card">
+            <div class="honor-ribbon">Destacado</div>
+            <div class="honor-image">
+              <img src="{% static 'images/estudiante2.jpg' %}" alt="Estudiante 2">
+              <div class="honor-overlay">
+                <div class="honor-details">
+                  <h4>Liderazgo Estudiantil</h4>
+                  <p>Presidente Estudiantil</p>
                 </div>
               </div>
-            </form>
+            </div>
+            <div class="honor-content">
+              <h3 class="student-name">Nombre del Estudiante 2</h3>
+              <p class="student-course">2do Bachillerato "B"</p>
+              <div class="achievement-badges">
+                <span class="badge"><i class="fa fa-users"></i> Liderazgo</span>
+                <span class="badge"><i class="fa fa-heart"></i> Servicio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="honor-card">
+            <div class="honor-ribbon">Destacado</div>
+            <div class="honor-image">
+              <img src="{% static 'images/estudiante3.jpg' %}" alt="Estudiante 3">
+              <div class="honor-overlay">
+                <div class="honor-details">
+                  <h4>Desempeño Integral</h4>
+                  <p>Excelencia Deportiva</p>
+                </div>
+              </div>
+            </div>
+            <div class="honor-content">
+              <h3 class="student-name">Nombre del Estudiante 3</h3>
+              <p class="student-course">3ro Bachillerato "C"</p>
+              <div class="achievement-badges">
+                <span class="badge"><i class="fa fa-running"></i> Deportes</span>
+                <span class="badge"><i class="fa fa-book"></i> Académico</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- ***** Cuadro de Honor End ***** -->
+
+  <!-- ***** Misión y Visión Start ***** -->
+  <section class="section mision-vision" data-section="section3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center mb-2">
+          <div class="section-heading">
+            <h2 class="gradient-text">Nuestra Identidad</h2>
+            <div class="line-dec"></div>
+            <p class="subtitle">Conoce los pilares que fundamentan nuestro compromiso educativo</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <div class="flip-card" tabindex="0" onclick="flipCard(this)">
+            <div class="flip-card-inner">
+              <div class="flip-card-front mision-card">
+                <div class="card-icon">
+                  <i class="fa fa-rocket"></i>
+                </div>
+                <h3>Misión</h3>
+                <div class="hover-instruction">Haz clic para ver</div>
+              </div>
+              <div class="flip-card-back">
+                <h3>Nuestra Misión</h3>
+                <p>Formar estudiantes íntegros con excelencia académica, valores éticos y compromiso social, capaces de contribuir positivamente a la sociedad mediante una educación innovadora y personalizada que desarrolle su máximo potencial.</p>
+                <div class="mission-values">
+                  <span class="value-tag">Excelencia</span>
+                  <span class="value-tag">Innovación</span>
+                  <span class="value-tag">Integridad</span>
+                </div>
+                <button class="back-button" onclick="flipBack(this, event)"><i class="fa fa-arrow-left"></i> Volver</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="flip-card" tabindex="0" onclick="flipCard(this)">
+            <div class="flip-card-inner">
+              <div class="flip-card-front vision-card">
+                <div class="card-icon">
+                  <i class="fa fa-eye"></i>
+                </div>
+                <h3>Visión</h3>
+                <div class="hover-instruction">Haz clic para ver</div>
+              </div>
+              <div class="flip-card-back">
+                <h3>Nuestra Visión</h3>
+                <p>Ser una institución educativa líder reconocida por su excelencia académica, formación integral y compromiso con la innovación pedagógica, preparando a nuestros estudiantes para los desafíos del siglo XXI con competencias globales y valores sólidos.</p>
+                <div class="vision-timeline">
+                  <div class="timeline-item">
+                    <span class="year">2025</span>
+                    <span class="achievement">Excelencia Digital</span>
+                  </div>
+                  <div class="timeline-item">
+                    <span class="year">2030</span>
+                    <span class="achievement">Referente Nacional</span>
+                  </div>
+                </div>
+                <button class="back-button" onclick="flipBack(this, event)"><i class="fa fa-arrow-left"></i> Volver</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row mt-5">
+        <div class="col-md-12">
+          <div class="values-banner">
+            <div class="values-content">
+              <h3>Nuestros Valores</h3>
+              <div class="values-container">
+                <div class="value-item">
+                  <div class="value-icon"><i class="fa fa-heart"></i></div>
+                  <div class="value-name">Respeto</div>
+                </div>
+                <div class="value-item">
+                  <div class="value-icon"><i class="fa fa-users"></i></div>
+                  <div class="value-name">Solidaridad</div>
+                </div>
+                <div class="value-item">
+                  <div class="value-icon"><i class="fa fa-gavel"></i></div>
+                  <div class="value-name">Justicia</div>
+                </div>
+                <div class="value-item">
+                  <div class="value-icon"><i class="fa fa-lightbulb-o"></i></div>
+                  <div class="value-name">Innovación</div>
+                </div>
+                <div class="value-item">
+                  <div class="value-icon"><i class="fa fa-check-circle"></i></div>
+                  <div class="value-name">Compromiso</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ***** Misión y Visión End ***** -->
 
 
 
-  <section class="section courses" data-section="section4">
+  <!-- ***** Sección Docentes Start ***** -->
+  <section class="section docentes" data-section="section4">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 text-center mb-2">
           <div class="section-heading">
-            <h2>DOCENTES DE LA INSTITUCIÓN</h2>
+            <h2 class="gradient-text">Nuestro Equipo Docente</h2>
+            <div class="line-dec"></div>
+            <p class="subtitle">Profesionales comprometidos con la excelencia educativa</p>
           </div>
         </div>
-        <div class="owl-carousel owl-theme">
-          <div class="item">
-            <img src="{% static 'images/resultado.jpeg' %}" alt="Course #1">
-            <div class="down-content">
-              <h4>Digital Marketing</h4>
-              <p>You can get free images and videos for your websites by visiting Unsplash, Pixabay, and Pexels.</p>
-              <div class="author-image">
-                <img src="{% static 'images/resultado.jpeg' %}" alt="Author 1">
+      </div>
+      
+      <div class="owl-carousel owl-theme docentes-carousel">
+        <!-- Docente 1 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/resultado.jpeg' %}" alt="Docente de Matemáticas">
               </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Matemáticas</span>
               </div>
             </div>
+            <div class="docente-body">
+              <h3 class="docente-name">Lic. Ana Martínez</h3>
+              <p class="docente-title">Matemáticas Superiores</p>
+              <div class="docente-description">
+                <p>Especialista en matemáticas aplicadas con 10 años de experiencia docente y enfoque en metodologías innovadoras.</p>
+              </div>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">10</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">MSc.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">3°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
+              </div>
+            </div>
+            
           </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="Course #2">
-            <div class="down-content">
-              <h4>Business World</h4>
-              <p>Quisque cursus augue ut velit dictum, quis volutpat enim blandit. Maecenas a lectus ac ipsum porta.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Author 2">
+        </div>
+        
+        <!-- Docente 2 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Ciencias">
               </div>
-              <div class="text-button-free">
-                <a href="#">Free <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Ciencias</span>
               </div>
             </div>
+            <div class="docente-body">
+              <h3 class="docente-name">Dr. Carlos Mendoza</h3>
+              <p class="docente-title">Biología y Química</p>
+              <div class="docente-description">
+                <p>Doctor en Ciencias con especialidad en biología molecular. Promueve el aprendizaje basado en proyectos de investigación.</p>
+              </div>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">15</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">PhD.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">2°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
+              </div>
+            </div>
+            
           </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="Course #3">
-            <div class="down-content">
-              <h4>Media Technology</h4>
-              <p>Pellentesque ultricies diam magna, auctor cursus lectus pretium nec. Maecenas finibus lobortis enim.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Author 3">
+        </div>
+        
+        <!-- Docente 3 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Literatura">
               </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Literatura</span>
               </div>
             </div>
+            <div class="docente-body">
+              <h3 class="docente-name">Mgs. Laura Sánchez</h3>
+              <p class="docente-title">Lengua y Literatura</p>
+              <div class="docente-description">
+                <p>Especialista en literatura latinoamericana contemporánea. Fomenta la creatividad y el pensamiento crítico a través de la escritura.</p>
+              </div>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">8</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">Mgs.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">1°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
+              </div>
+            </div>
+            
           </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="Course #4">
-            <div class="down-content">
-              <h4>Communications</h4>
-              <p>Download free images and videos for your websites by visiting Unsplash, Pixabay, and Pexels.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Author 4">
+        </div>
+        
+        <!-- Docente 4 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Historia">
               </div>
-              <div class="text-button-free">
-                <a href="#">Free <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Historia</span>
               </div>
             </div>
+            <div class="docente-body">
+              <h3 class="docente-name">Lic. Roberto Paredes</h3>
+              <p class="docente-title">Historia y Estudios Sociales</p>
+              <div class="docente-description">
+                <p>Especialista en historia ecuatoriana y latinoamericana. Utiliza métodos innovadores para conectar el pasado con el presente.</p>
+              </div>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">12</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">Lic.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">3°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
+              </div>
+            </div>
+            
           </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Business Ethics</h4>
-              <p>Pellentesque ultricies diam magna, auctor cursus lectus pretium nec. Maecenas finibus lobortis enim.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
+        </div>
+        
+        <!-- Docente 5 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Física">
               </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Física</span>
               </div>
             </div>
+            <div class="docente-body">
+              <h3 class="docente-name">Ing. Pedro Alvarado</h3>
+              <p class="docente-title">Física y Matemáticas</p>
+              <div class="docente-description">
+                <p>Ingeniero con especialidad en física aplicada. Combina la teoría con experimentos prácticos para facilitar el aprendizaje.</p>
+              </div>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">7</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">MSc.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">2°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
+              </div>
+            </div>
+            
           </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Photography</h4>
-              <p>Quisque cursus augue ut velit dictum, quis volutpat enim blandit. Maecenas a lectus ac ipsum porta.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
+        </div>
+        
+        <!-- Docente 6 -->
+        <div class="item">
+          <div class="docente-card">
+            <div class="docente-header">
+              <div class="docente-avatar">
+                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Informática">
               </div>
-              <div class="text-button-free">
-                <a href="#">Free <i class="fa fa-angle-double-right"></i></a>
-              </div>
-            </div>
-          </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Web Development</h4>
-              <p>Pellentesque ultricies diam magna, auctor cursus lectus pretium nec. Maecenas finibus lobortis enim.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
-              </div>
-              <div class="text-button-free">
-                <a href="#">Free <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-specialty">
+                <span>Informática</span>
               </div>
             </div>
-          </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Learn HTML CSS</h4>
-              <p>You can get free images and videos for your websites by visiting Unsplash, Pixabay, and Pexels.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
+            <div class="docente-body">
+              <h3 class="docente-name">Ing. María Torres</h3>
+              <p class="docente-title">Computación e Informática</p>
+              <div class="docente-description">
+                <p>Especialista en desarrollo de software y tecnologías educativas. Promueve el pensamiento computacional y la programación.</p>
               </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
-              </div>
-            </div>
-          </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Social Media</h4>
-              <p>Pellentesque ultricies diam magna, auctor cursus lectus pretium nec. Maecenas finibus lobortis enim.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
-              </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
+              <div class="docente-stats">
+                <div class="stat-item">
+                  <span class="stat-value">9</span>
+                  <span class="stat-label">Años Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">Ing.</span>
+                  <span class="stat-label">Grado</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">1°-3°</span>
+                  <span class="stat-label">Bachillerato</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Digital Arts</h4>
-              <p>Quisque cursus augue ut velit dictum, quis volutpat enim blandit. Maecenas a lectus ac ipsum porta.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
-              </div>
-              <div class="text-button-free">
-                <a href="#">Free <i class="fa fa-angle-double-right"></i></a>
-              </div>
-            </div>
-          </div>
-          <div class="item">
-            <img src="{% static 'images/voto.jpeg' %}" alt="">
-            <div class="down-content">
-              <h4>Media Streaming</h4>
-              <p>Pellentesque ultricies diam magna, auctor cursus lectus pretium nec. Maecenas finibus lobortis enim.</p>
-              <div class="author-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="">
-              </div>
-              <div class="text-button-pay">
-                <a href="#">Pay <i class="fa fa-angle-double-right"></i></a>
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- ***** Sección Docentes End ***** -->
   
 
   <section class="section video" data-section="section5">
@@ -498,13 +721,16 @@ https://templatemo.com/tm-557-grad-school
   <!-- Bootstrap core JavaScript -->
     <script src="{% static 'plantillas/assets/vendor_informativo/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'plantillas/assets/vendor_informativo/bootstrap/js/bootstrap.min.js' %}"></script>
-
-    <script src="{% static 'plantillas/assets/assets_informativo/js/isotope.min.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/owl-carousel.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/lightbox.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/tabs.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/video.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/slick-slider.js' %}"></script>
+    
+    <!-- CDNs para los archivos JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script src="{% static 'js/cards.js' %}"></script>
+    <script src="{% static 'js/features.js' %}"></script>
     <script src="{% static 'plantillas/assets/assets_informativo/js/custom.js' %}"></script>
     <script>
         //according to loftblog tut
