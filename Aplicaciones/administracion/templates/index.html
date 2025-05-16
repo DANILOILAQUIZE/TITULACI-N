@@ -965,8 +965,8 @@ https://templatemo.com/tm-557-grad-school
               <h4>Innovación Educativa UE Riobamba</h4>
             </div>
             <figure>
-              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="play">
-                <img src="static/images/video-thumbnail.jpg" alt="Video Institucional" onerror="this.src='static/images/courses-01.jpg'">
+              <a href="https://www.youtube.com/watch?v=71DxQY09h0M" class="play">
+                <img src="{% static 'images/video-thumbnail.jpg' %}" alt="Video Institucional" onerror="this.src='static/plantillas/assets/assets_informativo/images/courses-01.jpg'">
               </a>
             </figure>
           </article>
@@ -1049,6 +1049,24 @@ https://templatemo.com/tm-557-grad-school
       </div>
     </div>
   </section>
+
+  <!-- Botón de Inicio de Sesión -->
+  <div class="position-fixed bottom-0 end-0 mb-3 me-3">
+    <button type="button" class="btn btn-primary btn-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+      <i class="fa fa-user me-2"></i>Iniciar Sesión
+    </button>
+  </div>
+
+  
+  <!-- Botón de Inicio de Sesión -->
+  <div class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1000;">
+    <button type="button" class="btn btn-primary btn-lg rounded-circle" style="padding: 15px;" data-bs-toggle="modal" data-bs-target="#loginModal">
+      <i class="fa fa-user fa-2x"></i>
+    </button>
+  </div>
+
+  <!-- Incluir el modal de inicio de sesión -->
+  {% include 'modal_login.html' %}
 
   <footer>
     <div class="container">
