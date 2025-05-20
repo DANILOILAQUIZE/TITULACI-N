@@ -29,6 +29,10 @@
     <link rel="stylesheet" href="{% static 'css/autoridades.css' %}">
     <link rel="stylesheet" href="{% static 'css/honor.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact-custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/logo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login-modern.css' %}">
+    <link rel="stylesheet" href="{% static 'css/buttons-modern.css' %}">
 <!--
     
 TemplateMo 557 Grad School
@@ -39,27 +43,28 @@ https://templatemo.com/tm-557-grad-school
   </head>
 
 <body>
+    <a id="inicio"></a>
 
    
   <!--header-->
   <header class="main-header clearfix" role="header">
     <div class="logo">
-      <a href="#"><em>UNIDAD</em> EDUCATIVA RIOBAMBA</a>
+      <a href="#" class="logo-link">
+        <img src="{% static 'images/logo1.png' %}" alt="UNIDAD EDUCATIVA RIOBAMBA" class="logo-img">
+        <span class="logo-text">UNIDAD EDUCATIVA RIOBAMBA</span>
+      </a>
     </div>
     <a href="#menu" class="menu-link"><i class="fa fa-bars"></i></a>
     <nav id="menu" class="main-nav" role="navigation">
       <ul class="main-menu">
         <li><a href="#section1">Inicio</a></li>
-        <li class="has-submenu"><a href="#section2">Sobre el Sistema</a>
-          <ul class="sub-menu">
-            <li><a href="#section2">¿Qué es?</a></li>
-            <li><a href="#section3">Características</a></li>
-            <li><a href="#section3">Cómo funciona</a></li>
-          </ul>
-        </li>
-        <li><a href="#section4">Beneficios</a></li>
-        <li><a href="#section6">Contacto</a></li>
-        <li><a href="{% url 'agregarLogin' %}">Login</a></li>
+        
+        <li><a href="#section3">Misión y Visión</a></li>
+        <li><a href="#section4" class="scroll-to-section">Docentes</a></li>
+        <li><a href="#section-autoridades">Autoridades</a></li>
+        <li><a href="#section-honor">Cuadro de Honor</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+       
       </ul>
     </nav>
   </header>
@@ -78,7 +83,7 @@ https://templatemo.com/tm-557-grad-school
             -->
             <h2><em>Votación</em> Electrónica</h2>
             <div class="main-button">
-                <div class="scroll-to-section"><a href="#section2">EMITIR VOTO</a></div>
+                <a href="#section2" class="btn-modern btn-primary-modern">EMITIR VOTO</a>
             </div>
           </div>
       </div>
@@ -717,226 +722,711 @@ https://templatemo.com/tm-557-grad-school
   <!-- ***** Misión y Visión End ***** -->
 
 
-
   <!-- ***** Sección Docentes Start ***** -->
-  <section class="section docentes" data-section="section4">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 text-center mb-4">
-          <div class="section-heading">
-            <h2 class="gradient-text">Nuestro Equipo Docente</h2>
-            <div class="line-dec"></div>
-            <p class="subtitle">Profesionales comprometidos con la excelencia educativa</p>
+  <section class="container-fluid courses" id="section4" style="min-height:90vh;">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="section-heading">
+          <br>
+          <h2 class="morado titulo-claro">&nbsp;&nbsp;&nbsp;NUESTROS DOCENTES&nbsp;&nbsp;&nbsp;</h2>
+          <br>
+        </div>
+      </div>
+    </div>
+
+   
+
+  <!-- Modal para Martín García -->
+  <div class="modal fade" id="docenteModal1" tabindex="-1" role="dialog" aria-labelledby="docenteModal1Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal1Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Máster en Matemáticas Aplicadas<br>
+                15 años de experiencia en enseñanza<br>
+                Especialista en Álgebra y Geometría<br>
+                Autor de varios libros de texto<br>
+                Coordinador del área de Matemáticas</p>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">MATEMÁTICAS</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+
+                    <div class="text-center">
+                      <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                      <div class="separador"></div>
+                      <i class="fa fa-envelope" style="color: #312783;"></i> martin.garcia@utc.edu.ec<br>
+                      <div class="separador"></div>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0983000577
+                    </div>
+
+                    <br>
+                    <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal1">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930983000577&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                    <br>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div class="owl-carousel owl-theme docentes-carousel">
-        <!-- Docente 1 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/resultado.jpeg' %}" alt="Docente de Matemáticas">
-              </div>
-              <div class="docente-specialty">
-                <span>Matemáticas</span>
+    </div>
+  </div>
+
+  <!-- Modal para Sánchez López -->
+  <div class="modal fade" id="docenteModal2" tabindex="-1" role="dialog" aria-labelledby="docenteModal2Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal2Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Máster en Literatura Latinoamericana<br>
+                12 años de experiencia en enseñanza<br>
+                Especialista en Literatura Andina<br>
+                Autor de varios ensayos literarios<br>
+                Coordinador del área de Literatura</p>
               </div>
             </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Lic. Ana Martínez</h3>
-              <p class="docente-title">Matemáticas Superiores</p>
-              <div class="docente-description">
-                <p>Especialista en matemáticas aplicadas con 10 años de experiencia docente y enfoque en metodologías innovadoras.</p>
-              </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">10</span>
-                  <span class="stat-label">Años Exp.</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">MSc.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">3°</span>
-                  <span class="stat-label">Bachillerato</span>
+
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">LENGUA Y LITERATURA</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+
+                    <div class="text-center">
+                      <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                      <div class="separador"></div>
+                      <i class="fa fa-envelope" style="color: #312783;"></i> sanchez.lopez@utc.edu.ec<br>
+                      <div class="separador"></div>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0983000578
+                    </div>
+
+                    <br>
+                    <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal2">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930983000578&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                    <br>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Docente 2 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Ciencias">
-              </div>
-              <div class="docente-specialty">
-                <span>Ciencias</span>
-              </div>
-            </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Dr. Carlos Mendoza</h3>
-              <p class="docente-title">Biología y Química</p>
-              <div class="docente-description">
-                <p>Doctor en Ciencias con especialidad en biología molecular. Promueve el aprendizaje basado en proyectos de investigación.</p>
-              </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">15</span>
-                  <span class="stat-label">Años Exp.</span>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal para Rodríguez Fernández -->
+    <div class="modal fade" id="docenteModal3" tabindex="-1" role="dialog" aria-labelledby="docenteModal3Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal3Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Física Teórica<br>
+                  10 años de experiencia en enseñanza<br>
+                  Especialista en Física Cuántica<br>
+                  Investigador en Física Teórica<br>
+                  Coordinador del área de Física</p>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">PhD.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">2°</span>
-                  <span class="stat-label">Bachillerato</span>
+              </div>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">FÍSICA</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> rodriguez.fernandez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000579
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal3">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000579&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Docente 3 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Literatura">
-              </div>
-              <div class="docente-specialty">
-                <span>Literatura</span>
-              </div>
-            </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Mgs. Laura Sánchez</h3>
-              <p class="docente-title">Lengua y Literatura</p>
-              <div class="docente-description">
-                <p>Especialista en literatura latinoamericana contemporánea. Fomenta la creatividad y el pensamiento crítico a través de la escritura.</p>
-              </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">8</span>
-                  <span class="stat-label">Años Exp.</span>
+      </div>
+    </div>
+
+    <!-- Modal para Hernández Martínez -->
+    <div class="modal fade" id="docenteModal4" tabindex="-1" role="dialog" aria-labelledby="docenteModal4Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal4Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Química Orgánica<br>
+                  11 años de experiencia en enseñanza<br>
+                  Especialista en Síntesis Orgánica<br>
+                  Investigador en Química de Materiales<br>
+                  Coordinador del área de Química</p>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">Mgs.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">1°</span>
-                  <span class="stat-label">Bachillerato</span>
+              </div>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">QUÍMICA</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> hernandez.martinez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000580
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal4">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000580&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Docente 4 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Historia">
-              </div>
-              <div class="docente-specialty">
-                <span>Historia</span>
-              </div>
-            </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Lic. Roberto Paredes</h3>
-              <p class="docente-title">Historia y Estudios Sociales</p>
-              <div class="docente-description">
-                <p>Especialista en historia ecuatoriana y latinoamericana. Utiliza métodos innovadores para conectar el pasado con el presente.</p>
-              </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">12</span>
-                  <span class="stat-label">Años Exp.</span>
+      </div>
+    </div>
+
+    <!-- Modal para García Pérez -->
+    <div class="modal fade" id="docenteModal5" tabindex="-1" role="dialog" aria-labelledby="docenteModal5Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal5Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Biología Molecular<br>
+                  12 años de experiencia en enseñanza<br>
+                  Especialista en Genética<br>
+                  Investigador en Biotecnología<br>
+                  Coordinador del área de Biología</p>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">Lic.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">3°</span>
-                  <span class="stat-label">Bachillerato</span>
+              </div>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">BIOLOGÍA</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> garcia.perez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000581
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal5">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000581&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Docente 5 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Física">
-              </div>
-              <div class="docente-specialty">
-                <span>Física</span>
-              </div>
-            </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Ing. Pedro Alvarado</h3>
-              <p class="docente-title">Física y Matemáticas</p>
-              <div class="docente-description">
-                <p>Ingeniero con especialidad en física aplicada. Combina la teoría con experimentos prácticos para facilitar el aprendizaje.</p>
-              </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">7</span>
-                  <span class="stat-label">Años Exp.</span>
+      </div>
+    </div>
+
+    <!-- Modal para López Ramírez -->
+    <div class="modal fade" id="docenteModal6" tabindex="-1" role="dialog" aria-labelledby="docenteModal6Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal6Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Historia<br>
+                  14 años de experiencia en enseñanza<br>
+                  Especialista en Historia Andina<br>
+                  Autor de varios libros de historia<br>
+                  Coordinador del área de Historia</p>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">MSc.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">2°</span>
-                  <span class="stat-label">Bachillerato</span>
+              </div>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">HISTORIA</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> lopez.ramirez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000582
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal6">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000582&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Docente 6 -->
-        <div class="item">
-          <div class="docente-card">
-            <div class="docente-header">
-              <div class="docente-avatar">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Docente de Informática">
+      </div>
+    </div>
+
+    <!-- Modal para Torres Gómez -->
+    <div class="modal fade" id="docenteModal7" tabindex="-1" role="dialog" aria-labelledby="docenteModal7Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal7Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Educación Física<br>
+                  9 años de experiencia en enseñanza<br>
+                  Especialista en Deportes<br>
+                  Entrenador de alto rendimiento<br>
+                  Coordinador del área de Educación Física</p>
+                </div>
               </div>
-              <div class="docente-specialty">
-                <span>Informática</span>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">EDUCACIÓN FÍSICA</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> torres.gomez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000583
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal7">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000583&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="docente-body">
-              <h3 class="docente-name">Ing. María Torres</h3>
-              <p class="docente-title">Computación e Informática</p>
-              <div class="docente-description">
-                <p>Especialista en desarrollo de software y tecnologías educativas. Promueve el pensamiento computacional y la programación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Vargas Sánchez -->
+    <div class="modal fade" id="docenteModal8" tabindex="-1" role="dialog" aria-labelledby="docenteModal8Label" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModal8Label">DATOS DEL DOCENTE</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-justify" style="padding:20px;">
+                  <center>
+                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                  </center>
+                  <hr style="background: #312783;">
+                  <p>Máster en Artes Visuales<br>
+                  13 años de experiencia en enseñanza<br>
+                  Especialista en Pintura<br>
+                  Artista plástico reconocido<br>
+                  Coordinador del área de Artes</p>
+                </div>
               </div>
-              <div class="docente-stats">
-                <div class="stat-item">
-                  <span class="stat-value">9</span>
-                  <span class="stat-label">Años Exp.</span>
+
+              <div class="col-md-4">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="text-center">
+                        <br>
+                        <center>
+                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ARTES</label>
+                        </center>
+                        <hr style="background: #312783;">
+                      </div>
+
+                      <div class="text-center">
+                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
+                        <div class="separador"></div>
+                        <i class="fa fa-envelope" style="color: #312783;"></i> vargas.sanchez@utc.edu.ec<br>
+                        <div class="separador"></div>
+                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000584
+                      </div>
+
+                      <br>
+                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal8">
+                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                      </button>
+                      <br>
+                      <a href="https://api.whatsapp.com/send?phone=+5930983000584&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                      </a>
+                      <br>
+                    </div>
+                  </div>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">Ing.</span>
-                  <span class="stat-label">Grado</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">1°-3°</span>
-                  <span class="stat-label">Bachillerato</span>
-                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @media screen and (min-width: 480px) {
+        .docentes-movil li {
+          float: left;
+        }
+      }
+      .img-docente-hover {
+        border-radius: 50% !important;
+        transition: all 0.3s ease;
+      }
+      .img-docente-hover:hover {
+        transform: scale(1.1);
+      }
+      .title {
+        font-weight: bold !important;
+      }
+    </style>
+
+    <!-- menu -->
+    <div class="row" style="margin-top:-35px; background-color:rgba(255,255,255,0.8) !important;">
+      <div class="col-md-12 text-center docentes-movil">
+        <ul class="nav" style="display:inline-block;">
+          <br>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera boton-carrera-activado" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-74" href="#btn-74">MATEMÁTICAS</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-75" href="#btn-75">LENGUAJE Y LITERATURA</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-76" href="#btn-76">FÍSICA</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-77" href="#btn-77">CIENCIAS SOCIALES</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-78" href="#btn-78">CIENCIAS NATURALES</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-79" href="#btn-79">INGLÉS</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-80" href="#btn-80">EDUCACIÓN FÍSICA</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+          <li style="margin-bottom: 10px;">
+            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-81" href="#btn-81">ARTES</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+          </li>
+        </ul>
+        <br><br>
+      </div>
+    </div>
+
+    <!-- PODER CONFIGURAR LA IMAGEN -->
+    <div class="row" style="background-color:rgba(255,255,255,0.5);">
+      <div class="col-md-12">
+        <div class="active tab-content contenidopestañas">
+          <div id="btn-74" class="tab-pane fade in active show">
+            <div class="row">
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal1">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Martín García" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Martín García<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal2">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Sánchez López" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Sánchez López<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal3">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Rodríguez Fernández" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Rodríguez Fernández<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal4">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Hernández Martínez" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Hernández Martínez<br>
+                </h3>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal5">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="García Pérez" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  García Pérez<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal6">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="López Ramírez" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  López Ramírez<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal7">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Torres Gómez" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Torres Gómez<br>
+                </h3>
+              </div>
+              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal8">
+                <center>
+                  <div class="container-imagen">
+                    <div class="sinfotoempresa image sinfoto-hover">
+                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Vargas Sánchez" class="img-circle">
+                    </div>
+                  </div>
+                </center>
+                <div class="" style="height:8px;"></div>
+                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
+                  Vargas Sánchez<br>
+                </h3>
               </div>
             </div>
           </div>
@@ -945,7 +1435,283 @@ https://templatemo.com/tm-557-grad-school
     </div>
   </section>
   <!-- ***** Sección Docentes End ***** -->
-  
+
+  <!-- Modal para detalles de docentes -->
+  <div class="modal fade" id="docenteModal124" tabindex="-1" role="dialog" aria-labelledby="docenteModal124Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal124Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <img src="https://ciya.utc.edu.ec/uploads/administracion/docentes/foto_docente/foto_docente1650388575_1958.png" alt="" class="img-fluid img-docente rounded-circle" style="width: 200px !important; height:200px;">
+              <br><br>
+              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
+                <b>Barbosa Galarza José Efren</b>
+              </label>
+              <br>
+              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
+                <i class="fa fa-whatsapp"></i>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Ingeniero Electricista con más de 15 años de experiencia en docencia. Especialista en sistemas eléctricos de potencia y automatización industrial.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ELECTRICIDAD</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+                    <div class="text-center">
+                      <i class="fa fa-envelope" style="color: #312783;"></i> jose.barbosa@riobamba.edu.ec<br>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
+                    </div>
+                    <br>
+                    <div class="text-center" style="margin-bottom: 15px;">
+                      <label for="" style="font-weight:bold; color:#312783;">ASIGNATURAS</label>
+                      <hr style="background: #312783; width: 80%;">
+                    </div>
+                    <div class="text-center">
+                      <p style="font-size: 14px;">
+                        <i class="fa fa-book"></i> Sistemas Eléctricos de Potencia<br>
+                        <i class="fa fa-book"></i> Automatización Industrial<br>
+                        <i class="fa fa-book"></i> Circuitos Eléctricos Avanzados<br>
+                        <i class="fa fa-book"></i> Generación de Energía Eléctrica
+                      </p>
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal124">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Cabrera Celi Gabriela Cristina -->
+  <div class="modal fade" id="docenteModal110" tabindex="-1" role="dialog" aria-labelledby="docenteModal110Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal110Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <div class="sinfotoempresa image sinfoto-hover">
+                <div class="letracentro">G</div>
+              </div>
+              <br><br>
+              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
+                <b>Cabrera Celi Gabriela Cristina</b>
+              </label>
+              <br>
+              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
+                <i class="fa fa-whatsapp"></i>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Descripción del perfil profesional del docente...</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ELECTROMECÁNICA</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+                    <div class="text-center">
+                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal110">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Castillo Fiallos Jessica Nataly -->
+  <div class="modal fade" id="docenteModal107" tabindex="-1" role="dialog" aria-labelledby="docenteModal107Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal107Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <img src="https://ciya.utc.edu.ec/uploads/administracion/docentes/foto_docente/foto_docente1649946523_1953.png" alt="" class="img-fluid img-docente rounded-circle" style="width: 200px !important; height:200px;">
+              <br><br>
+              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
+                <b>Castillo Fiallos Jessica Nataly</b>
+              </label>
+              <br>
+              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
+                <i class="fa fa-whatsapp"></i>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Descripción del perfil profesional del docente...</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">INDUSTRIAL</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+                    <div class="text-center">
+                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal107">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Jiménez Jiménez Juan Carlos -->
+  <div class="modal fade" id="docenteModal302" tabindex="-1" role="dialog" aria-labelledby="docenteModal302Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docenteModal302Label">DATOS DEL DOCENTE</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <div class="sinfotoempresa image sinfoto-hover">
+                <div class="letracentro">J</div>
+              </div>
+              <br><br>
+              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
+                <b>Jiménez Jiménez Juan Carlos</b>
+              </label>
+              <br>
+              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
+                <i class="fa fa-whatsapp"></i>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <div class="text-justify" style="padding:20px;">
+                <center>
+                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
+                </center>
+                <hr style="background: #312783;">
+                <p>Descripción del perfil profesional del docente...</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <br>
+                      <center>
+                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">SOFTWARE</label>
+                      </center>
+                      <hr style="background: #312783;">
+                    </div>
+                    <div class="text-center">
+                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
+                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal302">
+                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
+                    </button>
+                    <br>
+                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section class="section video" data-section="section5">
     <div class="container">
@@ -1050,17 +1816,12 @@ https://templatemo.com/tm-557-grad-school
     </div>
   </section>
 
-  <!-- Botón de Inicio de Sesión -->
-  <div class="position-fixed bottom-0 end-0 mb-3 me-3">
-    <button type="button" class="btn btn-primary btn-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
-      <i class="fa fa-user me-2"></i>Iniciar Sesión
-    </button>
-  </div>
+ 
 
   
   <!-- Botón de Inicio de Sesión -->
   <div class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1000;">
-    <button type="button" class="btn btn-primary btn-lg rounded-circle" style="padding: 15px;" data-bs-toggle="modal" data-bs-target="#loginModal">
+    <button type="button" class="btn btn-lg btn-login rounded-circle" style="width: 60px; height: 60px;" data-bs-toggle="modal" data-bs-target="#loginModal">
       <i class="fa fa-user fa-2x"></i>
     </button>
   </div>

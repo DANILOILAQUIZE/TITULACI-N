@@ -2,6 +2,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inicializando efectos del Cuadro de Honor...');
     
+    // Manejar enlace de inicio
+    const inicioLink = document.querySelector('a[href="#top"]');
+    if (inicioLink) {
+        inicioLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const topSection = document.getElementById('top');
+            if (topSection) {
+                topSection.scrollIntoView({ behavior: 'smooth' });
+                // Ajustar el scroll para que no quede tapado por el header
+                window.scrollBy(0, -document.querySelector('.main-header').offsetHeight);
+            }
+        });
+    }
+    
     // Inicializar filtros
     initializeFilters();
     
@@ -20,6 +34,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ajustar posición al cambiar tamaño de ventana
     window.addEventListener('resize', function() {
         positionCards();
+    });
+
+    // Manejar menú móvil
+    const menuLink = document.querySelector('.menu-link');
+    const mainMenu = document.querySelector('.main-menu');
+    
+    menuLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        mainMenu.classList.toggle('active');
+    });
+
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!menuLink.contains(e.target) && !mainMenu.contains(e.target)) {
+            mainMenu.classList.remove('active');
+        }
     });
 });
 
