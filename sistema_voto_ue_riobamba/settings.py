@@ -126,14 +126,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-#STATIC PARA IMPORTAR ARCHIVOS CSS Y JS
+# Configuración de archivos estáticos
 STATIC_URL = '/static/'
+
+# Directorio donde se recopilarán los archivos estáticos para producción
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Directorios donde Django buscará archivos estáticos adicionales
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'sistema_voto_ue_riobamba', 'static'),
+    os.path.join(BASE_DIR, 'Aplicaciones', 'administracion', 'static'),
+]
 
 # Ignorar archivos .map en desarrollo
 STATICFILES_IGNORE_PATTERNS = [
     '*.map',
 ]
-STATICFILES_DIRS = (os.path.join(BASE_DIR / 'sistema_voto_ue_riobamba/static'),)
 
 #MEDIA PARA IMAGENES
 MEDIA_URL = '/media/'

@@ -10,3 +10,15 @@ def dashboard(request):
 def plantilla(request):
     return render(request, 'administracion/plantilla.html')
 
+def mision_vision(request):
+    return render(request, 'administracion/mision_vision.html')
+
+def nosotros(request):
+    return render(request, 'administracion/nosotros.html')
+
+def docentes(request):
+    return render(request, 'administracion/docentes.html')
+
+def docentes_nuevo(request):
+    return render(request, 'administracion/docentes-nuevo.html')
+

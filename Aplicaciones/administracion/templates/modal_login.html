@@ -5,12 +5,13 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-primary fw-bold" id="loginModalLabel">
+                    <h5 class="modal-title text-primary fw-bold" id="loginModalLabel" tit>
                         <i class="fa fa-sign-in me-2"></i>
                         <b>INGRESAR AL SISTEMA</b>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -21,9 +22,8 @@
                                     <input type="hidden" name="urlRetorno" value="" id="urlRetorno">
                                     <label for="username" class="fw-bold">Usuario:</label>
                                     <br>
-                                    <input type="text" name="username" id="username" 
-                                        placeholder="Ingrese su nombre de usuario" 
-                                        class="form-control mi-input" 
+                                    <input type="text" name="username" id="username"
+                                        placeholder="Ingrese su nombre de usuario" class="form-control mi-input"
                                         value="" required>
                                 </div>
                             </div>
@@ -32,10 +32,9 @@
                                 <div class="col-md-12">
                                     <label for="password" class="fw-bold">Contraseña:</label>
                                     <br>
-                                    <input type="password" name="password" id="password" 
-                                        placeholder="Ingrese su contraseña" 
-                                        class="form-control mi-input" 
-                                        value="" required>
+                                    <input type="password" name="password" id="password"
+                                        placeholder="Ingrese su contraseña" class="form-control mi-input" value=""
+                                        required>
                                 </div>
                             </div>
                             <br>

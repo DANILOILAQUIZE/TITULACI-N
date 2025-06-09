@@ -1,94 +1,27 @@
-
+{% extends 'base.html' %}
 {% load static %}
-{% block contenido %}
-<!DOCTYPE html>
-<html lang="en">
 
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-
-    <title>UNIDAD EDUCATIVA RIOBAMBA</title>
-    
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'plantillas/assets/vendor_informativo/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/fontawesome.css' %}">
-    <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/templatemo-grad-school.css' %}">
-    <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/owl.css' %}">
-    <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/lightbox.css' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/cards.css' %}">
-    <link rel="stylesheet" href="{% static 'css/features.css' %}">
-    <link rel="stylesheet" href="{% static 'css/docentes.css' %}">
-    <link rel="stylesheet" href="{% static 'css/autoridades.css' %}">
-    <link rel="stylesheet" href="{% static 'css/honor.css' %}">
-    <link rel="stylesheet" href="{% static 'css/contact-custom.css' %}">
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-    <link rel="stylesheet" href="{% static 'css/logo.css' %}">
-    <link rel="stylesheet" href="{% static 'css/login-modern.css' %}">
-    <link rel="stylesheet" href="{% static 'css/buttons-modern.css' %}">
-<!--
-    
-TemplateMo 557 Grad School
-
-https://templatemo.com/tm-557-grad-school
-
--->
-  </head>
-
-<body>
-    <a id="inicio"></a>
-
-   
-  <!--header-->
-  <header class="main-header clearfix" role="header">
-    <div class="logo">
-      <a href="#" class="logo-link">
-        <img src="{% static 'images/logo1.png' %}" alt="UNIDAD EDUCATIVA RIOBAMBA" class="logo-img">
-        <span class="logo-text">UNIDAD EDUCATIVA RIOBAMBA</span>
-      </a>
-    </div>
-    <a href="#menu" class="menu-link"><i class="fa fa-bars"></i></a>
-    <nav id="menu" class="main-nav" role="navigation">
-      <ul class="main-menu">
-        <li><a href="#section1">Inicio</a></li>
-        
-        <li><a href="#section3">Misión y Visión</a></li>
-        <li><a href="#section4" class="scroll-to-section">Docentes</a></li>
-        <li><a href="#section-autoridades">Autoridades</a></li>
-        <li><a href="#section-honor">Cuadro de Honor</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
-       
-      </ul>
-    </nav>
-  </header>
+{% block content %}
 
   <!-- ***** Main Banner Area Start ***** -->
   <section class="section main-banner" id="top" data-section="section1">
-      <video autoplay muted loop id="bg-video">
-          <source src=" {% static 'plantillas/assets/assets_informativo/images/course-video.mp4' %}" type="video/mp4" />
-      </video>
+    <video autoplay muted loop id="bg-video">
+      <source src="{% static 'plantillas/assets/assets_informativo/images/course-video.mp4' %}" type="video/mp4" />
+    </video>
 
-      <div class="video-overlay header-text">
-          <div class="caption">
-            <!--
-            <p class="text-white">"Somos del RIOBAMBA, por mil títulos y mil glorias sin par, somos de la ciencia espartanos y nuestro ejemplo en el tiempo y en el espacio existirá"</p>
-            <p class="text-white font-weight-bold">¡Riobamba, Siempre A!</p>
-            -->
-            <h2><em>Votación</em> Electrónica</h2>
-            <div class="main-button">
-                <a href="#section2" class="btn-modern btn-primary-modern">EMITIR VOTO</a>
-            </div>
-          </div>
+    <div class="video-overlay header-text">
+      <div class="caption">
+        <h2><em>Votación</em> Electrónica</h2>
+        <div class="main-button">
+          <a href="#section2" class="btn-modern btn-primary-modern">EMITIR VOTO</a>
+        </div>
       </div>
+    </div>
   </section>
   <!-- ***** Main Banner Area End ***** -->
+
+
+  <!-- ***** Features Area Start ***** -->
   <section class="features">
     <div class="container">
       <div class="row">
@@ -96,11 +29,12 @@ https://templatemo.com/tm-557-grad-school
           <div class="features-post">
             <div class="features-content">
               <div class="content-show">
-                <h4><i class="fa fa-university"></i>Gobierno Estudiantil</h4>
+                <h4><i class="fa fa-pencil"></i>Votación Segura</h4>
               </div>
               <div class="content-hide">
-                <p>Sistema especializado para elecciones estudiantiles, diseñado específicamente para la UE Riobamba. Permite una representación democrática precisa y transparente.</p>
-                <p class="hidden-sm">Democracia digital en el ámbito educativo.</p>
+                <p>Nuestro sistema de votación electrónica garantiza la seguridad y confidencialidad de cada voto emitido. Utilizamos tecnología de encriptación de última generación.</p>
+                <p class="hidden-sm">Cada voto es verificado y almacenado de manera segura en nuestra base de datos.</p>
+                <div class="scroll-to-section"><a href="#section2">Más Información</a></div>
               </div>
             </div>
           </div>
@@ -109,11 +43,12 @@ https://templatemo.com/tm-557-grad-school
           <div class="features-post second-features">
             <div class="features-content">
               <div class="content-show">
-                <h4><i class="fa fa-chart-pie"></i>Resultados en Tiempo Real</h4>
+                <h4><i class="fa fa-graduation-cap"></i>Transparencia</h4>
               </div>
               <div class="content-hide">
-                <p>Conteo instantáneo de votos con precisión milimétrica. Generación automática de informes y estadísticas electorales para autoridades institucionales.</p>
-                <p class="hidden-sm">Transparencia y rapidez en la información electoral.</p>
+                <p>Garantizamos la transparencia en todo el proceso electoral. Los resultados son verificables y auditables en tiempo real por las autoridades competentes.</p>
+                <p class="hidden-sm">Cada paso del proceso está diseñado para asegurar la integridad de los resultados.</p>
+                <div class="scroll-to-section"><a href="#section3">Detalles</a></div>
               </div>
             </div>
           </div>
@@ -122,11 +57,12 @@ https://templatemo.com/tm-557-grad-school
           <div class="features-post third-features">
             <div class="features-content">
               <div class="content-show">
-                <h4><i class="fa fa-desktop"></i>Tecnología Educativa</h4>
+                <h4><i class="fa fa-book"></i>Facilidad de Uso</h4>
               </div>
               <div class="content-hide">
-                <p>Plataforma desarrollada íntegramente por estudiantes y docentes de la UE Riobamba, integrando innovación tecnológica con procesos democráticos institucionales.</p>
-                <p class="hidden-sm">Innovación tecnológica hecha por estudiantes.</p>
+                <p>Nuestra plataforma es intuitiva y fácil de usar. Diseñada pensando en todos los miembros de la comunidad educativa, sin importar su nivel de experiencia tecnológica.</p>
+                <p class="hidden-sm">Guías paso a paso disponibles para facilitar el proceso de votación.</p>
+                <div class="scroll-to-section"><a href="#section4">Leer Más</a></div>
               </div>
             </div>
           </div>
@@ -134,1520 +70,14 @@ https://templatemo.com/tm-557-grad-school
       </div>
     </div>
   </section>
+  <!-- ***** Features Area End ***** -->
 
-
-  <!-- ***** Autoridades Area Start ***** -->
-  <section class="section autoridades" data-section="section-autoridades">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 text-center mb-5">
-          <div class="section-heading">
-            <h2 class="gradient-text">Nuestras Autoridades</h2>
-            <div class="line-dec"></div>
-            <p class="subtitle">Conoce a quienes lideran nuestra institución educativa</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="row justify-content-center">
-        <!-- Rector -->
-        <div class="col-lg-4 col-md-6">
-          <div class="authority-container">
-            <div class="authority-badge">Rector</div>
-            <div class="authority-card">
-              <!-- Parte frontal de la tarjeta -->
-              <div class="authority-front">
-                <div class="authority-image-container">
-                  <img src="{% static 'images/rector.jpg' %}" alt="Foto del Rector" class="authority-image">
-                </div>
-                <div class="authority-info-front">
-                  <h3 class="authority-name">MSc. Julio Marti</h3>
-                  <span class="authority-title">Rector</span>
-                  <p class="authority-quote">Liderando la excelencia educativa con visión y compromiso</p>
-                </div>
-              </div>
-              
-              <!-- Parte trasera de la tarjeta -->
-              <div class="authority-back">
-                <div class="authority-bio">
-                  <h3>Perfil Profesional</h3>
-                  <div class="authority-details">
-                    <p>Doctor en Ciencias de la Educación con más de 20 años de experiencia en gestión educativa. Especialista en liderazgo institucional y desarrollo de proyectos educativos innovadores.</p>
-                  </div>
-                </div>
-                
-                <div class="authority-achievements">
-                  <h4>Logros Destacados</h4>
-                  <ul class="achievement-list">
-                    <li>Implementación del modelo educativo integral</li>
-                    <li>Reconocimiento nacional a la excelencia académica</li>
-                    <li>Desarrollo del programa de innovación tecnológica</li>
-                  </ul>
-                </div>
-                
-                <div class="authority-info">
-                  <div class="info-item">
-                    <i class="fa fa-calendar"></i>
-                    <span>Período: 2023 - 2027</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-graduation-cap"></i>
-                    <span>Doctor en Ciencias de la Educación</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-briefcase"></i>
-                    <span>20+ años de experiencia</span>
-                  </div>
-                </div>
-                
-                <div class="authority-social">
-                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Vicerrectora -->
-        <div class="col-lg-4 col-md-6">
-          <div class="authority-container">
-            <div class="authority-badge">Vicerrectora</div>
-            <div class="authority-card">
-              <!-- Parte frontal de la tarjeta -->
-              <div class="authority-front">
-                <div class="authority-image-container">
-                  <img src="{% static 'images/vicerectora.jpg' %}" alt="Foto de la Vicerrectora" class="authority-image">
-                </div>
-                <div class="authority-info-front">
-                  <h3 class="authority-name">MSc. Carina Borja</h3>
-                  <span class="authority-title">Vicerrectora</span>
-                  <p class="authority-quote">Impulsando la innovación educativa hacia el futuro</p>
-                </div>
-              </div>
-              
-              <!-- Parte trasera de la tarjeta -->
-              <div class="authority-back">
-                <div class="authority-bio">
-                  <h3>Perfil Profesional</h3>
-                  <div class="authority-details">
-                    <p>Máster en Gestión Educativa con especialización en innovación pedagógica. Experta en desarrollo curricular y formación docente con enfoque en metodologías activas.</p>
-                  </div>
-                </div>
-                
-                <div class="authority-achievements">
-                  <h4>Logros Destacados</h4>
-                  <ul class="achievement-list">
-                    <li>Desarrollo del programa de capacitación docente</li>
-                    <li>Implementación de metodologías activas de aprendizaje</li>
-                    <li>Coordinación del proyecto de transformación digital</li>
-                  </ul>
-                </div>
-                
-                <div class="authority-info">
-                  <div class="info-item">
-                    <i class="fa fa-calendar"></i>
-                    <span>Período: 2023 - 2027</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-graduation-cap"></i>
-                    <span>Máster en Gestión Educativa</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-briefcase"></i>
-                    <span>15+ años de experiencia</span>
-                  </div>
-                </div>
-                
-                <div class="authority-social">
-                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Inspector General -->
-        <div class="col-lg-4 col-md-6">
-          <div class="authority-container">
-            <div class="authority-badge">Inspector General</div>
-            <div class="authority-card">
-              <!-- Parte frontal de la tarjeta -->
-              <div class="authority-front">
-                <div class="authority-image-container">
-                  <img src="{% static 'images/voto.jpeg' %}" alt="Foto del Inspector General" class="authority-image">
-                </div>
-                <div class="authority-info-front">
-                  <h3 class="authority-name">Lic. Roberto Mendez</h3>
-                  <span class="authority-title">Inspector General</span>
-                  <p class="authority-quote">Fomentando la disciplina y los valores institucionales</p>
-                </div>
-              </div>
-              
-              <!-- Parte trasera de la tarjeta -->
-              <div class="authority-back">
-                <div class="authority-bio">
-                  <h3>Perfil Profesional</h3>
-                  <div class="authority-details">
-                    <p>Licenciado en Ciencias de la Educación con especialización en gestión educativa. Experto en convivencia escolar y resolución de conflictos en entornos educativos.</p>
-                  </div>
-                </div>
-                
-                <div class="authority-achievements">
-                  <h4>Logros Destacados</h4>
-                  <ul class="achievement-list">
-                    <li>Implementación del código de convivencia institucional</li>
-                    <li>Desarrollo del programa de mediación escolar</li>
-                    <li>Coordinación del sistema de seguimiento estudiantil</li>
-                  </ul>
-                </div>
-                
-                <div class="authority-info">
-                  <div class="info-item">
-                    <i class="fa fa-calendar"></i>
-                    <span>Período: 2023 - 2027</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-graduation-cap"></i>
-                    <span>Licenciado en Ciencias de la Educación</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-briefcase"></i>
-                    <span>12+ años de experiencia</span>
-                  </div>
-                </div>
-                
-                <div class="authority-social">
-                  <a href="#" class="social-icon"><i class="fa fa-envelope"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-linkedin"></i></a>
-                  <a href="#" class="social-icon"><i class="fa fa-twitter"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ***** Autoridades Area End ***** -->
-
-  <!-- ***** Cuadro de Honor Start ***** -->
-<section class="section honor-board" data-section="section-honor">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 text-center mb-5">
-        <div class="section-heading">
-          <h2 class="gradient-text">Cuadro de Honor</h2>
-          <div class="line-dec"></div>
-          <p class="honor-subtitle">Reconociendo la Excelencia y Dedicación de Nuestros Estudiantes</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Filtros de categorías -->
-    <div class="honor-filter-container">
-      <div class="honor-filter-tabs">
-        <div class="honor-filter active" data-filter="all">Todos</div>
-        <div class="honor-filter" data-filter="academic">Académico</div>
-        <div class="honor-filter" data-filter="leadership">Liderazgo</div>
-        <div class="honor-filter" data-filter="sports">Deportes</div>
-        <div class="honor-filter" data-filter="arts">Arte y Cultura</div>
-      </div>
-    </div>
-    
-    <!-- Cuadro de Honor con Timeline -->
-    <div class="honor-timeline-container">
-      <!-- Línea central del timeline -->
-      <div class="honor-timeline-line"></div>
-      
-      <!-- Estudiantes en el timeline -->
-      <div class="honor-timeline">
-        <!-- Estudiante 1 -->
-        <div class="honor-timeline-item" data-category="academic">
-          <div class="honor-timeline-badge">
-            <div class="honor-position">1</div>
-          </div>
-          <div class="honor-timeline-panel">
-            <div class="honor-timeline-header">
-              <div class="honor-timeline-image">
-                <img src="{% static 'images/estudiante1.jpg' %}" alt="Ana María Rodríguez">
-                <div class="honor-shine"></div>
-              </div>
-              <div class="honor-timeline-title">
-                <h3>Ana María Rodríguez</h3>
-                <p>3ro Bachillerato "A"</p>
-                <div class="honor-timeline-category">Excelencia Académica</div>
-              </div>
-            </div>
-            <div class="honor-timeline-body">
-              <div class="honor-timeline-stats">
-                <div class="honor-stat">
-                  <div class="honor-stat-circle">
-                    <svg viewBox="0 0 36 36">
-                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <path class="honor-stat-circle-fill" stroke-dasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <text x="18" y="20.35" class="honor-stat-text">9.8</text>
-                    </svg>
-                  </div>
-                  <span>Promedio</span>
-                </div>
-                <div class="honor-badges">
-                  <span class="honor-badge academic"><i class="fa fa-star"></i></span>
-                  <span class="honor-badge trophy"><i class="fa fa-trophy"></i></span>
-                </div>
-              </div>
-              <div class="honor-timeline-quote">
-                <p>"El esfuerzo constante es la clave del éxito académico"</p>
-              </div>
-              <button class="honor-timeline-btn">Ver Logros</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Estudiante 2 -->
-        <div class="honor-timeline-item" data-category="leadership">
-          <div class="honor-timeline-badge">
-            <div class="honor-position">2</div>
-          </div>
-          <div class="honor-timeline-panel">
-            <div class="honor-timeline-header">
-              <div class="honor-timeline-image">
-                <img src="{% static 'images/estudiante2.jpg' %}" alt="Carlos Mendoza">
-                <div class="honor-shine"></div>
-              </div>
-              <div class="honor-timeline-title">
-                <h3>Carlos Mendoza</h3>
-                <p>2do Bachillerato "B"</p>
-                <div class="honor-timeline-category">Liderazgo Estudiantil</div>
-              </div>
-            </div>
-            <div class="honor-timeline-body">
-              <div class="honor-timeline-stats">
-                <div class="honor-stat">
-                  <div class="honor-stat-circle">
-                    <svg viewBox="0 0 36 36">
-                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <path class="honor-stat-circle-fill" stroke-dasharray="95, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <text x="18" y="20.35" class="honor-stat-text">9.5</text>
-                    </svg>
-                  </div>
-                  <span>Promedio</span>
-                </div>
-                <div class="honor-badges">
-                  <span class="honor-badge leadership"><i class="fa fa-users"></i></span>
-                  <span class="honor-badge heart"><i class="fa fa-heart"></i></span>
-                </div>
-              </div>
-              <div class="honor-timeline-quote">
-                <p>"Un buen líder inspira a otros a alcanzar su máximo potencial"</p>
-              </div>
-              <button class="honor-timeline-btn">Ver Logros</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Estudiante 3 -->
-        <div class="honor-timeline-item" data-category="sports">
-          <div class="honor-timeline-badge">
-            <div class="honor-position">3</div>
-          </div>
-          <div class="honor-timeline-panel">
-            <div class="honor-timeline-header">
-              <div class="honor-timeline-image">
-                <img src="{% static 'images/estudiante3.jpg' %}" alt="Valentina Torres">
-                <div class="honor-shine"></div>
-              </div>
-              <div class="honor-timeline-title">
-                <h3>Valentina Torres</h3>
-                <p>3ro Bachillerato "C"</p>
-                <div class="honor-timeline-category">Excelencia Deportiva</div>
-              </div>
-            </div>
-            <div class="honor-timeline-body">
-              <div class="honor-timeline-stats">
-                <div class="honor-stat">
-                  <div class="honor-stat-circle">
-                    <svg viewBox="0 0 36 36">
-                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <path class="honor-stat-circle-fill" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <text x="18" y="20.35" class="honor-stat-text">9.2</text>
-                    </svg>
-                  </div>
-                  <span>Promedio</span>
-                </div>
-                <div class="honor-badges">
-                  <span class="honor-badge sports"><i class="fa fa-running"></i></span>
-                  <span class="honor-badge academic"><i class="fa fa-book"></i></span>
-                </div>
-              </div>
-              <div class="honor-timeline-quote">
-                <p>"La disciplina deportiva fortalece tanto el cuerpo como la mente"</p>
-              </div>
-              <button class="honor-timeline-btn">Ver Logros</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Estudiante 4 -->
-        <div class="honor-timeline-item" data-category="academic">
-          <div class="honor-timeline-badge">
-            <div class="honor-position">4</div>
-          </div>
-          <div class="honor-timeline-panel">
-            <div class="honor-timeline-header">
-              <div class="honor-timeline-image">
-                <img src="{% static 'images/voto.jpeg' %}" alt="Mateo Herrera">
-                <div class="honor-shine"></div>
-              </div>
-              <div class="honor-timeline-title">
-                <h3>Mateo Herrera</h3>
-                <p>3ro Bachillerato "B"</p>
-                <div class="honor-timeline-category">Innovación Tecnológica</div>
-              </div>
-            </div>
-            <div class="honor-timeline-body">
-              <div class="honor-timeline-stats">
-                <div class="honor-stat">
-                  <div class="honor-stat-circle">
-                    <svg viewBox="0 0 36 36">
-                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <path class="honor-stat-circle-fill" stroke-dasharray="90, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <text x="18" y="20.35" class="honor-stat-text">9.0</text>
-                    </svg>
-                  </div>
-                  <span>Promedio</span>
-                </div>
-                <div class="honor-badges">
-                  <span class="honor-badge tech"><i class="fa fa-laptop-code"></i></span>
-                  <span class="honor-badge innovation"><i class="fa fa-lightbulb"></i></span>
-                </div>
-              </div>
-              <div class="honor-timeline-quote">
-                <p>"La tecnología es la herramienta que transforma ideas en soluciones"</p>
-              </div>
-              <button class="honor-timeline-btn">Ver Logros</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Estudiante 5 -->
-        <div class="honor-timeline-item" data-category="arts">
-          <div class="honor-timeline-badge">
-            <div class="honor-position">5</div>
-          </div>
-          <div class="honor-timeline-panel">
-            <div class="honor-timeline-header">
-              <div class="honor-timeline-image">
-                <img src="{% static 'images/rector.jpg' %}" alt="Camila Paz">
-                <div class="honor-shine"></div>
-              </div>
-              <div class="honor-timeline-title">
-                <h3>Camila Paz</h3>
-                <p>1ro Bachillerato "A"</p>
-                <div class="honor-timeline-category">Arte y Cultura</div>
-              </div>
-            </div>
-            <div class="honor-timeline-body">
-              <div class="honor-timeline-stats">
-                <div class="honor-stat">
-                  <div class="honor-stat-circle">
-                    <svg viewBox="0 0 36 36">
-                      <path class="honor-stat-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <path class="honor-stat-circle-fill" stroke-dasharray="88, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                      <text x="18" y="20.35" class="honor-stat-text">8.8</text>
-                    </svg>
-                  </div>
-                  <span>Promedio</span>
-                </div>
-                <div class="honor-badges">
-                  <span class="honor-badge arts"><i class="fa fa-paint-brush"></i></span>
-                  <span class="honor-badge culture"><i class="fa fa-music"></i></span>
-                </div>
-              </div>
-              <div class="honor-timeline-quote">
-                <p>"El arte es la expresión más pura del alma humana"</p>
-              </div>
-              <button class="honor-timeline-btn">Ver Logros</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   
-  <!-- Modal de logros detallados -->
-  <div class="honor-achievement-modal">
-    <div class="honor-modal-content">
-      <div class="honor-modal-close"><i class="fa fa-times"></i></div>
-      <div class="honor-modal-header">
-        <div class="honor-modal-image">
-          <img src="" alt="Estudiante">
-        </div>
-        <div class="honor-modal-title">
-          <h3 class="honor-modal-name"></h3>
-          <p class="honor-modal-course"></p>
-          <div class="honor-modal-category"></div>
-        </div>
-      </div>
-      <div class="honor-modal-body">
-        <div class="honor-modal-section">
-          <h4><i class="fa fa-award"></i> Logros Destacados</h4>
-          <ul class="honor-achievement-list">
-            <!-- Los items se cargarán dinámicamente con JavaScript -->
-          </ul>
-        </div>
-        <div class="honor-modal-section">
-          <h4><i class="fa fa-chart-line"></i> Rendimiento Académico</h4>
-          <div class="honor-modal-chart">
-            <canvas id="studentPerformanceChart"></canvas>
-          </div>
-        </div>
-        <div class="honor-modal-section">
-          <h4><i class="fa fa-comment"></i> Testimonio</h4>
-          <div class="honor-modal-quote">
-            <p class="honor-quote-text"></p>
-            <div class="honor-quote-signature"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- ***** Cuadro de Honor End ***** -->
 
-  <!-- ***** Misión y Visión Start ***** -->
-  <section class="section mision-vision" data-section="section3">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 text-center mb-2">
-          <div class="section-heading">
-            <h2 class="gradient-text">Nuestra Identidad</h2>
-            <div class="line-dec"></div>
-            <p class="subtitle">Conoce los pilares que fundamentan nuestro compromiso educativo</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <div class="flip-card" tabindex="0" onclick="flipCard(this)">
-            <div class="flip-card-inner">
-              <div class="flip-card-front mision-card">
-                <div class="card-icon">
-                  <i class="fa fa-rocket"></i>
-                </div>
-                <h3>Misión</h3>
-                <div class="hover-instruction">Haz clic para ver</div>
-              </div>
-              <div class="flip-card-back">
-                <h3>Nuestra Misión</h3>
-                <p>Formar estudiantes íntegros con excelencia académica, valores éticos y compromiso social, capaces de contribuir positivamente a la sociedad mediante una educación innovadora y personalizada que desarrolle su máximo potencial.</p>
-                <div class="mission-values">
-                  <span class="value-tag">Excelencia</span>
-                  <span class="value-tag">Innovación</span>
-                  <span class="value-tag">Integridad</span>
-                </div>
-                <button class="back-button" onclick="flipBack(this, event)"><i class="fa fa-arrow-left"></i> Volver</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-6">
-          <div class="flip-card" tabindex="0" onclick="flipCard(this)">
-            <div class="flip-card-inner">
-              <div class="flip-card-front vision-card">
-                <div class="card-icon">
-                  <i class="fa fa-eye"></i>
-                </div>
-                <h3>Visión</h3>
-                <div class="hover-instruction">Haz clic para ver</div>
-              </div>
-              <div class="flip-card-back">
-                <h3>Nuestra Visión</h3>
-                <p>Ser una institución educativa líder reconocida por su excelencia académica, formación integral y compromiso con la innovación pedagógica, preparando a nuestros estudiantes para los desafíos del siglo XXI con competencias globales y valores sólidos.</p>
-                <div class="vision-timeline">
-                  <div class="timeline-item">
-                    <span class="year">2025</span>
-                    <span class="achievement">Excelencia Digital</span>
-                  </div>
-                  <div class="timeline-item">
-                    <span class="year">2030</span>
-                    <span class="achievement">Referente Nacional</span>
-                  </div>
-                </div>
-                <button class="back-button" onclick="flipBack(this, event)"><i class="fa fa-arrow-left"></i> Volver</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="row mt-5">
-        <div class="col-md-12">
-          <div class="values-banner">
-            <div class="values-content">
-              <h3>Nuestros Valores</h3>
-              <div class="values-container">
-                <div class="value-item">
-                  <div class="value-icon"><i class="fa fa-heart"></i></div>
-                  <div class="value-name">Respeto</div>
-                </div>
-                <div class="value-item">
-                  <div class="value-icon"><i class="fa fa-users"></i></div>
-                  <div class="value-name">Solidaridad</div>
-                </div>
-                <div class="value-item">
-                  <div class="value-icon"><i class="fa fa-gavel"></i></div>
-                  <div class="value-name">Justicia</div>
-                </div>
-                <div class="value-item">
-                  <div class="value-icon"><i class="fa fa-lightbulb-o"></i></div>
-                  <div class="value-name">Innovación</div>
-                </div>
-                <div class="value-item">
-                  <div class="value-icon"><i class="fa fa-check-circle"></i></div>
-                  <div class="value-name">Compromiso</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ***** Misión y Visión End ***** -->
-
-
-  <!-- ***** Sección Docentes Start ***** -->
-  <section class="container-fluid courses" id="section4" style="min-height:90vh;">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="section-heading">
-          <br>
-          <h2 class="morado titulo-claro">&nbsp;&nbsp;&nbsp;NUESTROS DOCENTES&nbsp;&nbsp;&nbsp;</h2>
-          <br>
-        </div>
-      </div>
-    </div>
-
-   
-
-  <!-- Modal para Martín García -->
-  <div class="modal fade" id="docenteModal1" tabindex="-1" role="dialog" aria-labelledby="docenteModal1Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal1Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Máster en Matemáticas Aplicadas<br>
-                15 años de experiencia en enseñanza<br>
-                Especialista en Álgebra y Geometría<br>
-                Autor de varios libros de texto<br>
-                Coordinador del área de Matemáticas</p>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">MATEMÁTICAS</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-
-                    <div class="text-center">
-                      <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                      <div class="separador"></div>
-                      <i class="fa fa-envelope" style="color: #312783;"></i> martin.garcia@utc.edu.ec<br>
-                      <div class="separador"></div>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0983000577
-                    </div>
-
-                    <br>
-                    <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal1">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930983000577&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                    <br>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para Sánchez López -->
-  <div class="modal fade" id="docenteModal2" tabindex="-1" role="dialog" aria-labelledby="docenteModal2Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal2Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Máster en Literatura Latinoamericana<br>
-                12 años de experiencia en enseñanza<br>
-                Especialista en Literatura Andina<br>
-                Autor de varios ensayos literarios<br>
-                Coordinador del área de Literatura</p>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">LENGUA Y LITERATURA</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-
-                    <div class="text-center">
-                      <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                      <div class="separador"></div>
-                      <i class="fa fa-envelope" style="color: #312783;"></i> sanchez.lopez@utc.edu.ec<br>
-                      <div class="separador"></div>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0983000578
-                    </div>
-
-                    <br>
-                    <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal2">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930983000578&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                    <br>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <!-- Modal para Rodríguez Fernández -->
-    <div class="modal fade" id="docenteModal3" tabindex="-1" role="dialog" aria-labelledby="docenteModal3Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal3Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Física Teórica<br>
-                  10 años de experiencia en enseñanza<br>
-                  Especialista en Física Cuántica<br>
-                  Investigador en Física Teórica<br>
-                  Coordinador del área de Física</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">FÍSICA</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> rodriguez.fernandez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000579
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal3">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000579&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para Hernández Martínez -->
-    <div class="modal fade" id="docenteModal4" tabindex="-1" role="dialog" aria-labelledby="docenteModal4Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal4Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Química Orgánica<br>
-                  11 años de experiencia en enseñanza<br>
-                  Especialista en Síntesis Orgánica<br>
-                  Investigador en Química de Materiales<br>
-                  Coordinador del área de Química</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">QUÍMICA</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> hernandez.martinez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000580
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal4">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000580&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para García Pérez -->
-    <div class="modal fade" id="docenteModal5" tabindex="-1" role="dialog" aria-labelledby="docenteModal5Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal5Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Biología Molecular<br>
-                  12 años de experiencia en enseñanza<br>
-                  Especialista en Genética<br>
-                  Investigador en Biotecnología<br>
-                  Coordinador del área de Biología</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">BIOLOGÍA</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> garcia.perez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000581
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal5">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000581&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para López Ramírez -->
-    <div class="modal fade" id="docenteModal6" tabindex="-1" role="dialog" aria-labelledby="docenteModal6Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal6Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Historia<br>
-                  14 años de experiencia en enseñanza<br>
-                  Especialista en Historia Andina<br>
-                  Autor de varios libros de historia<br>
-                  Coordinador del área de Historia</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">HISTORIA</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> lopez.ramirez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000582
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal6">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000582&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para Torres Gómez -->
-    <div class="modal fade" id="docenteModal7" tabindex="-1" role="dialog" aria-labelledby="docenteModal7Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal7Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Educación Física<br>
-                  9 años de experiencia en enseñanza<br>
-                  Especialista en Deportes<br>
-                  Entrenador de alto rendimiento<br>
-                  Coordinador del área de Educación Física</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">EDUCACIÓN FÍSICA</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> torres.gomez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000583
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal7">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000583&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para Vargas Sánchez -->
-    <div class="modal fade" id="docenteModal8" tabindex="-1" role="dialog" aria-labelledby="docenteModal8Label" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="docenteModal8Label">DATOS DEL DOCENTE</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="text-justify" style="padding:20px;">
-                  <center>
-                    <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                  </center>
-                  <hr style="background: #312783;">
-                  <p>Máster en Artes Visuales<br>
-                  13 años de experiencia en enseñanza<br>
-                  Especialista en Pintura<br>
-                  Artista plástico reconocido<br>
-                  Coordinador del área de Artes</p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="text-center">
-                        <br>
-                        <center>
-                          <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ARTES</label>
-                        </center>
-                        <hr style="background: #312783;">
-                      </div>
-
-                      <div class="text-center">
-                        <i class="fa fa-map-marker" style="color: #312783;"></i> 
-                        <div class="separador"></div>
-                        <i class="fa fa-envelope" style="color: #312783;"></i> vargas.sanchez@utc.edu.ec<br>
-                        <div class="separador"></div>
-                        <i class="fa fa-phone" style="color: #312783;"></i> 0983000584
-                      </div>
-
-                      <br>
-                      <button type="button" class="btn btn- btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal8">
-                        <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                      </button>
-                      <br>
-                      <a href="https://api.whatsapp.com/send?phone=+5930983000584&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                        <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                      </a>
-                      <br>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <style>
-      @media screen and (min-width: 480px) {
-        .docentes-movil li {
-          float: left;
-        }
-      }
-      .img-docente-hover {
-        border-radius: 50% !important;
-        transition: all 0.3s ease;
-      }
-      .img-docente-hover:hover {
-        transform: scale(1.1);
-      }
-      .title {
-        font-weight: bold !important;
-      }
-    </style>
-
-    <!-- menu -->
-    <div class="row" style="margin-top:-35px; background-color:rgba(255,255,255,0.8) !important;">
-      <div class="col-md-12 text-center docentes-movil">
-        <ul class="nav" style="display:inline-block;">
-          <br>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera boton-carrera-activado" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-74" href="#btn-74">MATEMÁTICAS</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-75" href="#btn-75">LENGUAJE Y LITERATURA</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-76" href="#btn-76">FÍSICA</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-77" href="#btn-77">CIENCIAS SOCIALES</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-78" href="#btn-78">CIENCIAS NATURALES</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-79" href="#btn-79">INGLÉS</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-80" href="#btn-80">EDUCACIÓN FÍSICA</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-          <li style="margin-bottom: 10px;">
-            <a class="btn  boton-carrera" onclick="activarDesactivarBotonCarrera(this);" data-toggle="tab" id="tab-81" href="#btn-81">ARTES</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-          </li>
-        </ul>
-        <br><br>
-      </div>
-    </div>
-
-    <!-- PODER CONFIGURAR LA IMAGEN -->
-    <div class="row" style="background-color:rgba(255,255,255,0.5);">
-      <div class="col-md-12">
-        <div class="active tab-content contenidopestañas">
-          <div id="btn-74" class="tab-pane fade in active show">
-            <div class="row">
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal1">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Martín García" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Martín García<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal2">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Sánchez López" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Sánchez López<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal3">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Rodríguez Fernández" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Rodríguez Fernández<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal4">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Hernández Martínez" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Hernández Martínez<br>
-                </h3>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal5">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="García Pérez" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  García Pérez<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal6">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="López Ramírez" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  López Ramírez<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal7">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Torres Gómez" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Torres Gómez<br>
-                </h3>
-              </div>
-              <div class="col-md-3" style="margin-top:30px; cursor:pointer; text-align:center;" data-toggle="modal" data-target="#docenteModal8">
-                <center>
-                  <div class="container-imagen">
-                    <div class="sinfotoempresa image sinfoto-hover">
-                      <img src="{% static 'images/docentes/vargas_sanchez.jpg' %}" alt="Vargas Sánchez" class="img-circle">
-                    </div>
-                  </div>
-                </center>
-                <div class="" style="height:8px;"></div>
-                <h3 class="title" style="font-size:15px; color:#312783 !important; font-weight:600;">
-                  Vargas Sánchez<br>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ***** Sección Docentes End ***** -->
-
-  <!-- Modal para detalles de docentes -->
-  <div class="modal fade" id="docenteModal124" tabindex="-1" role="dialog" aria-labelledby="docenteModal124Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal124Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <img src="https://ciya.utc.edu.ec/uploads/administracion/docentes/foto_docente/foto_docente1650388575_1958.png" alt="" class="img-fluid img-docente rounded-circle" style="width: 200px !important; height:200px;">
-              <br><br>
-              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
-                <b>Barbosa Galarza José Efren</b>
-              </label>
-              <br>
-              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
-                <i class="fa fa-whatsapp"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Ingeniero Electricista con más de 15 años de experiencia en docencia. Especialista en sistemas eléctricos de potencia y automatización industrial.</p>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ELECTRICIDAD</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-                    <div class="text-center">
-                      <i class="fa fa-envelope" style="color: #312783;"></i> jose.barbosa@riobamba.edu.ec<br>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
-                    </div>
-                    <br>
-                    <div class="text-center" style="margin-bottom: 15px;">
-                      <label for="" style="font-weight:bold; color:#312783;">ASIGNATURAS</label>
-                      <hr style="background: #312783; width: 80%;">
-                    </div>
-                    <div class="text-center">
-                      <p style="font-size: 14px;">
-                        <i class="fa fa-book"></i> Sistemas Eléctricos de Potencia<br>
-                        <i class="fa fa-book"></i> Automatización Industrial<br>
-                        <i class="fa fa-book"></i> Circuitos Eléctricos Avanzados<br>
-                        <i class="fa fa-book"></i> Generación de Energía Eléctrica
-                      </p>
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal124">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para Cabrera Celi Gabriela Cristina -->
-  <div class="modal fade" id="docenteModal110" tabindex="-1" role="dialog" aria-labelledby="docenteModal110Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal110Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <div class="sinfotoempresa image sinfoto-hover">
-                <div class="letracentro">G</div>
-              </div>
-              <br><br>
-              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
-                <b>Cabrera Celi Gabriela Cristina</b>
-              </label>
-              <br>
-              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
-                <i class="fa fa-whatsapp"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Descripción del perfil profesional del docente...</p>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">ELECTROMECÁNICA</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-                    <div class="text-center">
-                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal110">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para Castillo Fiallos Jessica Nataly -->
-  <div class="modal fade" id="docenteModal107" tabindex="-1" role="dialog" aria-labelledby="docenteModal107Label" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal107Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <img src="https://ciya.utc.edu.ec/uploads/administracion/docentes/foto_docente/foto_docente1649946523_1953.png" alt="" class="img-fluid img-docente rounded-circle" style="width: 200px !important; height:200px;">
-              <br><br>
-              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
-                <b>Castillo Fiallos Jessica Nataly</b>
-              </label>
-              <br>
-              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
-                <i class="fa fa-whatsapp"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Descripción del perfil profesional del docente...</p>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">INDUSTRIAL</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-                    <div class="text-center">
-                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal107">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal para Jiménez Jiménez Juan Carlos -->
-  <div class="modal fade" id="docenteModal302" tabindex="-1" role="dialog" aria-labelledby="docenteModal302Label" aria-hidden="true">
+  <div class="modal fade" id="docenteModal302" tabindex="-1" role="dialog" aria-labelledby="docenteModal302Label"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -1667,7 +97,8 @@ https://templatemo.com/tm-557-grad-school
                 <b>Jiménez Jiménez Juan Carlos</b>
               </label>
               <br>
-              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. " target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
+              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. "
+                target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
                 <i class="fa fa-whatsapp"></i>
               </a>
             </div>
@@ -1691,16 +122,19 @@ https://templatemo.com/tm-557-grad-school
                       </center>
                       <hr style="background: #312783;">
                     </div>
+
                     <div class="text-center">
                       <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
                       <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
                     </div>
                     <br>
-                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal" data-target="#propuestasModal302">
+                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal"
+                      data-target="#propuestasModal302">
                       <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
                     </button>
                     <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. " target="_blank" class="btn btn-outline-principal btn-block">
+                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. "
+                      target="_blank" class="btn btn-outline-principal btn-block">
                       <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
                     </a>
                   </div>
@@ -1720,8 +154,12 @@ https://templatemo.com/tm-557-grad-school
           <div class="left-content">
             <span>Innovación Educativa</span>
             <h4>Conoce nuestro <em>Proyecto Educativo Digital</em></h4>
-            <p>En la Unidad Educativa Riobamba estamos comprometidos con la innovación tecnológica y la transformación digital de la educación. Nuestro sistema de votación electrónica es solo una muestra de cómo integramos la tecnología para mejorar la experiencia educativa.
-            <br><br>Descubre cómo nuestros estudiantes participan activamente en proyectos tecnológicos que fomentan el pensamiento crítico, la colaboración y las habilidades digitales esenciales para el futuro.</p>
+            <p>En la Unidad Educativa Riobamba estamos comprometidos con la innovación tecnológica y la transformación
+              digital de la educación. Nuestro sistema de votación electrónica es solo una muestra de cómo integramos la
+              tecnología para mejorar la experiencia educativa.
+              <br><br>Descubre cómo nuestros estudiantes participan activamente en proyectos tecnológicos que fomentan
+              el pensamiento crítico, la colaboración y las habilidades digitales esenciales para el futuro.
+            </p>
             <div class="main-button"><a href="#section6" class="scroll-to-section">Contáctanos</a></div>
           </div>
         </div>
@@ -1732,7 +170,8 @@ https://templatemo.com/tm-557-grad-school
             </div>
             <figure>
               <a href="https://www.youtube.com/watch?v=71DxQY09h0M" class="play">
-                <img src="{% static 'images/video-thumbnail.jpg' %}" alt="Video Institucional" onerror="this.src='static/plantillas/assets/assets_informativo/images/courses-01.jpg'">
+                <img src="{% static 'images/video-thumbnail.jpg' %}" alt="Video Institucional"
+                  onerror="this.src='static/plantillas/assets/assets_informativo/images/courses-01.jpg'">
               </a>
             </figure>
           </article>
@@ -1754,12 +193,14 @@ https://templatemo.com/tm-557-grad-school
             <div class="row">
               <div class="col-md-6">
                 <fieldset>
-                  <input name="name" type="text" class="form-control" id="name" placeholder="Nombre completo" required="">
+                  <input name="name" type="text" class="form-control" id="name" placeholder="Nombre completo"
+                    required="">
                 </fieldset>
               </div>
               <div class="col-md-6">
                 <fieldset>
-                  <input name="email" type="text" class="form-control" id="email" placeholder="Correo electrónico" required="">
+                  <input name="email" type="text" class="form-control" id="email" placeholder="Correo electrónico"
+                    required="">
                 </fieldset>
               </div>
               <div class="col-md-6">
@@ -1780,7 +221,8 @@ https://templatemo.com/tm-557-grad-school
               </div>
               <div class="col-md-12">
                 <fieldset>
-                  <textarea name="message" rows="6" class="form-control" id="message" placeholder="Escribe tu mensaje aquí..." required=""></textarea>
+                  <textarea name="message" rows="6" class="form-control" id="message"
+                    placeholder="Escribe tu mensaje aquí..." required=""></textarea>
                 </fieldset>
               </div>
               <div class="col-md-12">
@@ -1793,7 +235,9 @@ https://templatemo.com/tm-557-grad-school
         </div>
         <div class="col-md-6">
           <div id="map">
-            <iframe src="https://maps.google.com/maps?q=Unidad+Educativa+Riobamba,+Ecuador&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="422px" frameborder="0" style="border:0" allowfullscreen></iframe>
+            <iframe
+              src="https://maps.google.com/maps?q=Unidad+Educativa+Riobamba,+Ecuador&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%" height="422px" frameborder="0" style="border:0" allowfullscreen></iframe>
           </div>
           <div class="contact-info mt-4">
             <div class="row">
@@ -1816,13 +260,14 @@ https://templatemo.com/tm-557-grad-school
     </div>
   </section>
 
- 
 
-  
+
+
   <!-- Botón de Inicio de Sesión -->
   <div class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1000;">
-    <button type="button" class="btn btn-lg btn-login rounded-circle" style="width: 60px; height: 60px;" data-bs-toggle="modal" data-bs-target="#loginModal">
-      <i class="fa fa-user fa-2x"></i>
+    <button type="button" class="btn btn-lg btn-login rounded-circle" style="width: 60px; height: 60px;"
+      data-bs-toggle="modal" data-bs-target="#loginModal">
+      <i class="fa fa-sign-in me-2"></i>
     </button>
   </div>
 
@@ -1833,11 +278,11 @@ https://templatemo.com/tm-557-grad-school
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <p><i class="fa fa-copyright"></i> Copyright 2025 by Grad School  
-          
-           | Design: <a href="https://templatemo.com" rel="sponsored" target="_parent">TemplateMo</a><br>
-           Distributed By: <a href="https://themewagon.com" rel="sponsored" target="_blank">ThemeWagon</a>
-          
+          <p><i class="fa fa-copyright"></i> Copyright 2025 by Grad School
+
+            | Design: <a href="https://templatemo.com" rel="sponsored" target="_parent">TemplateMo</a><br>
+            Distributed By: <a href="https://themewagon.com" rel="sponsored" target="_blank">ThemeWagon</a>
+
           </p>
         </div>
       </div>
@@ -1846,77 +291,76 @@ https://templatemo.com/tm-557-grad-school
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'plantillas/assets/vendor_informativo/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plantillas/assets/vendor_informativo/bootstrap/js/bootstrap.min.js' %}"></script>
-    
-    <!-- CDNs para los archivos JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-    <!-- CDN para animaciones avanzadas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="{% static 'js/cards.js' %}"></script>
-    <script src="{% static 'js/features.js' %}"></script>
-    <script src="{% static 'js/docentes.js' %}"></script>
-    <script src="{% static 'js/autoridades.js' %}"></script>
-    <script src="{% static 'js/honor.js' %}"></script>
-    <script src="{% static 'js/contact-custom.js' %}"></script>
-    <script src="{% static 'plantillas/assets/assets_informativo/js/custom.js' %}"></script>
-    <script>
-        //according to loftblog tut
-        $('.nav li:first').addClass('active');
+  <script src="{% static 'plantillas/assets/vendor_informativo/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'plantillas/assets/vendor_informativo/bootstrap/js/bootstrap.min.js' %}"></script>
 
-        var showSection = function showSection(section, isAnimate) {
+  <!-- CDNs para los archivos JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+  <!-- CDN para animaciones avanzadas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="{% static 'js/cards.js' %}"></script>
+  <script src="{% static 'js/features.js' %}"></script>
+  <script src="{% static 'js/docentes.js' %}"></script>
+  <script src="{% static 'js/autoridades.js' %}"></script>
+  <script src="{% static 'js/honor.js' %}"></script>
+  <script src="{% static 'js/contact-custom.js' %}"></script>
+  <script src="{% static 'plantillas/assets/assets_informativo/js/custom.js' %}"></script>
+  <script>
+    //according to loftblog tut
+    $('.nav li:first').addClass('active');
+
+    var showSection = function showSection(section, isAnimate) {
+      var
+        direction = section.replace(/#/, ''),
+        reqSection = $('.section').filter('[data-section="' + direction + '"]'),
+        reqSectionPos = reqSection.offset().top - 0;
+
+      if (isAnimate) {
+        $('body, html').animate({
+          scrollTop: reqSectionPos
+        },
+          800);
+      } else {
+        $('body, html').scrollTop(reqSectionPos);
+      }
+
+    };
+
+    var checkSection = function checkSection() {
+      $('.section').each(function () {
+        var
+          $this = $(this),
+          topEdge = $this.offset().top - 80,
+          bottomEdge = topEdge + $this.height(),
+          wScroll = $(window).scrollTop();
+        if (topEdge < wScroll && bottomEdge > wScroll) {
           var
-          direction = section.replace(/#/, ''),
-          reqSection = $('.section').filter('[data-section="' + direction + '"]'),
-          reqSectionPos = reqSection.offset().top - 0;
+            currentId = $this.data('section'),
+            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+          reqLink.closest('li').addClass('active').
+            siblings().removeClass('active');
+        }
+      });
+    };
 
-          if (isAnimate) {
-            $('body, html').animate({
-              scrollTop: reqSectionPos },
-            800);
-          } else {
-            $('body, html').scrollTop(reqSectionPos);
-          }
+    $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
+      // No hacer nada si el enlace es externo o no es un enlace de sección
+      if ($(this).hasClass('external') || !$(this).attr('href').startsWith('#')) {
+        return true;
+      }
+      
+      e.preventDefault();
+      $('#menu').removeClass('active');
+      showSection($(this).attr('href'), true);
+    });
 
-        };
-
-        var checkSection = function checkSection() {
-          $('.section').each(function () {
-            var
-            $this = $(this),
-            topEdge = $this.offset().top - 80,
-            bottomEdge = topEdge + $this.height(),
-            wScroll = $(window).scrollTop();
-            if (topEdge < wScroll && bottomEdge > wScroll) {
-              var
-              currentId = $this.data('section'),
-              reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-              reqLink.closest('li').addClass('active').
-              siblings().removeClass('active');
-            }
-          });
-        };
-
-        $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
-          if($(e.target).hasClass('external')) {
-            return;
-          }
-          e.preventDefault();
-          $('#menu').removeClass('active');
-          showSection($(this).attr('href'), true);
-        });
-
-        $(window).scroll(function () {
-          checkSection();
-        });
-    </script>
-</body>
-</html>
-
-
+    $(window).scroll(function () {
+      checkSection();
+    });
+  </script>
 {% endblock %}

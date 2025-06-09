@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Estilos para las iniciales de los docentes -->
+<style>
+    .docente-iniciales {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0 auto 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .docente-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .docente-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<!-- ***** Nosotros Start ***** -->
+<section class="section nosotros-section" data-section="section-nosotros">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center mb-5">
+                <div class="section-heading">
+                    <h2 class="gradient-text">Sobre Nosotros</h2>
+                    <div class="line-dec"></div>
+                    <p class="subtitle">Conoce más sobre nuestra institución educativa</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pestañas de navegación -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="nosotros-tabs nav nav-fill mb-4" id="nosotrosTabs" role="tablist">
+                    <button class="nav-link-custom active" id="historia-tab" data-bs-toggle="tab" data-bs-target="#historia" type="button" role="tab" aria-controls="historia" aria-selected="true">
+                        <i class="fa fa-history me-2"></i>Nuestra Historia
+                    </button>
+                    <button class="nav-link-custom" id="autoridades-tab" data-bs-toggle="tab" data-bs-target="#autoridades" type="button" role="tab" aria-controls="autoridades" aria-selected="false">
+                        <i class="fa fa-users me-2"></i>Autoridades
+                    </button>
+                    
+                    
+                </div>
+                
+                <!-- Contenido de las pestañas -->
+                <div class="nosotros-tab-content tab-content" id="nosotrosTabsContent">
+                    <!-- Pestaña de Historia -->
+                    <div class="tab-pane fade" id="historia" role="tabpanel" aria-labelledby="historia-tab">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6">
+                                <div class="historia-content-custom">
+                                    <h3 class="mb-4">Nuestra Historia</h3>
+                                    <p>Fundada en 1985, la Unidad Educativa Riobamba ha sido un pilar fundamental en la educación de la región, formando generaciones de estudiantes con excelencia académica y valores humanos.</p>
+                                    <p>A lo largo de más de tres décadas, nuestra institución ha crecido y evolucionado, adaptándose a los cambios tecnológicos y pedagógicos para ofrecer siempre la mejor educación a nuestros estudiantes.</p>
+                                    <div class="mt-4">
+                                        <div class="historia-logro-custom">
+                                            <i class="fa fa-trophy text-warning me-2"></i>
+                                            <span>Más de 10,000 egresados</span>
+                                        </div>
+                                        <div class="historia-logro-custom">
+                                            <i class="fa fa-award text-warning me-2"></i>
+                                            <span>Reconocimientos a la excelencia educativa</span>
+                                        </div>
+                                        <div class="historia-logro-custom">
+                                            <i class="fa fa-graduation-cap text-warning me-2"></i>
+                                            <span>Programas académicos innovadores</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="historia-imagen-custom">
+                                    <img src="{% static 'images/rector.jpg' %}" alt="Historia del Colegio" class="img-fluid rounded shadow">
+                                    <div class="historia-anos-custom">
+                                        <span>1985</span>
+                                        <span>2025</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña de Autoridades -->
+                    <div class="tab-pane fade" id="autoridades" role="tabpanel" aria-labelledby="autoridades-tab">
+                        <div class="row">
+                            <div class="col-md-12 text-center mb-5">
+                                <h3 class="mb-3">Nuestro Equipo Directivo</h3>
+                                <p class="lead text-muted">Conoce al equipo de liderazgo que guía nuestra institución hacia la excelencia educativa</p>
+                                <div class="divider-custom">
+                                    <div class="divider-custom-line"></div>
+                                    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                                    <div class="divider-custom-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row justify-content-center">
+                            <!-- Rector -->
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/rector.jpg' %}" alt="Rector" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #4e73df;">
+                                                <span>CA</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>Dr. Carlos Andrade</h4>
+                                        <span class="cargo">Rector</span>
+                                        <p class="mb-0">Máxima autoridad académica y administrativa de la institución.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>PhD en Educación - Universidad Central</p>
+                                            <p><i class="fas fa-award me-2"></i>Premio Nacional a la Excelencia Educativa 2020</p>
+                                            <p><i class="fas fa-envelope me-2"></i>rector@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vicerrector Académico -->
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/vicerrector.jpg' %}" alt="Vicerrector Académico" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #1cc88a;">
+                                                <span>AM</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>MSc. Ana Mendoza</h4>
+                                        <span class="cargo">Vicerrectora Académica</span>
+                                        <p class="mb-0">Responsable de la gestión pedagógica y calidad educativa.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>Máster en Pedagogía - Universidad Andina</p>
+                                            <p><i class="fas fa-award me-2"></i>Mejor Docente 2019 - Ministerio de Educación</p>
+                                            <p><i class="fas fa-envelope me-2"></i>vicerrectoria@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vicerrector Administrativo -->
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/administrativo.jpg' %}" alt="Vicerrector Administrativo" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #f6c23e;">
+                                                <span>RS</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>Econ. Roberto Salazar</h4>
+                                        <span class="cargo">Vicerrector Administrativo</span>
+                                        <p class="mb-0">Encargado de la gestión de recursos y finanzas institucionales.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>Economía - ESPE</p>
+                                            <p><i class="fas fa-award me-2"></i>Especialista en Gestión Educativa</p>
+                                            <p><i class="fas fa-envelope me-2"></i>viceadministrativo@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Secretario General 
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/secretario.jpg' %}" alt="Secretario General" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #e74a3b;">
+                                                <span>MG</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>Ab. María González</h4>
+                                        <span class="cargo">Secretaria General</span>
+                                        <p class="mb-0">Responsable de la documentación oficial y trámites legales.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>Derecho - Universidad Central</p>
+                                            <p><i class="fas fa-award me-2"></i>Especialista en Derecho Educativo</p>
+                                            <p><i class="fas fa-envelope me-2"></i>secretaria@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                          Jefe de Bienestar Estudiantil 
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/bienestar.jpg' %}" alt="Jefe de Bienestar" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #36b9cc;">
+                                                <span>PL</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>Psic. Patricia López</h4>
+                                        <span class="cargo">Jefa de Bienestar Estudiantil</span>
+                                        <p class="mb-0">Encargada del desarrollo integral y bienestar de los estudiantes.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>Psicología Clínica - PUCE</p>
+                                            <p><i class="fas fa-award me-2"></i>Especialista en Educación Inclusiva</p>
+                                            <p><i class="fas fa-envelope me-2"></i>bienestar@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                           Coordinador Académico 
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="autoridad-card">
+                                    <div class="autoridad-img">
+                                        <div class="avatar-container">
+                                            <img src="{% static 'images/coordinador.jpg' %}" alt="Coordinador Académico" class="img-fluid autoridad-foto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-default" style="background-color: #6f42c1;">
+                                                <span>JR</span>
+                                            </div>
+                                        </div>
+                                        <div class="social-links">
+                                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                            <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="autoridad-info">
+                                        <h4>Lic. Juan Ramírez</h4>
+                                        <span class="cargo">Coordinador Académico</span>
+                                        <p class="mb-0">Responsable de la planificación y seguimiento académico.</p>
+                                        <div class="autoridad-detalle">
+                                            <p><i class="fas fa-graduation-cap me-2"></i>Lic. en Ciencias de la Educación</p>
+                                            <p><i class="fas fa-award me-2"></i>Magíster en Planificación Educativa</p>
+                                            <p><i class="fas fa-envelope me-2"></i>coordinacion@colegioejemplo.edu.ec</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        -->
+                        <div class="row mt-5">
+                            <div class="col-md-12 text-center">
+                                <div class="frase-inspiradora">
+                                    <i class="fas fa-quote-left"></i>
+                                    <p class="mb-0">"Nuestro compromiso es ofrecer una educación de calidad que forme ciudadanos íntegros, críticos y comprometidos con el desarrollo de nuestra sociedad."</p>
+                                    <p class="firma">- Equipo Directivo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Nosotros End ***** -->
+
+<!-- Scripts específicos para la página de Nosotros -->
+<script>
+    // Inicialización de las pestañas
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar tooltips de Bootstrap
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Inicializar pestañas usando la API de Bootstrap 5
+        var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+        tabEls.forEach(function(tabEl) {
+            tabEl.addEventListener('click', function(event) {
+                event.preventDefault();
+                var tab = new bootstrap.Tab(tabEl);
+                tab.show();
+            });
+        });
+        
+        // Forzar la visualización de la pestaña de docentes al cargar
+        var docentesTab = document.getElementById('docentes-tab');
+        if (docentesTab) {
+            var tab = new bootstrap.Tab(docentesTab);
+            tab.show();
+        }
+    });
+</script>
+{% endblock %}

@@ -95,7 +95,9 @@
                 {% csrf_token %}
                 <div class="modal-body">
                     <h5 class="mb-3"><i class="la la-plus-circle"></i> Nuevo Periodo Académico</h5>
-                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                     <div class="form-group">
                         <label for="nombre">Nombre del Periodo <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="nombre" required>

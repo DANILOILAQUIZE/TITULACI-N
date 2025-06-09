@@ -1,0 +1,80 @@
+/* Estilos para el modal de login */
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2980b9, #21618c);
+}
+
+.btn-outline-secondary {
+    border: 1px solid #e0e0e0;
+    color: #333;
+    padding: 0.75rem 2rem;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8f9fa;
+    color: #21618c;
+}
+
+.form-check-input {
+    margin-top: 0.3rem;
+}
+
+.form-check-label {
+    color: #666;
+}
+
+.text-primary {
+    color: #3498db !important;
+    font-weight: 500;
+    text-decoration: none !important;
+}
+
+.text-primary:hover {
+    text-decoration: underline !important;
+}
