@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/templatemo-grad-school.css' %}">
   <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/owl.css' %}">
   <link rel="stylesheet" href="{% static 'plantillas/assets/assets_informativo/css/lightbox.css' %}">
-  
+
   <!-- Custom CSS Files -->
   <link rel="stylesheet" href="{% static 'css/global-colors.css' %}">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -61,48 +61,76 @@
   <!-- jQuery UI -->
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
   <!-- Bootstrap JS Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+
   <!-- Template Scripts -->
   <script src="{% static 'plantillas/assets/assets_informativo/js/isotope.min.js' %}"></script>
   <script src="{% static 'plantillas/assets/assets_informativo/js/owl-carousel.js' %}"></script>
   <script src="{% static 'plantillas/assets/assets_informativo/js/lightbox.js' %}"></script>
   <script src="{% static 'plantillas/assets/assets_informativo/js/video.js' %}"></script>
   <script src="{% static 'plantillas/assets/assets_informativo/js/slick-slider.js' %}"></script>
-  
+
   <!-- Custom Scripts -->
   <script src="{% static 'js/menu.js' %}?v=1.1"></script>
   <script src="{% static 'js/features.js' %}"></script>
   <script src="{% static 'js/cards.js' %}"></script>
-  
+
   <script>
     // Verificar si Bootstrap está cargado
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap no se ha cargado correctamente');
       } else {
         console.log('Bootstrap está cargado correctamente');
-        
+
         // Inicializar tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-        
+
         // Inicializar pestañas de Bootstrap 5
         var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
-        tabEls.forEach(function(tabEl) {
+        tabEls.forEach(function (tabEl) {
           tabEl.addEventListener('click', function (e) {
             e.preventDefault();
             var tab = new bootstrap.Tab(tabEl);
             tab.show();
           });
         });
-        
+
         // Inicializar pestañas de jQuery UI (si es necesario)
         if (typeof $.fn.tabs === 'function') {
           $(".tabs").tabs();
         }
+      }
+    });
+  </script>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <p><i class="fa fa-copyright"></i> Copyright 2025 by Grad School
+
+            | Design: <a href="https://templatemo.com" rel="sponsored" target="_parent">TemplateMo</a><br>
+            Distributed By: <a href="https://themewagon.com" rel="sponsored" target="_blank">ThemeWagon</a>
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Actualizar el año actual en el footer
+    document.addEventListener('DOMContentLoaded', function () {
+      const yearElement = document.getElementById('currentYear');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
       }
     });
   </script>

@@ -4,7 +4,7 @@
 {% block content %}
 
   <!-- ***** Main Banner Area Start ***** -->
-  <section class="section main-banner" id="top" data-section="section1">
+  <section class="section main-banner" id="top" data-section="section1" style="padding-bottom: 0 !important; margin-bottom: 0 !important;">
     <video autoplay muted loop id="bg-video">
       <source src="{% static 'plantillas/assets/assets_informativo/images/course-video.mp4' %}" type="video/mp4" />
     </video>
@@ -22,8 +22,8 @@
 
 
   <!-- ***** Features Area Start ***** -->
-  <section class="features">
-    <div class="container">
+  <section class="features" style="position: relative; z-index: 10; margin-top: -100px; width: 100%; background: transparent;">
+    <div class="container" style="background: transparent; padding: 20px 0; margin-top: -50px;">
       <div class="row">
         <div class="col-lg-4 col-12">
           <div class="features-post">
@@ -274,20 +274,7 @@
   <!-- Incluir el modal de inicio de sesión -->
   {% include 'modal_login.html' %}
 
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <p><i class="fa fa-copyright"></i> Copyright 2025 by Grad School
-
-            | Design: <a href="https://templatemo.com" rel="sponsored" target="_parent">TemplateMo</a><br>
-            Distributed By: <a href="https://themewagon.com" rel="sponsored" target="_blank">ThemeWagon</a>
-
-          </p>
-        </div>
-      </div>
-    </div>
-  </footer>
+  
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->

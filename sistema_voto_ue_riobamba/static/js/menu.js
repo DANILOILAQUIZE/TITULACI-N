@@ -1,6 +1,7 @@
 // Menú reutilizable para todo el sitio
-console.log('Cargando menú...');
+console.log('Cargando menú de navegación...');
 document.addEventListener('DOMContentLoaded', function() {
+    // Insertar el menú
     var menuHTML = `
     <nav id="menu" class="main-nav" role="navigation">
         <ul class="main-menu">
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <li><a href="/mision-vision/" class="external">Misión y Visión</a></li>
             <li><a href="/nosotros/" class="external">Nosotros</a></li>
             <li><a href="/docentes-nuevo/" class="external">Nuestros Docentes</a></li>
-            <li><a href="#section-honor" class="scroll-to-section">Cuadro de Honor</a></li>
+            <li><a href="#section-honor" class="scroll-to-section">Noticias</a></li>
             <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
         </ul>
     </nav>`;
@@ -45,9 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Cerrar el menú móvil si está abierto
-            if (menu.classList.contains('active')) {
+            if (menu && menu.classList.contains('active')) {
                 menu.classList.remove('active');
             }
         });
     });
+
+    // El footer ahora está en base.html
 });

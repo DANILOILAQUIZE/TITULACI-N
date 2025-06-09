@@ -22,3 +22,7 @@ def docentes(request):
 def docentes_nuevo(request):
     return render(request, 'administracion/docentes-nuevo.html')
 
+def noticias(request):
+    return render(request, 'administracion/noticias.html')
+
+
