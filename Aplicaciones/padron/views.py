@@ -1,20 +1,172 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import ListView
-from .models import Grado, Periodo, Paralelo, PadronElectoral
+from .models import Grado, Periodo, Paralelo, PadronElectoral, CredencialUsuario
 from django.db import IntegrityError
-from Aplicaciones.periodo.models import Periodo
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
-from .models import  Grado, Paralelo, Periodo, PadronElectoral
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 import io
+import random
+import string
+from django.core.mail import send_mail
+
+#CRUD GRADOS
+def generar_credenciales(request):
+    if request.method == 'POST':
+        # Generar credenciales
+        padrones = PadronElectoral.objects.all()
+        credenciales = []
+        
+        for padron in padrones:
+            # Generar contraseña aleatoria de 8 caracteres
+            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            
+            # Crear o actualizar la credencial
+            credencial, created = CredencialUsuario.objects.update_or_create(
+                padron=padron,
+                defaults={
+                    'usuario': padron.cedula,
+                    'contrasena': password,
+                    'estado': 'activo'
+                }
+            )
+            
+            credenciales.append({
+                'id': credencial.id,
+                'nombre': f"{padron.nombre} {padron.apellidos}",
+                'cedula': padron.cedula,
+                'contrasena': password,
+                'correo': padron.correo
+            })
+        
+        messages.success(request, 'Credenciales generadas exitosamente')
+        return render(request, 'padron/credenciales.html', {
+            'credenciales': credenciales,
+            'mostrar_envio': True
+        })
+
+    # Si es GET, mostrar la lista de credenciales existentes
+    credenciales = CredencialUsuario.objects.select_related('padron').all()
+    return render(request, 'padron/credenciales.html', {
+        'credenciales': [
+            {
+                'id': cred.id,
+                'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
+                'cedula': cred.padron.cedula,
+                'contrasena': cred.get_contrasena_plana,
+                'correo': cred.padron.correo
+            }
+            for cred in credenciales
+        ],
+        'mostrar_envio': False
+    })
+
+def enviar_credenciales(request):
+    if request.method == 'POST':
+        print('=== INICIO DE ENVÍO DE CREDENCIALES ===')
+        print('POST data:', request.POST)
+        print('IDs seleccionados:', request.POST.getlist('credenciales'))
+        
+        try:
+            # Verificar que hay credenciales seleccionadas
+            ids_seleccionados = request.POST.getlist('credenciales')
+            if not ids_seleccionados:
+                messages.error(request, 'Debe seleccionar al menos una credencial para enviar')
+                print('=== FIN - NO SE SELECCIONARON CREDENCIALES ===')
+                return redirect('generar_credenciales')
+            
+            try:
+                # Obtener las credenciales seleccionadas
+                credenciales = CredencialUsuario.objects.filter(id__in=ids_seleccionados).select_related('padron')
+                print(f'Número de credenciales encontradas: {credenciales.count()}')
+                
+                if not credenciales.exists():
+                    raise ValueError('No se encontraron credenciales válidas para enviar')
+                    
+                # Enviar correos electrónicos
+                for credencial in credenciales:
+                    print(f'=== PROCESANDO CREDENCIAL: {credencial.padron.cedula} ===')
+                    print(f'Nombre: {credencial.padron.nombre} {credencial.padron.apellidos}')
+                    print(f'Correo: {credencial.padron.correo}')
+                    print(f'Estado: {credencial.estado}')
+                    
+                    try:
+                        # Validar el formato del correo
+                        from django.core.validators import validate_email
+                        try:
+                            validate_email(credencial.padron.correo)
+                            print('Correo válido')
+                        except Exception as e:
+                            print(f'Error de validación de correo: {str(e)}')
+                            raise ValueError(f'Correo electrónico inválido: {credencial.padron.correo}')
+                        
+                        subject = 'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba'
+                        message = f"""Hola {credencial.padron.nombre} {credencial.padron.apellidos},
+
+Tus credenciales de acceso al sistema son las siguientes:
+
+Usuario (Cédula): {credencial.padron.cedula}
+Contraseña: {credencial.get_contrasena_plana}
+
+Por seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión por primera vez.
+
+Atentamente,
+Consejo Electoral - Unidad Educativa Riobamba"""
+                        
+                        print('Enviando correo...')
+                        send_mail(
+                            subject,
+                            message,
+                            'riobamba@aplicacionesutc.com',  # Remitente consistente
+                            [credencial.padron.correo],
+                            fail_silently=False,  # Cambiado a False para ver errores
+                        )
+                        print('Correo enviado exitosamente')
+                        
+                        # Actualizar estado de la credencial
+                        credencial.estado = 'cambiada'
+                        credencial.save()
+                        print('Estado actualizado a cambiada')
+                        
+                    except Exception as e:
+                        import traceback
+                        print('=== ERROR DETALLADO ===')
+                        print(f'Tipo de error: {type(e).__name__}')
+                        print(f'Mensaje de error: {str(e)}')
+                        print('Traceback:')
+                        print(traceback.format_exc())
+                        print('=== FIN DEL ERROR ===')
+                        
+                        messages.warning(request, f'Error al enviar correo a {credencial.padron.correo}: {str(e)}')
+                        print(f'Error al enviar correo a {credencial.padron.correo}: {str(e)}')
+                        
+                # Si no hubo errores críticos, mostrar mensaje de éxito general
+                messages.success(request, 'Credenciales enviadas exitosamente. Algunos correos pueden haber fallado.')
+                print('=== FIN - PROCESO COMPLETADO ===')
+                return redirect('generar_credenciales')
+                
+            except ValueError as ve:
+                print(f'Error de validación: {str(ve)}')
+                messages.error(request, str(ve))
+                print('=== FIN - ERROR DE VALIDACIÓN ===')
+                return redirect('generar_credenciales')
+                
+        except Exception as e:
+            print(f'Error inesperado: {str(e)}')
+            import traceback
+            print('=== ERROR INESPERADO ===')
+            print(f'Tipo de error: {type(e).__name__}')
+            print(f'Mensaje de error: {str(e)}')
+            print('Traceback:')
+            print(traceback.format_exc())
+            print('=== FIN DEL ERROR ===')
+            messages.error(request, 'Ocurrió un error inesperado al enviar las credenciales')
+            print('=== FIN - ERROR INESPERADO ===')
+            return redirect('generar_credenciales')
+    
+    return redirect('generar_credenciales')
 
 #CRUD GRADOS
 class GradoListView(ListView):

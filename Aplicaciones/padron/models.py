@@ -108,3 +108,115 @@ class PadronElectoral(models.Model):
         # Verifica que el grado pertenezca al período (si período existe)
         if self.periodo and self.grado.periodo != self.periodo:
             raise ValidationError("El grado seleccionado no corresponde al período especificado")
+
+    def verificar_contrasena(self, contrasena):
+        """Verifica si la contraseña proporcionada coincide con la almacenada"""
+        from django.contrib.auth.hashers import check_password
+        return check_password(contrasena, self.get_contrasena_encriptada())
+
+
+class CredencialUsuario(models.Model):
+    """Modelo para almacenar las credenciales de los usuarios del sistema"""
+    padron = models.OneToOneField(
+        PadronElectoral,
+        on_delete=models.CASCADE,
+        related_name='credencial',
+        verbose_name="Registro del padrón"
+    )
+    
+    # Usuario será la cédula del estudiante
+    usuario = models.CharField(
+        max_length=10,
+        unique=True,
+        verbose_name="Nombre de usuario"
+    )
+    
+    # Contraseña encriptada
+    contrasena = models.CharField(
+        max_length=128,
+        verbose_name="Contraseña"
+    )
+    
+    fecha_generacion = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Fecha de generación"
+    )
+    
+    # Estado de la credencial
+    ESTADOS = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+        ('cambiada', 'Contraseña cambiada')
+    ]
+    estado = models.CharField(
+        max_length=10,
+        choices=ESTADOS,
+        default='activo',
+        verbose_name="Estado de la credencial"
+    )
+    
+    class Meta:
+        verbose_name = "Credencial de usuario"
+        verbose_name_plural = "Credenciales de usuarios"
+        ordering = ['-fecha_generacion']
+    
+    def __str__(self):
+        return f"{self.padron.cedula} - {self.padron.nombre} {self.padron.apellidos}"
+
+    def cambiar_estado(self, nuevo_estado):
+        """Cambia el estado de la credencial"""
+        if nuevo_estado in dict(self.ESTADOS):
+            self.estado = nuevo_estado
+            self.save()
+            return True
+        return False
+
+    def cambiar_contrasena(self, nueva_contrasena):
+        """Cambia la contraseña y actualiza el estado"""
+        self.contrasena = nueva_contrasena
+        self.estado = 'cambiada'
+        self.save()
+        return True
+
+    def generar_contrasena(self):
+        """Genera una nueva contraseña aleatoria"""
+        import random
+        import string
+        nueva_contrasena = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        self.contrasena = nueva_contrasena
+        self.save()
+        return nueva_contrasena
+
+    @property
+    def get_contrasena_plana(self):
+        """Devuelve la contraseña en texto plano (sólo para mostrar)"""
+        # La contraseña se almacena en texto plano en la base de datos
+        return str(self.contrasena)
+
+    def get_contrasena_encriptada(self):
+        """Devuelve la contraseña encriptada"""
+        from django.contrib.auth.hashers import make_password
+        return make_password(self.contrasena)
+
+    def verificar_contrasena(self, contrasena):
+        """Verifica si la contraseña proporcionada coincide con la almacenada"""
+        from django.contrib.auth.hashers import check_password
+        return check_password(contrasena, self.get_contrasena_encriptada())
+
+# Importar después de definir los modelos para evitar errores de importación circular
+from django.contrib.auth.hashers import make_password, check_password
+
+# Validaciones adicionales
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+@receiver(pre_save, sender=CredencialUsuario)
+def validar_credencial(sender, instance, **kwargs):
+    """Validaciones adicionales antes de guardar una credencial"""
+    # Verificar que el usuario (cedula) sea único
+    if CredencialUsuario.objects.filter(usuario=instance.usuario).exclude(id=instance.id).exists():
+        raise ValidationError('Ya existe una credencial con este usuario')
+    
+    # Solo encriptar la contraseña si no es una nueva generación
+    if not instance.pk and not instance.contrasena.startswith('pbkdf2_sha256$'):
+        instance.contrasena = make_password(instance.contrasena)
