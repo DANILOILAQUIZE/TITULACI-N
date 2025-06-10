@@ -434,56 +434,204 @@ def exportar_padron_excel(request):
 
 # CARGAR EL PADRON ELECTORAL DESDE UN ARCHIVO EXCEL
 def importar_padron_excel(request):
-    if request.method == 'POST' and request.FILES.get('archivo_excel'):
-        archivo = request.FILES['archivo_excel']
+    print("DEBUG: Iniciando importación de archivo Excel")
+    if request.method != 'POST':
+        print("DEBUG: Error - No es una petición POST")
+        messages.error(request, 'Método no permitido')
+        return redirect('gestion_padron')
         
-        try:
-            wb = load_workbook(archivo)
-            ws = wb.active
+    if not request.FILES.get('archivo_excel'):
+        print("DEBUG: Error - No se recibió ningún archivo")
+        messages.error(request, 'No se ha proporcionado ningún archivo')
+        return redirect('gestion_padron')
+    
+    archivo = request.FILES['archivo_excel']
+    print(f"DEBUG: Archivo recibido: {archivo.name}, Tamaño: {archivo.size} bytes")
+    
+    # Verificar que el archivo sea un Excel
+    if not archivo.name.endswith(('.xlsx', '.xls')):
+        print(f"DEBUG: Error - Formato de archivo no soportado: {archivo.name}")
+        messages.error(request, 'El archivo debe ser de tipo Excel (.xlsx o .xls)')
+        return redirect('gestion_padron')
+    
+    try:
+        print("DEBUG: Intentando cargar el archivo Excel...")
+        # Cargar el archivo Excel
+        wb = load_workbook(archivo, data_only=True)
+        ws = wb.active
+        print(f"DEBUG: Archivo cargado. Hojas: {wb.sheetnames}, Hoja activa: {ws.title}")
+        
+        # Verificar que el archivo no esté vacío
+        max_row = ws.max_row
+        max_col = ws.max_column
+        print(f"DEBUG: Filas: {max_row}, Columnas: {max_col}")
+        
+        if max_row <= 1:
+            print("DEBUG: Error - El archivo está vacío o solo tiene encabezados")
+            messages.error(request, 'El archivo está vacío o solo contiene encabezados')
+            return redirect('gestion_padron')
             
-            # Obtener el período actual automáticamente
-            periodo_actual = Periodo.objects.order_by('-fecha_inicio').first()
-            if not periodo_actual:
-                messages.error(request, 'No hay períodos definidos en el sistema')
-                return redirect('gestion_padron')
+        # Mostrar encabezados para depuración
+        headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+        print(f"DEBUG: Encabezados encontrados: {headers}")
+        
+        # Obtener el período activo actual
+        periodo_actual = Periodo.objects.filter(estado='activo').order_by('-fecha_inicio').first()
+        
+        if not periodo_actual:
+            messages.error(request, 'No hay un período académico activo. Por favor, cree un período activo primero.')
+            return redirect('gestion_padron')
             
-            with transaction.atomic():
-                for row in ws.iter_rows(min_row=2, values_only=True):
-                    # Asumimos el formato: Cédula | Nombres | Apellidos | Grado | Paralelo | Correo | Teléfono
-                    cedula, nombre, apellidos, grado_nombre, paralelo_nombre, correo, telefono = row[:7]
-                    
-                    # Validar campos obligatorios
-                    if not all([cedula, nombre, apellidos, grado_nombre, paralelo_nombre, correo]):
+        print(f"DEBUG: Usando período académico: {periodo_actual.nombre}")
+        print(f"DEBUG: Fecha de inicio: {periodo_actual.fecha_inicio}, Fecha de fin: {periodo_actual.fecha_fin}")
+        
+        # Contadores para estadísticas
+        registros_procesados = 0
+        registros_omitidos = 0
+        
+        with transaction.atomic():
+            # Empezar desde la segunda fila (asumiendo que la primera es el encabezado)
+            for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    # Validar que la fila tenga suficientes columnas (mínimo 6 columnas requeridas)
+                    if len(row) < 6:  # Reducido de 7 a 6 ya que el teléfono es opcional
+                        registros_omitidos += 1
+                        print(f"DEBUG: Fila {row_num} omitida - No tiene suficientes columnas")
+                        continue
+                        
+                    # Obtener los valores de cada columna
+                    # Orden: Cédula | Apellidos | Nombres | Grado | Paralelo | Correo | Teléfono (opcional)
+                    try:
+                        cedula = str(row[0]).strip() if row[0] else None
+                        apellidos = str(row[1]).strip().upper() if row[1] else None
+                        nombre = str(row[2]).strip().upper() if row[2] else None
+                        grado_nombre = str(row[3]).strip().upper() if row[3] else None
+                        paralelo_nombre = str(row[4]).strip().upper() if row[4] else None
+                        correo = str(row[5]).strip().lower() if row[5] else None
+                        telefono = str(row[6]).strip() if len(row) > 6 and row[6] else None
+                        
+                        print(f"DEBUG: Fila {row_num} - Datos leídos: {cedula}, {apellidos}, {nombre}, {grado_nombre}, {paralelo_nombre}, {correo}, {telefono}")
+                    except Exception as e:
+                        print(f"DEBUG: Error al procesar fila {row_num}: {str(e)}")
+                        registros_omitidos += 1
                         continue
                     
-                    # Convertir nombre y apellidos a mayúsculas (como en agregar_estudiante)
-                    nombre = str(nombre).upper()
-                    apellidos = str(apellidos).upper()
+                    # Validar campos obligatorios
+                    campos_requeridos = [
+                        ('Cédula', cedula),
+                        ('Apellidos', apellidos),
+                        ('Nombres', nombre),
+                        ('Grado', grado_nombre),
+                        ('Paralelo', paralelo_nombre),
+                        ('Correo', correo)
+                    ]
+                    
+                    campos_faltantes = [nombre for nombre, valor in campos_requeridos if not valor]
+                    if campos_faltantes:
+                        registros_omitidos += 1
+                        print(f"DEBUG: Fila {row_num} omitida - Faltan campos obligatorios: {', '.join(campos_faltantes)}")
+                        continue
+                    
+                    # Validar formato de cédula (10 dígitos)
+                    if not (cedula.isdigit() and len(cedula) == 10):
+                        print(f"DEBUG: Fila {row_num} omitida - Cédula inválida: {cedula}")
+                        registros_omitidos += 1
+                        continue
+                    
+                    # Validar formato de correo electrónico
+                    if '@' not in correo or '.' not in correo.split('@')[-1]:
+                        print(f"DEBUG: Fila {row_num} omitida - Correo inválido: {correo}")
+                        registros_omitidos += 1
+                        continue
                     
                     # Obtener o crear grado y paralelo
-                    grado, _ = Grado.objects.get_or_create(nombre=str(grado_nombre).strip())
-                    paralelo, _ = Paralelo.objects.get_or_create(
-                        nombre=str(paralelo_nombre).strip(),
-                        grado=grado
-                    )
-                    
-                    # Crear o actualizar estudiante
-                    estudiante, created = PadronElectoral.objects.update_or_create(
-                        cedula=cedula,
-                        defaults={
-                            'nombre': nombre,
-                            'apellidos': apellidos,
-                            'grado': grado,
-                            'paralelo': paralelo,
-                            'periodo': periodo_actual,  # Usar el período actual
-                            'correo': correo,
-                            'telefono': telefono if telefono else None,
-                            'estado': 'activo'
-                        }
-                    )
+                    try:
+                        # Limpiar y estandarizar nombres
+                        grado_nombre = str(grado_nombre).strip().upper()
+                        paralelo_nombre = str(paralelo_nombre).strip().upper()
+                        
+                        print(f"DEBUG: Procesando - Grado: {grado_nombre}, Paralelo: {paralelo_nombre}")
+                        
+                        # Obtener o crear el grado
+                        grado, created = Grado.objects.get_or_create(
+                            nombre=grado_nombre,
+                            defaults={'periodo': periodo_actual}
+                        )
+                        
+                        if created:
+                            print(f"DEBUG: Nuevo grado creado: {grado.nombre}")
+                        
+                        # Obtener o crear el paralelo
+                        paralelo, created = Paralelo.objects.get_or_create(
+                            nombre=paralelo_nombre,
+                            grado=grado
+                        )
+                        
+                        if created:
+                            print(f"DEBUG: Nuevo paralelo creado: {paralelo.nombre} para el grado {grado.nombre}")
+                        
+                        # Crear o actualizar estudiante
+                        estudiante, created = PadronElectoral.objects.update_or_create(
+                            cedula=cedula,
+                            defaults={
+                                'nombre': nombre,
+                                'apellidos': apellidos,
+                                'grado': grado,
+                                'paralelo': paralelo,
+                                'periodo': periodo_actual,
+                                'correo': correo,
+                                'telefono': telefono,
+                                'estado': 'activo'
+                            }
+                        )
+                        
+                        if created:
+                            print(f"DEBUG: Nuevo estudiante creado: {estudiante.apellidos} {estudiante.nombre}")
+                        else:
+                            print(f"DEBUG: Estudiante actualizado: {estudiante.apellidos} {estudiante.nombre}")
+                        
+                        registros_procesados += 1
+                        
+                    except Exception as e:
+                        registros_omitidos += 1
+                        continue
+                        
+                except Exception as e:
+                    registros_omitidos += 1
+                    continue
             
-            messages.success(request, 'Padrón importado exitosamente!')
-        except Exception as e:
-            messages.error(request, f'Error al importar archivo: {str(e)}')
+            # Mensaje de éxito con estadísticas
+            if registros_procesados > 0:
+                mensaje_exito = (
+                    f'<strong>¡Importación completada con éxito!</strong><br>'
+                    f'<strong>Período académico:</strong> {periodo_actual.nombre}<br>'
+                    f'<strong>Registros procesados:</strong> {registros_procesados}<br>'
+                    f'<strong>Registros omitidos:</strong> {registros_omitidos}'
+                )
+                messages.success(request, mensaje_exito, extra_tags='alert-success')
+            else:
+                mensaje_error = (
+                    '<strong>No se pudo procesar ningún registro. Por favor verifique:</strong><br>'
+                    '1. El formato del archivo debe ser: Cédula | Apellidos | Nombres | Grado | Paralelo | Correo | Teléfono (opcional)<br>'
+                    '2. La primera fila debe contener los encabezados<br>'
+                    '3. No debe haber filas vacías<br>'
+                    '4. Las cédulas no deben estar duplicadas<br>'
+                    '5. Los correos electrónicos deben tener un formato válido'
+                )
+                messages.error(request, mensaje_error, extra_tags='alert-danger')
+                
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"DEBUG: Error al procesar el archivo: {str(e)}")
+        print(f"DEBUG: Traceback completo: {error_trace}")
+        
+        messages.error(
+            request, 
+            f'Error al procesar el archivo: {str(e)}\n'
+            'Asegúrese de que el archivo no esté abierto en otro programa, que el formato sea correcto '
+            'y que tenga los permisos necesarios.'
+        )
     
+    print("DEBUG: Redirigiendo a la página de gestión de padrón")  # Debug
     return redirect('gestion_padron')
