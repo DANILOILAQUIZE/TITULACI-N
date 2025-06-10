@@ -1,6 +1,6 @@
 /* ESTILO DE PRUEBA - Si ves esto, el archivo se está cargando */
 body {
-    background-color: red !important;
+    background-color: var(--color-primary) !important; /* Usando el color primario global */
 }
 
 /* Estilos para la sección de docentes */

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <li><a href="/mision-vision/" class="external">Misión y Visión</a></li>
             <li><a href="/nosotros/" class="external">Nosotros</a></li>
             <li><a href="/docentes-nuevo/" class="external">Nuestros Docentes</a></li>
-            <li><a href="#section-honor" class="scroll-to-section">Noticias</a></li>
+            <li><a href="/noticias/" class="scroll-to-section">Noticias</a></li>
             <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
         </ul>
     </nav>`;

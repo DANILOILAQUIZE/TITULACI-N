@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/noticias.css' %}">
+<style>
+    .noticia-destacada {
+        border-left: 4px solid #4e73df;
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    .categoria-badge {
+        font-size: 0.75rem;
+        margin-right: 5px;
+    }
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<br><br><br>
+<div class="container">
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3"><i class="fas fa-newspaper text-primary me-2"></i>Noticias</h1>
+        <p class="lead text-muted">Mantente informado sobre las últimas noticias y anuncios importantes de nuestra institución.</p>
+    </div>
+
+    <!-- Sección de noticias destacadas -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-star text-warning me-2"></i>Noticias Destacadas</h3>
+        </div>
+        
+        <!-- Noticia destacada 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                    <img src="https://via.placeholder.com/800x500/4e73df/ffffff?text=Noticia+1" class="card-img-top" alt="Noticia destacada">
+                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">Académico</span>
+                        <small class="text-muted">Hace 2 días</small>
+                    </div>
+                    <h5 class="card-title">Inauguración del nuevo laboratorio de ciencias</h5>
+                    <p class="card-text">El nuevo laboratorio cuenta con equipos de última generación para potenciar el aprendizaje de nuestros estudiantes.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Noticia destacada 2 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                    <img src="https://via.placeholder.com/800x500/1cc88a/ffffff?text=Noticia+2" class="card-img-top" alt="Noticia destacada">
+                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-success">Deportes</span>
+                        <small class="text-muted">Hace 4 días</small>
+                    </div>
+                    <h5 class="card-title">Equipo de fútbol gana el campeonato intercolegial</h5>
+                    <p class="card-text">Nuestro equipo de fútbol se coronó campeón en el torneo intercolegial regional.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Noticia destacada 3 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                    <img src="https://via.placeholder.com/800x500/36b9cc/ffffff?text=Noticia+3" class="card-img-top" alt="Noticia destacada">
+                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-info">Cultura</span>
+                        <small class="text-muted">Hace 1 semana</small>
+                    </div>
+                    <h5 class="card-title">Festival de arte y cultura 2023</h5>
+                    <p class="card-text">Exitosa participación de nuestros estudiantes en el festival anual de arte y cultura.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Últimas noticias -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-clock text-primary me-2"></i>Últimas Noticias</h3>
+        </div>
+        
+        <!-- Noticia 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="https://via.placeholder.com/800x500/f6c23e/ffffff?text=Noticia+4" class="card-img-top" alt="Noticia">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-secondary">General</span>
+                        <small class="text-muted">Hace 2 semanas</small>
+                    </div>
+                    <h5 class="card-title">Convocatoria para becas académicas 2023</h5>
+                    <p class="card-text">Abierta la convocatoria para postular a las becas de excelencia académica del presente año.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Noticia 2 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="https://via.placeholder.com/800x500/e74a3b/ffffff?text=Noticia+5" class="card-img-top" alt="Noticia">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-danger">Importante</span>
+                        <small class="text-muted">Hace 3 semanas</small>
+                    </div>
+                    <h5 class="card-title">Nuevo protocolo de bioseguridad</h5>
+                    <p class="card-text">Conoce las nuevas medidas de bioseguridad implementadas en nuestra institución.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Noticia 3 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="https://via.placeholder.com/800x500/5a5c69/ffffff?text=Noticia+6" class="card-img-top" alt="Noticia">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">Académico</span>
+                        <small class="text-muted">Hace 1 mes</small>
+                    </div>
+                    <h5 class="card-title">Talleres de refuerzo académico</h5>
+                    <p class="card-text">Inscríbete en nuestros talleres de refuerzo para mejorar tu rendimiento académico.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botón de ver más noticias -->
+    <div class="text-center mt-4">
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Ver más noticias
+        </a>
+    </div>
+</div>
+{% endblock %}
+                        <div class="col-md-3">
+                            <h4 class="mb-0">2</h4>
+                            <small class="text-muted">Borradores</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="mb-0">3</h4>
+                            <small class="text-muted">Destacadas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="filtros-container mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Buscar noticias...">
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select class="form-select">
+                        <option selected>Todas las categorías</option>
+                        <option>Académico</option>
+                        <option>Eventos</option>
+                        <option>Deportes</option>
+                        <option>Cultural</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select class="form-select">
+                        <option selected>Todos los estados</option>
+                        <option>Publicado</option>
+                        <option>Borrador</option>
+                        <option>Archivado</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-end">
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para agregar nueva noticia -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Listado de Noticias</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNoticia">
+                        <i class="fas fa-plus me-1"></i> Nueva Noticia
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listado de noticias -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 30%;">Título</th>
+                                <th style="width: 15%;">Categoría</th>
+                                <th style="width: 15%;">Autor</th>
+                                <th style="width: 10%;">Fecha</th>
+                                <th style="width: 10%;">Vistas</th>
+                                <th style="width: 10%;">Estado</th>
+                                <th style="width: 15%;" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Noticia destacada -->
+                            <tr class="table-warning noticia-destacada">
+                                <td><i class="fas fa-star text-warning"></i></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/60" class="rounded me-2" width="40" height="40" alt="Miniatura">
+                                        <div>
+                                            <strong>Inicio del año escolar 2025</strong>
+                                            <div class="text-muted small">Publicado: 05/06/2025</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary categoria-badge">Académico</span></td>
+                                <td>Admin</td>
+                                <td>01/06/2025</td>
+                                <td><i class="fas fa-eye me-1"></i> 245</td>
+                                <td><span class="badge bg-success">Publicado</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Vista previa">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Otras noticias -->
+                            <tr>
+                                <td>2</td>
+                                <td>Concurso de matemáticas 2025</td>
+                                <td><span class="badge bg-success categoria-badge">Eventos</span></td>
+                                <td>Prof. Juan Pérez</td>
+                                <td>28/05/2025</td>
+                                <td><i class="fas fa-eye me-1"></i> 189</td>
+                                <td><span class="badge bg-success">Publicado</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>3</td>
+                                <td>Taller de programación para principiantes</td>
+                                <td><span class="badge bg-info categoria-badge">Talleres</span></td>
+                                <td>Prof. María López</td>
+                                <td>25/05/2025</td>
+                                <td><i class="fas fa-eye me-1"></i> 156</td>
+                                <td><span class="badge bg-secondary">Borrador</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>4</td>
+                                <td>Torneo deportivo intercolegial</td>
+                                <td><span class="badge bg-warning categoria-badge">Deportes</span></td>
+                                <td>Prof. Carlos Rojas</td>
+                                <td>20/05/2025</td>
+                                <td><i class="fas fa-eye me-1"></i> 210</td>
+                                <td><span class="badge bg-success">Publicado</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                <nav class="p-3 border-top">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar noticia -->
+<div class="modal fade" id="modalNoticia" tabindex="-1" aria-labelledby="modalNoticiaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalNoticiaLabel"><i class="fas fa-plus-circle me-2"></i>Nueva Noticia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Título de la noticia</label>
+                                <input type="text" class="form-control form-control-lg" placeholder="Ingrese un título atractivo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Categoría</label>
+                                <select class="form-select" required>
+                                    <option value="" disabled selected>Seleccione una categoría</option>
+                                    <option>Académico</option>
+                                    <option>Eventos</option>
+                                    <option>Deportes</option>
+                                    <option>Cultural</option>
+                                    <option>Talleres</option>
+                                    <option>Otros</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Resumen</label>
+                        <textarea class="form-control" rows="2" placeholder="Escribe un resumen corto que aparecerá en la vista previa" required></textarea>
+                        <div class="form-text">Máximo 200 caracteres</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Contenido completo</label>
+                        <textarea class="form-control" id="editor" rows="8" placeholder="Escribe aquí el contenido completo de la noticia" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Imagen destacada</label>
+                                <input type="file" class="form-control" accept="image/*" id="imagenNoticia">
+                                <div class="form-text">Tamaño recomendado: 1200x630px</div>
+                                <div class="mt-2" id="vistaPreviaImagen">
+                                    <img src="https://via.placeholder.com/400x200?text=Vista+previa" class="img-fluid rounded" id="imagenPrevia" style="max-height: 150px; display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha de publicación</label>
+                                <input type="datetime-local" class="form-control" value="2025-06-09T14:30">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Estado</label>
+                                <select class="form-select">
+                                    <option value="publicado">Publicar ahora</option>
+                                    <option value="programado">Programar para después</option>
+                                    <option value="borrador">Guardar como borrador</option>
+                                </select>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="destacarNoticia">
+                                <label class="form-check-label" for="destacarNoticia">Destacar esta noticia</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="permitirComentarios" checked>
+                                <label class="form-check-label" for="permitirComentarios">Permitir comentarios</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Etiquetas</label>
+                        <input type="text" class="form-control" placeholder="Separar con comas">
+                        <div class="form-text">Ej: educación, tecnología, deportes</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-save me-1"></i> Guardar borrador
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i> Publicar ahora
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script para vista previa de imagen -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputImagen = document.getElementById('imagenNoticia');
+    const imagenPrevia = document.getElementById('imagenPrevia');
+    
+    if (inputImagen && imagenPrevia) {
+        inputImagen.addEventListener('change', function(e) {
+            const archivo = e.target.files[0];
+            if (archivo) {
+                const lector = new FileReader();
+                lector.onload = function(e) {
+                    imagenPrevia.src = e.target.result;
+                    imagenPrevia.style.display = 'block';
+                }
+                lector.readAsDataURL(archivo);
+            }
+        });
+    }
+    
+    // Inicializar el editor de texto enriquecido (requiere la inclusión de la biblioteca correspondiente)
+    if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.replace('editor');
+    }
+});
+</script>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

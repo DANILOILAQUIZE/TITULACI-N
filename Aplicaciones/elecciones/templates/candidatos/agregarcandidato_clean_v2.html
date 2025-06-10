@@ -1,0 +1,283 @@
+{% extends "plantilla.html" %}
+{% load static %}
+
+{% block contenido %}
+<style>
+.preview-image {
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 10px;
+    border-radius: 5px;
+    display: none;
+}
+.candidato-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    position: relative;
+}
+.candidato-container h5 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+</style>
+
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Agregar Candidatos</h4>
+            <a href="{% url 'listar_candidatos' %}" class="btn btn-light btn-sm">
+                <i class="fas fa-list"></i> Ver Lista de Candidatos
+            </a>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="POST" enctype="multipart/form-data" id="formCandidatos">
+                {% csrf_token %}
+                
+                <!-- Lista y Período -->
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="lista">LISTA</label>
+                        <select class="form-control rounded-pill" id="lista" name="lista" required>
+                            <option value="" selected disabled>--Seleccione una lista--</option>
+                            {% for lista in listas %}
+                                <option value="{{ lista.id }}">{{ lista.nombre_lista }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="periodo">PERIODO</label>
+                        <select class="form-control rounded-pill" id="periodo" name="periodo" required>
+                            <option value="" selected disabled>--Seleccione un periodo--</option>
+                            {% for periodo in periodos %}
+                                <option value="{{ periodo.id }}">{{ periodo.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Candidato Principal -->
+                <div class="candidato-container">
+                    <h5>Candidato Principal</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>CARGO</label>
+                            <select class="form-control rounded-pill" name="cargo_principal" required>
+                                <option value="" selected disabled>--Seleccione un cargo--</option>
+                                {% for cargo in cargos %}
+                                    <option value="{{ cargo.id }}">{{ cargo.nombre_cargo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>CÉDULA/NOMBRE</label>
+                            <input type="text" class="form-control rounded-pill cedula-input" data-tipo="principal" 
+                                   placeholder="Ingrese cédula o nombre" autocomplete="off">
+                            <input type="hidden" name="cedula_principal" class="cedula-hidden">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>NOMBRE COMPLETO</label>
+                            <input type="text" class="form-control rounded-pill nombre-input" name="nombre_principal" 
+                                   readonly required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>IMAGEN</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="imagen_principal" 
+                                       name="imagen_principal" accept="image/*" onchange="previewImage(event, 'preview_principal')">
+                                <label class="custom-file-label" for="imagen_principal">Seleccionar imagen</label>
+                            </div>
+                            <img id="preview_principal" class="preview-image mt-2" alt="Vista previa de la imagen">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Candidato Suplente -->
+                <div class="candidato-container">
+                    <h5>Candidato Suplente</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>CARGO</label>
+                            <select class="form-control rounded-pill" name="cargo_suplente" required>
+                                <option value="" selected disabled>--Seleccione un cargo--</option>
+                                {% for cargo in cargos %}
+                                    <option value="{{ cargo.id }}">{{ cargo.nombre_cargo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>CÉDULA/NOMBRE</label>
+                            <input type="text" class="form-control rounded-pill cedula-input" data-tipo="suplente" 
+                                   placeholder="Ingrese cédula o nombre" autocomplete="off">
+                            <input type="hidden" name="cedula_suplente" class="cedula-hidden">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>NOMBRE COMPLETO</label>
+                            <input type="text" class="form-control rounded-pill nombre-input" name="nombre_suplente" 
+                                   readonly required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>IMAGEN</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="imagen_suplente" 
+                                       name="imagen_suplente" accept="image/*" onchange="previewImage(event, 'preview_suplente')">
+                                <label class="custom-file-label" for="imagen_suplente">Seleccionar imagen</label>
+                            </div>
+                            <img id="preview_suplente" class="preview-image mt-2" alt="Vista previa de la imagen">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Candidato Alterno (Opcional) -->
+                <div class="candidato-container">
+                    <h5>Candidato Alterno (Opcional)</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>CARGO</label>
+                            <select class="form-control rounded-pill" name="cargo_alterno">
+                                <option value="" selected disabled>--Seleccione un cargo--</option>
+                                {% for cargo in cargos %}
+                                    <option value="{{ cargo.id }}">{{ cargo.nombre_cargo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>CÉDULA/NOMBRE</label>
+                            <input type="text" class="form-control rounded-pill cedula-input" data-tipo="alterno" 
+                                   placeholder="Ingrese cédula o nombre" autocomplete="off">
+                            <input type="hidden" name="cedula_alterno" class="cedula-hidden">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>NOMBRE COMPLETO</label>
+                            <input type="text" class="form-control rounded-pill nombre-input" name="nombre_alterno" 
+                                   readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>IMAGEN</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="imagen_alterno" 
+                                       name="imagen_alterno" accept="image/*" onchange="previewImage(event, 'preview_alterno')">
+                                <label class="custom-file-label" for="imagen_alterno">Seleccionar imagen</label>
+                            </div>
+                            <img id="preview_alterno" class="preview-image mt-2" alt="Vista previa de la imagen">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-right mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4">
+                        <i class="fas fa-save mr-2"></i>Guardar Candidatos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Función para mostrar vista previa de imágenes
+    function previewImage(event, previewId) {
+        const input = event.target;
+        const preview = document.getElementById(previewId);
+        const fileName = input.files[0]?.name || 'Ningún archivo seleccionado';
+        
+        // Actualizar el label del input file
+        const label = input.nextElementSibling;
+        label.textContent = fileName;
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                preview.classList.remove('d-none');
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    // Función para buscar nombre por cédula
+    function buscarNombrePorCedula(cedula, tipo) {
+        if (cedula.length < 9) return;
+        
+        // Mostrar loading
+        const $nombreInput = $(`input[name="nombre_${tipo}"]`);
+        $nombreInput.prop('disabled', true).val('Buscando...');
+        
+        $.ajax({
+            url: '{% url "buscar_nombre_por_cedula" %}' || '/buscar_nombre_por_cedula/',
+            data: { 'cedula': cedula },
+            dataType: 'json',
+            success: function(data) {
+                if (data.nombre) {
+                    $(`input[name="nombre_${tipo}"]`).val(data.nombre);
+                    $(`input[name="cedula_${tipo}"]`).val(cedula);
+                } else {
+                    $(`input[name="nombre_${tipo}"]`).val('');
+                    $(`input[name="cedula_${tipo}"]`).val('');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No encontrado',
+                        text: 'No se encontró un ciudadano con esta cédula',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la búsqueda:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al buscar la cédula',
+                    confirmButtonText: 'Aceptar'
+                });
+            },
+            complete: function() {
+                $nombreInput.prop('disabled', false);
+            }
+        });
+    }
+
+    // Manejar cambio en los inputs de cédula
+    $(document).on('change keyup', '.cedula-input', function() {
+        const tipo = $(this).data('tipo');
+        const cedula = $(this).val().trim();
+        
+        if (cedula.length === 10) {  // Asumiendo que la cédula tiene 10 dígitos
+            buscarNombrePorCedula(cedula, tipo);
+        }
+    });
+
+    // Inicializar tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}
