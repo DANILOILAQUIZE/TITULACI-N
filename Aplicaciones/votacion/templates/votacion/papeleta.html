@@ -1,122 +1,191 @@
-{% extends "plantilla.html" %}
+<!DOCTYPE html>
 {% load static %}
-{% block contenido %}
-<div class="container mt-3">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Papeleta de Votación - {{ proceso.nombre }}</h4>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papeleta de Votación - {{ proceso.nombre }}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/papeleta.css' %}">
+    
+    <style>
+        /* Estilos inline adicionales si son necesarios */
+    </style>
+</head>
+<body>
+    <div class="voting-container">
+        <div class="header-card" data-aos="fade-up">
+            <div class="header-content">
+                <h1>Papeleta de Votación</h1>
+                <p>{{ proceso.nombre }}</p>
+            </div>
         </div>
-        <div class="card-body">
-            <form method="POST" action="{% url 'registrar_voto' proceso.id %}">
-                {% csrf_token %}
-                
-                {% if listas_con_candidatos %}
-                <div class="d-flex flex-wrap">
-                    {% for item in listas_con_candidatos %}
-                    <div class="mr-3 mb-3" style="width: 300px;">
-                        <div class="card h-100 border-{{ item.lista.color|default:'primary' }}">
-                            <div class="card-header border-bottom-{{ item.lista.color|default:'primary' }}">
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="lista_{{ item.lista.id }}" name="tipo_voto" value="lista" class="custom-control-input" data-lista="{{ item.lista.id }}">
-                                    <label class="custom-control-label" for="lista_{{ item.lista.id }}">
-                                        <h5 class="card-title mb-2 text-center">{{ item.lista.nombre_lista }}</h5>
-                                    </label>
+
+        <form method="POST" action="{% url 'registrar_voto' proceso.id %}">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <input type="hidden" name="lista" id="lista_seleccionada">
+            
+            {% if listas_con_candidatos %}
+            <div class="list-grid">
+                {% for item in listas_con_candidatos %}
+                <div class="list-item">
+                    <input type="radio" 
+                           id="lista_{{ item.lista.id }}" 
+                           name="tipo_voto" 
+                           value="lista" 
+                           class="hidden-radio" 
+                           data-lista="{{ item.lista.id }}">
+                    <label for="lista_{{ item.lista.id }}" class="list-card">
+                        <div class="selected-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="list-header">
+                            {% if item.lista.imagen %}
+                                <img src="{{ item.lista.imagen.url }}" alt="{{ item.lista.nombre_lista }}" class="list-logo">
+                            {% else %}
+                                <div class="list-logo">
+                                    <i class="fas fa-landmark" style="font-size: 2.5rem; color: #6c757d; margin-top: 15px;"></i>
                                 </div>
-                            </div>
-                            <div class="card-body text-center">
-                                {% if item.lista.imagen %}
-                                    <img src="{{ item.lista.imagen.url }}" alt="Logo de {{ item.lista.nombre_lista }}" class="img-fluid mb-3" style="max-height: 200px;">
+                            {% endif %}
+                            <h3 class="list-name">{{ item.lista.nombre_lista }}</h3>
+                            {% if item.lista.frase %}
+                                <p class="list-slogan">"{{ item.lista.frase }}"</p>
+                            {% endif %}
+                        </div>
+                        <div class="candidates-grid">
+                            {% for candidato in item.candidatos %}
+                            <div class="candidate-item">
+                                {% if candidato.imagen %}
+                                    <img src="{{ candidato.imagen.url }}" 
+                                         alt="{{ candidato.nombre_candidato }}" 
+                                         class="candidate-photo"
+                                         title="{{ candidato.cargo.nombre_cargo }}: {{ candidato.nombre_candidato }}">
                                 {% else %}
-                                    <div class="bg-light p-3 mb-3">
-                                        <i class="la la-image" style="font-size: 3rem; color: #6c757d;"></i>
-                                        <p class="text-muted mt-2">Sin imagen</p>
+                                    <div class="candidate-photo" style="background-color: #f0f2f5; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user" style="font-size: 1.5rem; color: #6c757d;"></i>
                                     </div>
                                 {% endif %}
-                                <p class="card-text">
-                                    <strong>Frase:</strong> {{ item.lista.frase|default:"Sin frase" }}
-                                </p>
-                                <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
-                                    {% for candidato in item.candidatos %}
-                                        <div class="text-center" style="width: 60px;">
-                                            {% if candidato.imagen %}
-                                                <img src="{{ candidato.imagen.url }}" 
-                                                     alt="{{ candidato.nombre_candidato }}" 
-                                                     class="img-fluid rounded-circle mb-1" 
-                                                     style="width: 40px; height: 40px; object-fit: cover;"
-                                                     title="{{ candidato.cargo.nombre_cargo }}: {{ candidato.nombre_candidato }}">
-                                            {% else %}
-                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-1" 
-                                                     style="width: 40px; height: 40px; margin: 0 auto;">
-                                                    <i class="la la-user" style="font-size: 1.5rem; color: #6c757d;"></i>
-                                                </div>
-                                            {% endif %}
-                                            <small class="d-block text-truncate" style="font-size: 0.7rem;" title="{{ candidato.cargo.nombre_cargo }}">
-                                                {{ candidato.cargo.nombre_cargo }}
-                                            </small>
-                                        </div>
-                                    {% endfor %}
+                                <div class="candidate-role" title="{{ candidato.cargo.nombre_cargo }}">
+                                    {{ candidato.cargo.nombre_cargo }}
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                    </div>
-                    {% endfor %}
+                    </label>
                 </div>
-                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
 
-                <div class="d-flex justify-content-center mt-4">
-                    <div class="card border-secondary mr-3" style="width: 200px;">
-                        <div class="card-body text-center">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="voto_blanco" name="tipo_voto" value="blanco" class="custom-control-input">
-                                <label class="custom-control-label" for="voto_blanco">
-                                    <h5 class="mb-0">Voto en Blanco</h5>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-secondary" style="width: 200px;">
-                        <div class="card-body text-center">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="voto_nulo" name="tipo_voto" value="nulo" class="custom-control-input">
-                                <label class="custom-control-label" for="voto_nulo">
-                                    <h5 class="mb-0">Voto Nulo</h5>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="voting-options">
+                <label class="voting-option" for="voto_blanco">
+                    <input type="radio" id="voto_blanco" name="tipo_voto" value="blanco" class="hidden-radio">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Voto en Blanco</h3>
+                    <p>No voto por ninguna lista</p>
+                </label>
+                
+                <label class="voting-option" for="voto_nulo">
+                    <input type="radio" id="voto_nulo" name="tipo_voto" value="nulo" class="hidden-radio">
+                    <i class="fas fa-ban"></i>
+                    <h3>Voto Nulo</h3>
+                    <p>Mi voto no será contabilizado</p>
+                </label>
+            </div>
 
-                <input type="hidden" name="lista" id="lista_seleccionada">
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
-                        <i class="la la-check-circle"></i> Confirmar Voto
-                    </button>
-                    <a href="{% url 'lista_procesos' %}" class="btn btn-secondary btn-lg rounded-pill ml-2">
-                        <i class="la la-times-circle"></i> Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
+            <div class="text-center my-5">
+                <button type="submit" class="btn btn-primary btn-vote me-3">
+                    <i class="fas fa-check-circle me-2"></i>Confirmar Voto
+                </button>
+                <a href="{% url 'lista_procesos' %}" class="btn btn-outline-secondary btn-vote">
+                    <i class="fas fa-times-circle me-2"></i>Cancelar
+                </a>
+            </div>
+        </form>
     </div>
-</div>
 
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[name="tipo_voto"]');
-    const listaSeleccionada = document.getElementById('lista_seleccionada');
-
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'lista') {
-                listaSeleccionada.value = this.dataset.lista;
-            } else {
-                listaSeleccionada.value = '';
-            }
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+    // Inicializar AOS
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+    
+    // Manejar la selección de opciones
+    document.addEventListener('DOMContentLoaded', function() {
+        const radioButtons = document.querySelectorAll('input[name="tipo_voto"]');
+        const listaSeleccionada = document.getElementById('lista_seleccionada');
+        
+        // Función para remover la clase 'selected' de todas las opciones
+        function clearSelections() {
+            document.querySelectorAll('.list-card, .voting-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+        
+        // Manejar cambios en los radio buttons
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                clearSelections();
+                
+                // Marcar como seleccionado el elemento padre correspondiente
+                if (this.id.startsWith('lista_')) {
+                    this.closest('.list-item').querySelector('.list-card').classList.add('selected');
+                    listaSeleccionada.value = this.dataset.lista;
+                } else {
+                    this.closest('.voting-option').classList.add('selected');
+                    listaSeleccionada.value = '';
+                }
+                
+                // Desplazamiento suave hacia arriba en móviles
+                if (window.innerWidth < 768) {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Efecto hover para las tarjetas de lista
+        document.querySelectorAll('.list-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                }
+            });
         });
     });
-});
-</script>
-{% endblock %}
-{% endblock %}
+    </script>
+</body>
+</html>
