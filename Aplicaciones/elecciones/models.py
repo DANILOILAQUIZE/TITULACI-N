@@ -25,12 +25,25 @@ class Cargo(models.Model):
         return f"{self.get_nombre_cargo_display()} ({self.periodo.nombre})"
     
 class Candidato(models.Model):
+    TIPOS_CANDIDATO = [
+        ('PRINCIPAL', 'Principal'),
+        ('SUPLENTE', 'Suplente'),
+        ('ALTERNO', 'Alterno'),
+    ]
+    
     nombre_candidato = models.CharField(max_length=100) 
     lista = models.ForeignKey(Lista, on_delete=models.CASCADE)  
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE) 
     periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE) 
-    padron=models.ForeignKey(PadronElectoral, on_delete=models.CASCADE, null=True, blank=True)
-    imagen = models.ImageField(upload_to='candidatos/', null=True, blank=True)  
+    padron = models.ForeignKey(PadronElectoral, on_delete=models.CASCADE, null=True, blank=True)
+    imagen = models.ImageField(upload_to='candidatos/', null=True, blank=True)
+    tipo_candidato = models.CharField(
+        max_length=20, 
+        choices=TIPOS_CANDIDATO, 
+        default='PRINCIPAL',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.nombre_candidato} - {self.cargo.nombre_cargo} ({self.lista.nombre_lista})"

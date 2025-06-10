@@ -1,235 +1,528 @@
 {% extends "plantilla.html" %}
 {% load static %}
+
 {% block contenido %}
 <style>
+/* Estilos para la vista previa de imágenes */
 .preview-image {
     width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    margin-top: 10px;
+}
+
+/* Estilos para los inputs de archivo personalizados */
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
     margin-top: 5px;
 }
+
+.custom-file-upload:hover {
+    background-color: #e9ecef;
+}
+
+/* Ocultar el input de archivo por defecto */
+.file-input {
+    display: none;
+}
+
+/* Estilo para el contenedor de la imagen */
+.image-upload-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Estilo para el ícono de cámara */
+.upload-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #4e73df;
+    color: white;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Contenedor de la imagen con posición relativa */
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.card-candidato {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.card-candidato:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1rem 1.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e3e6f0;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-secondary {
+    background: #858796;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.section-title {
+    position: relative;
+    padding-left: 15px;
+    margin: 20px 0 15px;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.section-title:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    height: 70%;
+    width: 4px;
+    background: #4e73df;
+    border-radius: 2px;
+}
+
+.avatar-upload {
+    position: relative;
+    max-width: 150px;
+    margin: 0 auto;
+}
+
+.avatar-upload .avatar-edit {
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    bottom: 10px;
+}
+
+.avatar-upload .avatar-edit input {
+    display: none;
+}
+
+.avatar-upload .avatar-edit label {
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 0;
+    border-radius: 100%;
+    background: #4e73df;
+    border: 2px solid #fff;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-weight: normal;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.avatar-upload .avatar-edit label:hover {
+    background: #2e59d9;
+}
 </style>
-<div class="container mt-3">
-    <div class="card">
-        <div class="card-header bg-primary text-white py-2">
-            <h4 class="mb-0">{% if candidatos_existentes %}Editar Candidatos{% else %}Agregar Candidato{% endif %}</h4>
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-user-plus me-2 text-primary"></i>
+            {% if candidatos_existentes %}Editar Candidatos{% else %}Agregar Nuevo Candidato{% endif %}
+        </h2>
+        <a href="{% url 'listar_candidatos' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Volver al Listado
+        </a>
+    </div>
+
+    <div class="card card-candidato">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                Información del Candidato
+            </h4>
         </div>
-        <div class="card-body py-3">
+        <div class="card-body py-4">
             {% if candidatos_existentes %}
-            <div class="table-responsive p-2">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Cargo</th>
-                            <th>Cédula</th>
-                            <th>Nombre</th>
-                            <th>Imagen</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for candidato in candidatos_existentes %}
-                        <tr>
-                            <td>{{ candidato.cargo.nombre_cargo }}</td>
-                            <td>{{ candidato.padron.cedula }}</td>
-                            <td>{{ candidato.nombre_candidato }}</td>
-                            <td>
-                                {% if candidato.imagen %}
-                                <img src="{{ candidato.imagen.url }}" alt="Imagen de {{ candidato.nombre_candidato }}" style="height: 50px;">
-                                {% else %}
-                                <span class="text-muted">Sin imagen</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url 'editar_candidato' candidato.id %}" class="btn btn-info btn-sm">
-                                    <i class="la la-edit"></i>
-                                </a>
-                                <a href="{% url 'eliminar_candidato' candidato.id %}" class="btn btn-danger btn-sm">
-                                    <i class="la la-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Ya existen candidatos registrados para esta lista y período. Puedes editarlos o agregar nuevos.
             </div>
             {% endif %}
 
-            <form method="POST" enctype="multipart/form-data" class="p-2">
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
-                <div class="form-row">
-                    <div class="form-group col-md-6 mb-2">
-                        <label for="lista">LISTA</label>
-                        <select class="form-control rounded-pill" id="lista" name="lista" required>
-                            <option value="" disabled {% if not lista_preseleccionada %}selected{% endif %}>--Seleccione una lista--</option>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="lista" class="form-label fw-bold">Lista Electoral</label>
+                        <select class="form-select" id="lista" name="lista" required>
+                            <option value="" disabled {% if not lista_preseleccionada %}selected{% endif %}>Seleccione una lista...</option>
                             {% for lista in listas %}
-                            <option value="{{ lista.id }}" {% if lista_preseleccionada and lista_preseleccionada.id == lista.id %}selected{% endif %}>{{ lista.nombre_lista }}</option>
+                            <option value="{{ lista.id }}" data-color="{{ lista.color }}" {% if lista_preseleccionada and lista_preseleccionada.id == lista.id %}selected{% endif %}>
+                                {{ lista.nombre_lista }}
+                            </option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione una lista.
+                        </div>
                     </div>
-                    <div class="form-group col-md-6 mb-2">
-                        <label for="periodo">PERIODO</label>
-                        <select class="form-control rounded-pill" id="periodo" name="periodo" required>
-                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>--Seleccione un periodo--</option>
+                    <div class="col-md-6 mb-3">
+                        <label for="periodo" class="form-label fw-bold">Período Electoral</label>
+                        <select class="form-select" id="periodo" name="periodo" required>
+                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>Seleccione un período...</option>
                             {% for periodo in periodos %}
-                            <option value="{{ periodo.id }}" {% if candidato_principal and candidato_principal.periodo.id == periodo.id %}selected{% endif %}>{{ periodo.nombre }}</option>
+                            <option value="{{ periodo.id }}" {% if candidato_principal and candidato_principal.periodo.id == periodo.id %}selected{% endif %}>
+                                {{ periodo.nombre }} ({{ periodo.fecha_inicio|date:"Y" }} - {{ periodo.fecha_fin|date:"Y" }})
+                            </option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un período.
+                        </div>
                     </div>
                 </div>
 
                 <!-- CANDIDATO PRINCIPAL -->
-                <h5 class="mt-3">Candidato Principal</h5>
-                <div class="form-row">
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cargo_principal">CARGO</label>
-                        <select class="form-control rounded-pill" id="cargo_principal" name="cargo_principal" required>
-                            <option value="" disabled {% if not candidato_principal %}selected{% endif %}>--Seleccione un cargo--</option>
+                <div class="section-title mt-4">
+                    <i class="fas fa-user-tie me-2"></i>Candidato Principal
+                    <span class="badge bg-primary ms-2">Obligatorio</span>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label for="cargo_principal" class="form-label">Cargo</label>
+                        <select class="form-select" id="cargo_principal" name="cargo_principal" required>
+                            <option value="" disabled selected>Seleccione un cargo...</option>
                             {% for cargo in cargos %}
-                            <option value="{{ cargo.id }}" {% if candidato_principal and candidato_principal.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            <option value="{{ cargo.id }}" {% if candidato_principal and candidato_principal.cargo.id == cargo.id %}selected{% endif %}>
+                                {{ cargo.nombre_cargo }}
+                            </option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un cargo.
+                        </div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_principal">CÉDULA/NOMBRE</label>
-                        <input type="text" class="form-control rounded-pill" id="cedula_principal" name="cedula_principal" placeholder="Ingrese cédula o nombre" value="{% if candidato_principal %}{{ candidato_principal.padron.cedula }}{% endif %}">
+                    <div class="col-md-3 mb-3">
+                        <label for="cedula_principal" class="form-label">Cédula/Nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            <input type="text" class="form-control" id="cedula_principal" name="cedula_principal" 
+                                   placeholder="Buscar por cédula o nombre" 
+                                   value="{% if candidato_principal %}{{ candidato_principal.padron.cedula }}{% endif %}"
+                                   autocomplete="off">
+                        </div>
+                        <div class="form-text">Ingrese para buscar en el padrón</div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="nombre_candidato_principal">NOMBRE COMPLETO</label>
-                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_principal" name="nombre_candidato_principal" required readonly value="{% if candidato_principal %}{{ candidato_principal.nombre_candidato }}{% endif %}">
+                    <div class="col-md-4 mb-3">
+                        <label for="nombre_candidato_principal" class="form-label">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="nombre_candidato_principal" 
+                                   name="nombre_candidato_principal" required readonly 
+                                   value="{% if candidato_principal %}{{ candidato_principal.nombre_candidato }}{% endif %}">
+                        </div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="imagen_principal">IMAGEN</label>
-                        <input type="file" class="form-control-file" id="imagen_principal" name="imagen_principal" accept="image/*" onchange="previewImage(event, 'preview_principal')">
-                        <img id="preview_principal" src="{% if candidato_principal and candidato_principal.imagen %}{{ candidato_principal.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_principal or not candidato_principal.imagen %}d-none{% endif %}">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Foto</label>
+                        <div class="image-upload-container">
+                            <div class="image-container">
+                                <img id="preview_principal" src="{% if candidato_principal and candidato_principal.imagen %}{{ candidato_principal.imagen.url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18c4a8a3d5b%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18c4a8a3d5b%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2272.5%22%20y%3D%22104.5%22%3E100x100%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E{% endif %}" class="preview-image" alt="Vista previa">
+                                <label for="imagen_principal" class="upload-icon" title="Cambiar imagen">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                            </div>
+                            <input type="file" class="file-input" id="imagen_principal" name="imagen_principal" accept="" onchange="previewImage(event, 'preview_principal')" {% if not candidato_principal or not candidato_principal.imagen %}required{% endif %}>
+                            <div class="form-text small mt-1">Haz clic en la cámara</div>
+                        </div>
+                        <div class="invalid-feedback">
+                            Por favor seleccione una imagen.
+                        </div>
                     </div>
                 </div>
 
                 <!-- CANDIDATO SUPLENTE -->
-                <h5 class="mt-3">Candidato Suplente</h5>
-                <div class="form-row">
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cargo_suplente">CARGO</label>
-                        <select class="form-control rounded-pill" id="cargo_suplente" name="cargo_suplente" required>
-                            <option value="" disabled {% if not candidato_suplente %}selected{% endif %}>--Seleccione un cargo--</option>
+                <div class="section-title mt-4">
+                    <i class="fas fa-user-friends me-2"></i>Candidato Suplente
+                    <span class="badge bg-success ms-2">Obligatorio</span>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label for="cargo_suplente" class="form-label">Cargo</label>
+                        <select class="form-select" id="cargo_suplente" name="cargo_suplente" required>
+                            <option value="" disabled selected>Seleccione un cargo...</option>
                             {% for cargo in cargos %}
-                            <option value="{{ cargo.id }}" {% if candidato_suplente and candidato_suplente.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            <option value="{{ cargo.id }}" {% if candidato_suplente and candidato_suplente.cargo.id == cargo.id %}selected{% endif %}>
+                                {{ cargo.nombre_cargo }}
+                            </option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un cargo.
+                        </div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_suplente">CÉDULA/NOMBRE</label>
-                        <input type="text" class="form-control rounded-pill" id="cedula_suplente" name="cedula_suplente" placeholder="Ingrese cédula" value="{% if candidato_suplente %}{{ candidato_suplente.padron.cedula }}{% endif %}">
+                    <div class="col-md-3 mb-3">
+                        <label for="cedula_suplente" class="form-label">Cédula/Nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            <input type="text" class="form-control" id="cedula_suplente" name="cedula_suplente" 
+                                   placeholder="Buscar por cédula o nombre" 
+                                   value="{% if candidato_suplente %}{{ candidato_suplente.padron.cedula }}{% endif %}"
+                                   autocomplete="off">
+                        </div>
+                        <div class="form-text">Ingrese para buscar en el padrón</div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="nombre_candidato_suplente">NOMBRE COMPLETO</label>
-                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_suplente" name="nombre_candidato_suplente" required readonly value="{% if candidato_suplente %}{{ candidato_suplente.nombre_candidato }}{% endif %}">
+                    <div class="col-md-4 mb-3">
+                        <label for="nombre_candidato_suplente" class="form-label">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="nombre_candidato_suplente" 
+                                   name="nombre_candidato_suplente" required readonly 
+                                   value="{% if candidato_suplente %}{{ candidato_suplente.nombre_candidato }}{% endif %}">
+                        </div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="imagen_suplente">IMAGEN</label>
-                        <input type="file" class="form-control-file" id="imagen_suplente" name="imagen_suplente" accept="image/*" onchange="previewImage(event, 'preview_suplente')">
-                        <img id="preview_suplente" src="{% if candidato_suplente and candidato_suplente.imagen %}{{ candidato_suplente.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_suplente or not candidato_suplente.imagen %}d-none{% endif %}">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Foto</label>
+                        <div class="image-upload-container">
+                            <div class="image-container">
+                                <img id="preview_suplente" src="{% if candidato_suplente and candidato_suplente.imagen %}{{ candidato_suplente.imagen.url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18c4a8a3d5b%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18c4a8a3d5b%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2272.5%22%20y%3D%22104.5%22%3E100x100%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E{% endif %}" class="preview-image" alt="Vista previa">
+                                <label for="imagen_suplente" class="upload-icon" title="Cambiar imagen">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                            </div>
+                            <input type="file" class="file-input" id="imagen_suplente" name="imagen_suplente" accept="image/*" onchange="previewImage(event, 'preview_suplente')">
+                            <div class="form-text small mt-1">Haz clic en la cámara</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- CANDIDATO ALTERNO -->
-                <h5 class="mt-3">Candidato Alterno (opcional)</h5>
-                <div class="form-row">
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cargo_alterno">CARGO</label>
-                        <select class="form-control rounded-pill" id="cargo_alterno" name="cargo_alterno">
-                            <option value="" disabled {% if not candidato_alterno %}selected{% endif %}>--Seleccione un cargo--</option>
+                <div class="section-title mt-4">
+                    <i class="fas fa-user-plus me-2"></i>Candidato Alterno
+                    <span class="badge bg-secondary ms-2">Opcional</span>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label for="cargo_alterno" class="form-label">Cargo</label>
+                        <select class="form-select" id="cargo_alterno" name="cargo_alterno">
+                            <option value="" disabled selected>Seleccione un cargo...</option>
                             {% for cargo in cargos %}
-                            <option value="{{ cargo.id }}" {% if candidato_alterno and candidato_alterno.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nombre_cargo }}</option>
+                            <option value="{{ cargo.id }}" {% if candidato_alterno and candidato_alterno.cargo.id == cargo.id %}selected{% endif %}>
+                                {{ cargo.nombre_cargo }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="cedula_alterno">CÉDULA/NOMBRE</label>
-                        <input type="text" class="form-control rounded-pill" id="cedula_alterno" name="cedula_alterno" placeholder="Ingrese cédula o nombre" value="{% if candidato_alterno %}{{ candidato_alterno.padron.cedula }}{% endif %}">
+                    <div class="col-md-3 mb-3">
+                        <label for="cedula_alterno" class="form-label">Cédula/Nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            <input type="text" class="form-control" id="cedula_alterno" name="cedula_alterno" 
+                                   placeholder="Buscar por cédula o nombre" 
+                                   value="{% if candidato_alterno %}{{ candidato_alterno.padron.cedula }}{% endif %}"
+                                   autocomplete="off">
+                        </div>
+                        <div class="form-text">Ingrese para buscar en el padrón</div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="nombre_candidato_alterno">NOMBRE COMPLETO</label>
-                        <input type="text" class="form-control rounded-pill" id="nombre_candidato_alterno" name="nombre_candidato_alterno" required readonly value="{% if candidato_alterno %}{{ candidato_alterno.nombre_candidato }}{% endif %}">
+                    <div class="col-md-4 mb-3">
+                        <label for="nombre_candidato_alterno" class="form-label">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="nombre_candidato_alterno" 
+                                   name="nombre_candidato_alterno" readonly 
+                                   value="{% if candidato_alterno %}{{ candidato_alterno.nombre_candidato }}{% endif %}">
+                        </div>
                     </div>
-                    <div class="form-group col-md-4 mb-2">
-                        <label for="imagen_alterno">IMAGEN</label>
-                        <input type="file" class="form-control-file" id="imagen_alterno" name="imagen_alterno" accept="image/*" onchange="previewImage(event, 'preview_alterno')">
-                        <img id="preview_alterno" src="{% if candidato_alterno and candidato_alterno.imagen %}{{ candidato_alterno.imagen.url }}{% else %}#{% endif %}" alt="Vista previa" class="preview-image {% if not candidato_alterno or not candidato_alterno.imagen %}d-none{% endif %}">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Foto</label>
+                        <div class="image-upload-container">
+                            <div class="image-container">
+                                <img id="preview_alterno" src="{% if candidato_alterno and candidato_alterno.imagen %}{{ candidato_alterno.imagen.url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18c4a8a3d5b%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18c4a8a3d5b%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2272.5%22%20y%3D%22104.5%22%3E100x100%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E{% endif %}" class="preview-image" alt="Vista previa">
+                                <label for="imagen_alterno" class="upload-icon" title="Cambiar imagen">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                            </div>
+                            <input type="file" class="file-input" id="imagen_alterno" name="imagen_alterno" accept="image/*" onchange="previewImage(event, 'preview_alterno')">
+                            <div class="form-text small mt-1">Haz clic en la cámara</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Botones -->
-                <div class="form-group text-center mt-2 mb-2">
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-                    <a href="{% url 'listar_candidatos' %}" class="btn btn-secondary rounded-pill px-4">CANCELAR</a>
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                    <div>
+                        <a href="{% url 'listar_candidatos' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar Candidato
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-
 <!-- Scripts -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
     
-    form.addEventListener('submit', function(e) {
-        console.log('Formulario enviado');
-        
-        // Recopilar datos del formulario
-        const formData = new FormData(this);
-        
-        // Imprimir todos los datos
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-        
-        // Validar campos requeridos
-        const requiredFields = this.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                console.error(`Campo requerido vacío: ${field.name}`);
-                field.classList.add('is-invalid');
-                isValid = false;
+    // Inicializar la búsqueda de candidatos
+    inicializarBusquedaCandidatos();
+    
+    // Obtener el formulario
+    const form = document.querySelector('form.needs-validation');
+    if (form) {
+        // Agregar evento de envío del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let formIsValid = true;
+            const requiredFields = this.querySelectorAll('[required]');
+            
+            // Validar campos requeridos
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    formIsValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar imagen
+            const imagenPrincipal = document.getElementById('imagen_principal');
+            if (imagenPrincipal && !imagenPrincipal.files[0] && !'{{ candidato_principal.imagen }}') {
+                alert('Por favor, seleccione una imagen para el candidato principal');
+                return false;
+            }
+            
+            if (formIsValid) {
+                // Mostrar loader
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+                
+                // Enviar formulario con AJAX
+                const formData = new FormData(this);
+                
+                // Debug: Mostrar datos del formulario
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+                
+                // Enviar con AJAX
+                fetch(this.action || window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mostrar mensaje de éxito
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        // Mostrar mensaje de error
+                        alert(data.message || 'Error al guardar los candidatos');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la solicitud. Por favor, intente nuevamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
+                
+                return false; // Prevenir envío normal del formulario
             } else {
-                field.classList.remove('is-invalid');
+                // Mostrar mensaje de error si hay campos inválidos
+                alert('Por favor complete correctamente todos los campos requeridos.');
             }
         });
-        
-        if (!isValid) {
-            e.preventDefault();
-            alert('Por favor complete todos los campos requeridos.');
-        }
-    });
+    }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Seguridad para evitar errores de inicialización
-    try {
-        const cedulaPrincipal = document.getElementById('cedula_principal');
-        const nombreCandidatoPrincipal = document.getElementById('nombre_candidato_principal');
-        const cedulaSuplente = document.getElementById('cedula_suplente');
-        const nombreCandidatoSuplente = document.getElementById('nombre_candidato_suplente');
-        const cedulaAlterno = document.getElementById('cedula_alterno');
-        const nombreCandidatoAlterno = document.getElementById('nombre_candidato_alterno');
-
-        // Función buscarNombre (código anterior)
-        function buscarNombre(busqueda, campoNombre) {
+// Función para buscar nombre por cédula o viceversa
+function buscarNombre(busqueda, campoNombre, campoCedula) {
     // Si el campo está vacío, limpiar todo
     if (!busqueda) {
         campoNombre.value = '';
-        const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
-                           campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
-                           campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
         if (campoCedula) {
             campoCedula.value = '';
         }
         return;
     }
-
+    
     // Determinar si la búsqueda es por cédula o por nombre
     const esCedula = /^[0-9]+$/.test(busqueda);
 
@@ -250,11 +543,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log('Datos recibidos:', data);
                 if (data.nombre && data.cedula) {
-                    // Obtener el campo de cédula correspondiente
-                    const campoCedula = campoNombre.id === 'nombre_candidato_principal' ? cedulaPrincipal :
-                                       campoNombre.id === 'nombre_candidato_suplente' ? cedulaSuplente :
-                                       campoNombre.id === 'nombre_candidato_alterno' ? cedulaAlterno : null;
-                    
                     // Establecer valores
                     if (esCedula) {
                         campoNombre.value = data.nombre;
@@ -280,59 +568,91 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 }
 
-        // Función manejarBusqueda (código anterior)
-        function manejarBusqueda(input, campoNombre) {
-            // ... (código anterior de manejarBusqueda)
+// Función para inicializar la búsqueda de candidatos
+function inicializarBusquedaCandidatos() {
+    // Seguridad para evitar errores de inicialización
+    try {
+        const cedulaPrincipal = document.getElementById('cedula_principal');
+        const nombreCandidatoPrincipal = document.getElementById('nombre_candidato_principal');
+        const cedulaSuplente = document.getElementById('cedula_suplente');
+        const nombreCandidatoSuplente = document.getElementById('nombre_candidato_suplente');
+        const cedulaAlterno = document.getElementById('cedula_alterno');
+        const nombreCandidatoAlterno = document.getElementById('nombre_candidato_alterno');
+
+        // Verificar que todos los elementos existan
+        if (!cedulaPrincipal || !nombreCandidatoPrincipal || !cedulaSuplente || 
+            !nombreCandidatoSuplente || !cedulaAlterno || !nombreCandidatoAlterno) {
+            console.error('No se encontraron todos los elementos necesarios');
+            return;
         }
 
-        // Eventos de búsqueda
-        cedulaPrincipal.addEventListener('input', function() {
-            buscarNombre(this.value, nombreCandidatoPrincipal);
-        });
-
-        cedulaSuplente.addEventListener('input', function() {
-            buscarNombre(this.value, nombreCandidatoSuplente);
-        });
-
-        cedulaAlterno.addEventListener('input', function() {
-            buscarNombre(this.value, nombreCandidatoAlterno);
-        });
-
-        // Eventos de borrado manual
-        cedulaPrincipal.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-                nombreCandidatoPrincipal.value = '';
+        // Función para manejar la búsqueda
+        function manejarBusqueda(input, campoNombre, campoCedula) {
+            if (input.value) {
+                buscarNombre(input.value, campoNombre, campoCedula);
             }
-        });
+        }
 
-        cedulaSuplente.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-                nombreCandidatoSuplente.value = '';
-            }
-        });
+        // Eventos de búsqueda para el candidato principal
+        if (cedulaPrincipal && nombreCandidatoPrincipal) {
+            cedulaPrincipal.addEventListener('input', function() {
+                buscarNombre(this.value, nombreCandidatoPrincipal, cedulaPrincipal);
+            });
 
-        cedulaAlterno.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-                nombreCandidatoAlterno.value = '';
-            }
-        });
+            cedulaPrincipal.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    nombreCandidatoPrincipal.value = '';
+                }
+            });
 
-        // Búsqueda cuando el campo pierde el foco
-        cedulaPrincipal.addEventListener('change', function() {
-            manejarBusqueda(this, nombreCandidatoPrincipal);
-        });
+            cedulaPrincipal.addEventListener('change', function() {
+                if (this.value) {
+                    buscarNombre(this.value, nombreCandidatoPrincipal, cedulaPrincipal);
+                }
+            });
+        }
 
-        cedulaSuplente.addEventListener('change', function() {
-            manejarBusqueda(this, nombreCandidatoSuplente);
-        });
+        // Eventos de búsqueda para el candidato suplente
+        if (cedulaSuplente && nombreCandidatoSuplente) {
+            cedulaSuplente.addEventListener('input', function() {
+                buscarNombre(this.value, nombreCandidatoSuplente, cedulaSuplente);
+            });
 
-        cedulaAlterno.addEventListener('change', function() {
-            manejarBusqueda(this, nombreCandidatoAlterno);
-        });
+            cedulaSuplente.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    nombreCandidatoSuplente.value = '';
+                }
+            });
+
+            cedulaSuplente.addEventListener('change', function() {
+                if (this.value) {
+                    buscarNombre(this.value, nombreCandidatoSuplente, cedulaSuplente);
+                }
+            });
+        }
+
+        // Eventos de búsqueda para el candidato alterno
+        if (cedulaAlterno && nombreCandidatoAlterno) {
+            cedulaAlterno.addEventListener('input', function() {
+                buscarNombre(this.value, nombreCandidatoAlterno, cedulaAlterno);
+            });
+
+            cedulaAlterno.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                    nombreCandidatoAlterno.value = '';
+                }
+            });
+
+            cedulaAlterno.addEventListener('change', function() {
+                if (this.value) {
+                    buscarNombre(this.value, nombreCandidatoAlterno, cedulaAlterno);
+                }
+            });
+        }
     } catch (error) {
         console.error('Error en la inicialización de scripts:', error);
     }
-});
+}
 
 // Función para vista previa de imagen
 function previewImage(event, idPreview) {

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q
 from django.utils import timezone
+from django.urls import reverse
 import json
 from .models import Candidato, Lista, Cargo
 from Aplicaciones.periodo.models import Periodo
@@ -477,15 +478,9 @@ def agregar_candidato(request):
     print(f'GET parameters: {request.GET}')
     print(f'POST parameters: {request.POST}')
     print(f'FILES: {request.FILES}')
-    print('\n' + '='*50)
-    print('DEPURACIÓN: Vista de Agregar Candidato')
-    print('='*50)
-    print(f'Método de solicitud: {request.method}')
-    print(f'GET parameters: {request.GET}')
-    print(f'POST parameters: {request.POST}')
-    print(f'FILES: {request.FILES}')
+    
     # Obtener el ID de la lista si se pasa como parámetro
-    lista_id = request.GET.get('lista')
+    lista_id = request.GET.get('lista') or request.POST.get('lista')
     lista_preseleccionada = None
     candidatos_existentes = None
     
@@ -494,8 +489,11 @@ def agregar_candidato(request):
             lista_preseleccionada = Lista.objects.get(id=lista_id)
             # Obtener los candidatos existentes de la lista
             candidatos_existentes = Candidato.objects.filter(lista=lista_preseleccionada)
-        except Lista.DoesNotExist:
-            pass
+        except (Lista.DoesNotExist, ValueError):
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'Lista no encontrada'}, status=404)
+            messages.error(request, 'Lista no encontrada')
+            return redirect('listar_candidatos')
     
     if request.method == 'POST':
         # Campos para candidato principal
@@ -526,86 +524,187 @@ def agregar_candidato(request):
             return redirect('agregar_candidato')
         
         try:
+            # Obtener instancias de los modelos
             lista = Lista.objects.get(id=lista_id)
             cargo_principal = Cargo.objects.get(id=cargo_principal_id)
             cargo_suplente = Cargo.objects.get(id=cargo_suplente_id)
             periodo = Periodo.objects.get(id=periodo_id)
             
-            # Buscar en el padrón electoral
+            # Crear candidatos en una transacción atómica
+            from django.db import transaction
+            
             try:
-                padron_principal = PadronElectoral.objects.get(cedula=cedula_principal)
-                padron_suplente = PadronElectoral.objects.get(cedula=cedula_suplente)
-                padron_alterno = None
-                
-                # Validar candidato alterno si se proporciona
-                if cargo_alterno_id and cedula_alterno and nombre_alterno:
-                    padron_alterno = PadronElectoral.objects.get(cedula=cedula_alterno)
-            except PadronElectoral.DoesNotExist as e:
-                messages.error(request, f'Cédula no encontrada en el padrón electoral: {str(e)}')
+                with transaction.atomic():
+                    # Buscar en el padrón electoral (sin fallar si no existe)
+                    padron_principal = None
+                    padron_suplente = None
+                    padron_alterno = None
+                    
+                    # Validar cédulas únicas
+                    if cedula_principal and cedula_principal == cedula_suplente:
+                        error_msg = 'Las cédulas del candidato principal y suplente no pueden ser iguales'
+                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
+                        messages.error(request, error_msg)
+                        return redirect('agregar_candidato')
+                        
+                    if cedula_alterno and (cedula_alterno == cedula_principal or cedula_alterno == cedula_suplente):
+                        error_msg = 'La cédula del candidato alterno no puede coincidir con las de los otros candidatos'
+                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
+                        messages.error(request, error_msg)
+                        return redirect('agregar_candidato')
+                    
+                    try:
+                        if cedula_principal:
+                            padron_principal = PadronElectoral.objects.get(cedula=cedula_principal)
+                    except PadronElectoral.DoesNotExist:
+                        print(f"Advertencia: Cédula {cedula_principal} no encontrada en el padrón")
+                        
+                    try:
+                        if cedula_suplente:
+                            padron_suplente = PadronElectoral.objects.get(cedula=cedula_suplente)
+                    except PadronElectoral.DoesNotExist:
+                        print(f"Advertencia: Cédula {cedula_suplente} no encontrada en el padrón")
+                    
+                    # Validar cédulas únicas
+                    if cedula_principal and cedula_suplente and cedula_principal == cedula_suplente:
+                        error_msg = 'Las cédulas de los candidatos deben ser únicas'
+                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
+                        messages.error(request, error_msg)
+                        return redirect('agregar_candidato')
+                    
+                    # Crear candidatos en una transacción atómica
+                    from django.db import transaction
+                    
+                    with transaction.atomic():
+                        # Crear candidato principal
+                        candidato_principal = Candidato.objects.create(
+                            nombre_candidato=nombre_principal,
+                            lista=lista,
+                            cargo=cargo_principal,
+                            periodo=periodo,
+                            imagen=imagen_principal,
+                            padron=padron_principal,
+                            tipo_candidato='PRINCIPAL'
+                        )
+                        
+                        # Crear candidato suplente
+                        candidato_suplente = Candidato.objects.create(
+                            nombre_candidato=nombre_suplente,
+                            lista=lista,
+                            cargo=cargo_suplente,
+                            periodo=periodo,
+                            imagen=imagen_suplente,
+                            padron=padron_suplente,
+                            tipo_candidato='SUPLENTE'
+                        )
+                        
+                        # Crear candidato alterno si se proporciona
+                        if cargo_alterno_id and nombre_alterno:
+                            try:
+                                if cedula_alterno:
+                                    padron_alterno = PadronElectoral.objects.get(cedula=cedula_alterno)
+                                
+                                Candidato.objects.create(
+                                    nombre_candidato=nombre_alterno,
+                                    lista=lista,
+                                    cargo=Cargo.objects.get(id=cargo_alterno_id),
+                                    periodo=periodo,
+                                    imagen=imagen_alterno,
+                                    padron=padron_alterno,
+                                    tipo_candidato='ALTERNO'
+                                )
+                            except PadronElectoral.DoesNotExist:
+                                print(f"Advertencia: Cédula {cedula_alterno} no encontrada en el padrón")
+                                Candidato.objects.create(
+                                    nombre_candidato=nombre_alterno,
+                                    lista=lista,
+                                    cargo=Cargo.objects.get(id=cargo_alterno_id),
+                                    periodo=periodo,
+                                    imagen=imagen_alterno,
+                                    tipo_candidato='ALTERNO'
+                                )
+                        
+            except Exception as e:
+                error_msg = f'Error al crear candidatos: {str(e)}'
+                print(error_msg)
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'message': error_msg}, status=500)
+                messages.error(request, error_msg)
                 return redirect('agregar_candidato')
             
-            # Crear candidatos
-            try:
-                candidato_principal = Candidato.objects.create(
-                    nombre_candidato=nombre_principal,
-                    lista=lista,
-                    cargo=cargo_principal,
-                    periodo=periodo,
-                    imagen=imagen_principal,
-                    padron=padron_principal
-                )
-                print(f'Candidato principal creado: {candidato_principal.id}')
-                
-                candidato_suplente = Candidato.objects.create(
-                    nombre_candidato=nombre_suplente,
-                    lista=lista,
-                    cargo=cargo_suplente,
-                    periodo=periodo,
-                    imagen=imagen_suplente,
-                    padron=padron_suplente
-                )
-                print(f'Candidato suplente creado: {candidato_suplente.id}')
-            except Exception as e:
-                print(f'ERROR al crear candidatos: {str(e)}')
-                messages.error(request, f'Error al crear candidatos: {str(e)}')
-                return render(request, 'candidatos/agregarcandidato.html', {
-                    'listas': Lista.objects.all(),
-                    'cargos': Cargo.objects.all(),
-                    'periodos': Periodo.objects.all(),
-                    'errors': {'general': str(e)}
+            # Si llegamos aquí, todo salió bien
+            success_msg = 'Candidatos guardados exitosamente'
+            print(success_msg)
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True, 
+                    'message': success_msg,
+                    'redirect_url': reverse('listar_candidatos')
                 })
-            
-            # Candidato alterno (opcional)
-            if cargo_alterno_id and nombre_alterno and padron_alterno:
-                cargo_alterno = Cargo.objects.get(id=cargo_alterno_id)
-                candidato_alterno = Candidato.objects.create(
-                    nombre_candidato=nombre_alterno,
-                    lista=lista,
-                    cargo=cargo_alterno,
-                    periodo=periodo,
-                    imagen=imagen_alterno,
-                    padron=padron_alterno
-                )
-            
-            messages.success(request, 'Candidatos agregados exitosamente')
+                
+            messages.success(request, success_msg)
             return redirect('listar_candidatos')
-        
+            
         except (Lista.DoesNotExist, Cargo.DoesNotExist, Periodo.DoesNotExist) as e:
-            messages.error(request, f'Error al crear candidatos: {str(e)}')
+            error_msg = f'Error al procesar los datos: {str(e)}'
+            print(error_msg)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': error_msg}, status=400)
+            messages.error(request, error_msg)
+            return redirect('agregar_candidato')
+            
+        except Exception as e:
+            error_msg = f'Error inesperado: {str(e)}'
+            print(error_msg)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'Ocurrió un error inesperado'}, status=500)
+            messages.error(request, 'Ocurrió un error inesperado')
             return redirect('agregar_candidato')
     
-    # GET request
+    # Si es una petición AJAX, devolver JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'listas': [{'id': l.id, 'nombre': l.nombre} for l in Lista.objects.all()],
+                'cargos': [{'id': c.id, 'nombre': c.nombre_cargo} for c in Cargo.objects.all()],
+                'periodos': [{'id': p.id, 'nombre': p.nombre_periodo} for p in Periodo.objects.all()],
+                'lista_preseleccionada': lista_preseleccionada.id if lista_preseleccionada else None
+            }
+        })
+    
+    # Cargar datos para el formulario en petición normal
     listas = Lista.objects.all()
-    cargos = Cargo.objects.all()
+    cargos = list(Cargo.objects.all())
     periodos = Periodo.objects.all()
     
-    return render(request, 'candidatos/agregarcandidato.html', {
+    # Inicializar variables para el contexto
+    context = {
         'listas': listas,
         'cargos': cargos,
         'periodos': periodos,
         'lista_preseleccionada': lista_preseleccionada,
-        'candidatos_existentes': candidatos_existentes
-    })
+        'candidatos_existentes': candidatos_existentes or [],
+        'candidato_principal': None,
+        'candidato_suplente': None,
+        'candidato_alterno': None
+    }
+    
+    # Si hay candidatos existentes, cargarlos
+    if candidatos_existentes:
+        for candidato in candidatos_existentes:
+            if candidato.cargo.nombre_cargo.lower() == 'principal':
+                context['candidato_principal'] = candidato
+            elif candidato.cargo.nombre_cargo.lower() == 'suplente':
+                context['candidato_suplente'] = candidato
+            elif candidato.cargo.nombre_cargo.lower() == 'alterno':
+                context['candidato_alterno'] = candidato
+    
+    return render(request, 'candidatos/agregarcandidato.html', context)
 
 def editar_candidato(request, candidato_id=None):
     if request.method == 'POST':
