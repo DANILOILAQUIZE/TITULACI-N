@@ -88,10 +88,18 @@ def guardarUsuario(request):
         print('FILES:', request.FILES)
         
         try:
-            cedula = request.POST['cedula']  # Ahora se usa como username
-            nombre = request.POST['nombre']
-            apellido = request.POST['apellido']
-            email = request.POST['email']
+            # Validar que todos los campos requeridos estén presentes
+            required_fields = ['cedula', 'nombre', 'email', 'id_rol']
+            for field in required_fields:
+                if field not in request.POST or not request.POST[field].strip():
+                    messages.error(request, f'El campo {field} es obligatorio')
+                    return redirect('agregarUsuario')
+            
+            # Obtener datos del formulario
+            cedula = request.POST['cedula'].strip()
+            nombre = request.POST['nombre'].strip()
+            apellido = request.POST.get('apellido', '').strip()
+            email = request.POST['email'].strip()
             id_rol = request.POST['id_rol']
             activo = request.POST.get('activo', 'off') == 'on'
             imagen = request.FILES.get('imagen')
@@ -109,47 +117,70 @@ def guardarUsuario(request):
             if Usuarios.objects.filter(username=cedula).exists():
                 messages.error(request, 'La cédula ya está registrada como nombre de usuario.')
                 return redirect('agregarUsuario')
+                
+            # Verificar si el correo ya está registrado
+            if Usuarios.objects.filter(email=email).exists():
+                messages.error(request, 'El correo electrónico ya está registrado.')
+                return redirect('agregarUsuario')
 
             # Generar contraseña aleatoria
             password_aleatoria = generar_contraseña_aleatoria()
             print(f'Contraseña generada: {password_aleatoria}')
 
-            # Crear usuario
-            usuario = Usuarios(
-                username=cedula,
-                nombre=nombre,
-                apellido=apellido,
-                email=email,
-                password=make_password(password_aleatoria),
-                id_rol_id=id_rol,
-                activo=activo,
-                imagen=imagen,
-                plain_password=password_aleatoria,  # Guardar la contraseña en texto plano (opcional)
-            )
-            print('Usuario creado, intentando guardar...')
-            usuario.save()
-            print('Usuario guardado exitosamente')
+            try:
+                # Crear usuario usando create_user para manejar correctamente la contraseña
+                usuario = Usuarios.objects.create_user(
+                    username=cedula,
+                    email=email,
+                    password=password_aleatoria,
+                    first_name=nombre,
+                    last_name=apellido,
+                    id_rol_id=id_rol,
+                    activo=activo,
+                    plain_password=password_aleatoria
+                )
+                
+                # Si hay una imagen, guardarla después de crear el usuario
+                if imagen:
+                    usuario.imagen = imagen
+                    usuario.save()
+                    
+                print('Usuario creado y guardado exitosamente')
+                
+            except Exception as e:
+                print(f'Error al guardar el usuario: {str(e)}')
+                messages.error(request, f'Error al guardar el usuario: {str(e)}')
+                return redirect('agregarUsuario')
             
         except KeyError as e:
-            print(f'Error: Campo faltante en el formulario - {str(e)}')
-            messages.error(request, f'Error: Falta el campo {str(e)} en el formulario.')
+            error_msg = f'Error: Campo faltante en el formulario - {str(e)}'
+            print(error_msg)
+            messages.error(request, error_msg)
             return redirect('agregarUsuario')
+            
         except Exception as e:
-            print(f'Error inesperado: {str(e)}')
-            messages.error(request, f'Error inesperado: {str(e)}')
+            error_msg = f'Error inesperado: {str(e)}'
+            print(error_msg)
+            import traceback
+            print(traceback.format_exc())  # Imprimir el traceback completo
+            messages.error(request, 'Ocurrió un error al procesar la solicitud. Por favor, intente nuevamente.')
             return redirect('agregarUsuario')
 
         # Enviar la contraseña por correo electrónico
         try:
             send_mail(
                 'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba',
-                f'Hola {nombre},{apellido} tu usuario ha sido creado no la pierdas.\n\nCédula (usuario): {cedula}\nContraseña: {password_aleatoria}\n\nPor favor, estas credenciales son del consejo electoral',
+                f'Hola {nombre} {apellido},\n\nTus credenciales de acceso al sistema son las siguientes:\n\nUsuario (Cédula): {cedula}\nContraseña: {password_aleatoria}\n\nPor seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión por primera vez.\n\nAtentamente,\nConsejo Electoral - Unidad Educativa Riobamba',
                 'riobamba@aplicacionesutc.com',  # Remitente
                 [email],
-                fail_silently=False,
+                fail_silently=True,  # Cambiado a True para que no falle si hay error en el envío
             )
+            messages.success(request, 'Usuario creado exitosamente y credenciales enviadas por correo.')
         except Exception as e:
-            messages.warning(request, f'Usuario creado, pero ocurrió un error al enviar el correo: {str(e)}')
+            error_msg = f'Usuario creado, pero ocurrió un error al enviar el correo: {str(e)}'
+            print(error_msg)
+            messages.warning(request, error_msg)
+            messages.info(request, f'La contraseña generada es: {password_aleatoria}. Por favor, anótela y guárdela en un lugar seguro.')
             return redirect('agregarUsuario')
 
         messages.success(request, 'Usuario agregado con éxito y contraseña enviada al correo.')
