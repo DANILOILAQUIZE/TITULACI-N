@@ -26,15 +26,32 @@
     </style>
 </head>
 <body>
+    <!-- Mensajes de confirmación -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="voting-container">
         <div class="header-card" data-aos="fade-up">
             <div class="header-content">
                 <h1>Papeleta de Votación</h1>
                 <p>{{ proceso.nombre }}</p>
+                {% if nombre_votante %}
+                <div class="alert alert-info mt-3" role="alert">
+                    <i class="fas fa-user-circle me-2"></i>Bienvenido(a) <strong>{{ nombre_votante }}</strong>
+                </div>
+                {% endif %}
             </div>
         </div>
 
-        <form method="POST" action="{% url 'registrar_voto' proceso.id %}">
+        <form method="POST" action="{% url 'votacion:registrar_voto' proceso.id %}">
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
             <input type="hidden" name="lista" id="lista_seleccionada">
             
@@ -110,7 +127,7 @@
                 <button type="submit" class="btn btn-primary btn-vote me-3">
                     <i class="fas fa-check-circle me-2"></i>Confirmar Voto
                 </button>
-                <a href="{% url 'lista_procesos' %}" class="btn btn-outline-secondary btn-vote">
+                <a href="{% url 'votacion:lista_procesos' %}" class="btn btn-outline-secondary btn-vote">
                     <i class="fas fa-times-circle me-2"></i>Cancelar
                 </a>
             </div>

@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'votacion'
+
 urlpatterns = [
     path('iniciar/', views.iniciar_proceso, name='iniciar_proceso'),
     path('lista/', views.lista_procesos, name='lista_procesos'),

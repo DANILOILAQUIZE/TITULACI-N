@@ -15,51 +15,79 @@ from django.core.mail import send_mail
 #CRUD GRADOS
 def generar_credenciales(request):
     if request.method == 'POST':
-        # Generar credenciales
-        padrones = PadronElectoral.objects.all()
+        # Obtener solo los padrones que no tienen credenciales
+        padrones_sin_credencial = PadronElectoral.objects.filter(
+            credencial__isnull=True
+        )
+        
+        if not padrones_sin_credencial.exists():
+            messages.info(request, 'Todos los estudiantes ya tienen credenciales generadas.')
+            return redirect('generar_credenciales')
+        
+        # Iniciar una transacción atómica
+        with transaction.atomic():
+            credenciales_generadas = []
+            
+            for padron in padrones_sin_credencial:
+                # Generar contraseña aleatoria de 8 caracteres
+                password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                
+                # Crear la nueva credencial con la contraseña en texto plano
+                credencial = CredencialUsuario(
+                    padron=padron,
+                    usuario=padron.cedula,
+                    estado='activo',
+                    _contrasena_plana=password  # Guardar en texto plano
+                )
+                # Esto activará el setter que también guardará la versión encriptada
+                credencial.save()
+                
+                # Asegurarnos de que la contraseña en texto plano esté disponible para mostrarla
+                credencial._contrasena_plana = password
+                credenciales_generadas.append(credencial)
+            
+            messages.success(request, f'Se generaron {len(credenciales_generadas)} nuevas credenciales.')
+        
+        # Obtener todas las credenciales para mostrarlas
         credenciales = []
-        
-        for padron in padrones:
-            # Generar contraseña aleatoria de 8 caracteres
-            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-            
-            # Crear o actualizar la credencial
-            credencial, created = CredencialUsuario.objects.update_or_create(
-                padron=padron,
-                defaults={
-                    'usuario': padron.cedula,
-                    'contrasena': password,
-                    'estado': 'activo'
-                }
-            )
-            
+        for cred in CredencialUsuario.objects.select_related('padron').all():
+            # Asegurarse de que tenemos la contraseña en texto plano
+            contrasena_plana = ''
+            if hasattr(cred, '_contrasena_plana') and cred._contrasena_plana:
+                contrasena_plana = cred._contrasena_plana
+            else:
+                contrasena_plana = cred.get_contrasena_plana  # Sin paréntesis, es una propiedad
+                
             credenciales.append({
-                'id': credencial.id,
-                'nombre': f"{padron.nombre} {padron.apellidos}",
-                'cedula': padron.cedula,
-                'contrasena': password,
-                'correo': padron.correo
+                'id': cred.id,
+                'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
+                'cedula': cred.padron.cedula,
+                'contrasena': contrasena_plana,  # Usar la contraseña en texto plano
+                'correo': cred.padron.correo,
+                'estado': cred.estado
             })
-        
-        messages.success(request, 'Credenciales generadas exitosamente')
+            
         return render(request, 'padron/credenciales.html', {
             'credenciales': credenciales,
             'mostrar_envio': True
         })
 
     # Si es GET, mostrar la lista de credenciales existentes
-    credenciales = CredencialUsuario.objects.select_related('padron').all()
+    credenciales = []
+    for cred in CredencialUsuario.objects.select_related('padron').all():
+        # Asegurarse de que tenemos la contraseña en texto plano
+        contrasena_plana = cred.get_contrasena_plana  # Sin paréntesis, es una propiedad
+        credenciales.append({
+            'id': cred.id,
+            'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
+            'cedula': cred.padron.cedula,
+            'contrasena': contrasena_plana,  # Usar la contraseña en texto plano
+            'correo': cred.padron.correo,
+            'estado': cred.estado
+        })
+        
     return render(request, 'padron/credenciales.html', {
-        'credenciales': [
-            {
-                'id': cred.id,
-                'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
-                'cedula': cred.padron.cedula,
-                'contrasena': cred.get_contrasena_plana,
-                'correo': cred.padron.correo
-            }
-            for cred in credenciales
-        ],
+        'credenciales': credenciales,
         'mostrar_envio': False
     })
 

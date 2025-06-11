@@ -178,9 +178,9 @@
             <li class="nav-item">
                 <a href="#"><i class="ft-check-circle"></i><span class="menu-title" data-i18n="">Votación</span></a>
                 <ul class="menu-content">
-                    <li><a class="menu-item" href="{% url 'iniciar_proceso' %}">Iniciar Proceso</a></li>
-                    <li><a class="menu-item" href="{% url 'lista_procesos' %}">Ver Procesos</a></li>
-                    <li><a class="menu-item" href="{% url 'obtener_proceso_activo' %}"><i class="la la-vote-yea"></i> Votar</a></li>
+                    <li><a class="menu-item" href="{% url 'votacion:iniciar_proceso' %}">Iniciar Proceso</a></li>
+                    <li><a class="menu-item" href="{% url 'votacion:lista_procesos' %}">Ver Procesos</a></li>
+                    <li><a class="menu-item" href="{% url 'votacion:obtener_proceso_activo' %}"><i class="la la-vote-yea"></i> Votar</a></li>
                 </ul>
             </li>
             <li class="nav-item">
@@ -193,7 +193,7 @@
                   <a href="{% url 'configurar_logo' %}"><i class="ft-settings"></i><span class="menu-title" data-i18n="">Configuración</span></a>
             </li>
             <li class="nav-item mt-4">
-              <a href="{% url 'index' %}">
+              <a href="{% url 'administracion:index' %}">
               <i class="ft-power"></i><span class="menu-title">Cerrar Sesión</span>
               </a>
           </li>

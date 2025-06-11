@@ -5,26 +5,27 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-primary fw-bold" id="loginModalLabel" tit>
+                    <h5 class="modal-title text-primary fw-bold" id="loginModalLabel">
                         <i class="fa fa-sign-in me-2"></i>
-                        <b>INGRESAR AL SISTEMA</b>
+                        <b>INGRESAR AL SISTEMA DE VOTACIÓN</b>
                     </h5>
                     
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="loginForm" class="" action="" method="post">
+                    <form id="loginForm" action="{% url 'administracion:login_padron' %}" method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
                         <div style="padding-left:50px; padding-right:50px;">
                             <div class="row align-items-center">
                                 <div class="col-md-12">
-                                    <input type="hidden" name="urlRetorno" value="" id="urlRetorno">
-                                    <label for="username" class="fw-bold">Usuario:</label>
+                                    <label for="username" class="fw-bold">Cédula:</label>
                                     <br>
                                     <input type="text" name="username" id="username"
-                                        placeholder="Ingrese su nombre de usuario" class="form-control mi-input"
-                                        value="" required>
+                                        placeholder="Ingrese su número de cédula" class="form-control mi-input"
+                                        required>
                                 </div>
                             </div>
                             <br>
@@ -33,7 +34,7 @@
                                     <label for="password" class="fw-bold">Contraseña:</label>
                                     <br>
                                     <input type="password" name="password" id="password"
-                                        placeholder="Ingrese su contraseña" class="form-control mi-input" value=""
+                                        placeholder="Ingrese su contraseña" class="form-control mi-input"
                                         required>
                                 </div>
                             </div>
@@ -42,7 +43,7 @@
                                 <div class="col-md-12 text-center">
                                     <button type="submit" class="btn btn-primary" name="button">
                                         <i class="fa fa-arrow-right me-2"></i>
-                                        Ingresar
+                                        Ingresar al sistema de votación
                                     </button>
                                     &nbsp;
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -51,6 +52,215 @@
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </center>
+</div>
+
+<!-- Script para manejar el envío del formulario de login -->
+<script>
+$(document).ready(function() {
+    // Función para restaurar el botón
+    function restoreButton(btn, html) {
+        if (btn && btn.length) {
+            btn.prop('disabled', false).html(html);
+        }
+    }
+    
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Mostrar spinner de carga
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        const originalBtnText = submitBtn.html();
+        submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Verificando...');
+        
+        // Limpiar mensajes anteriores
+        $('.modal-body .alert').remove();
+        
+        // Configurar timeout para la petición AJAX (10 segundos)
+        const ajaxTimeout = 10000; // 10 segundos
+        const timeoutTimer = setTimeout(function() {
+            if ($.active > 0) {
+                $.xhrPool = [];
+                restoreButton(submitBtn, originalBtnText);
+                
+                var errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">' +
+                              '<i class="fas fa-exclamation-triangle me-2"></i>El servidor está tardando demasiado en responder. Por favor, intente nuevamente.' +
+                              '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                $('.modal-body').prepend(errorHtml);
+                
+                // Hacer scroll al mensaje de error
+                $('html, body').animate({
+                    scrollTop: $('.alert').offset().top - 100
+                }, 500);
+            }
+        }, ajaxTimeout);
+        
+        // Realizar la petición AJAX
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: form.serialize(),
+            dataType: 'json',
+            timeout: ajaxTimeout,
+            beforeSend: function() {
+                // Agregar a la pila de peticiones activas
+                $.xhrPool = [];
+                $.xhrPool.push(this);
+            },
+            complete: function() {
+                // Limpiar timeout
+                clearTimeout(timeoutTimer);
+                // Restaurar botón
+                restoreButton(submitBtn, originalBtnText);
+                // Remover de la pila de peticiones activas
+                $.xhrPool = [];
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Mostrar mensaje de éxito personalizado
+                    var successMessage = 'Inicio de sesión exitoso. Redirigiendo...';
+                    if (response.message) {
+                        successMessage = response.message;
+                    }
+                    
+                    var successHtml = '<div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 15px;">' +
+                                    '<i class="fas fa-check-circle me-2"></i>' + successMessage + 
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                    $('.modal-body').prepend(successHtml);
+                    
+                    // Redirigir después de 5 segundos
+                    if (response.redirect_url) {
+                        setTimeout(function() {
+                            window.location.href = response.redirect_url;
+                        }, 5000);
+                    }
+                } else {
+                    // Mostrar mensaje de error
+                    var errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+                    if (response.message) {
+                        errorMessage = response.message;
+                    }
+                    
+                    var errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">' +
+                                  '<i class="fas fa-exclamation-circle me-2"></i>' + errorMessage + 
+                                  '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                    $('.modal-body').prepend(errorHtml);
+                    
+                    // Cerrar el modal después de 5 segundos si el voto ya fue emitido
+                    if (response.voto_ya_emitido) {
+                        // Mostrar mensaje más destacado
+                        var mensajeVotoEmitido = `
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin-top: 15px;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                                    <div>
+                                        <h5 class="alert-heading mb-1">Voto ya registrado</h5>
+                                        <p class="mb-0">${errorMessage}</p>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                        $('.modal-body').html(mensajeVotoEmitido);
+                        
+                        // Deshabilitar el formulario
+                        $('#loginForm :input').prop('disabled', true);
+                        
+                        // Cerrar el modal después de 5 segundos
+                        setTimeout(function() {
+                            $('#loginModal').modal('hide');
+                            // Recargar la página después de cerrar el modal
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 500);
+                        }, 5000);
+                    } else {
+                        // Para otros mensajes de error, usar el cierre normal
+                        var closeModalMessages = [
+                            'proceso electoral no está activo',
+                            'no tiene permiso para votar'
+                        ];
+                        
+                        var shouldCloseModal = closeModalMessages.some(function(msg) {
+                            return errorMessage.includes(msg);
+                        });
+                        
+                        if (shouldCloseModal) {
+                            setTimeout(function() {
+                                $('#loginModal').modal('hide');
+                            }, 5000);
+                        }
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', xhr, status, error);
+                let errorMessage = 'Ocurrió un error al intentar iniciar sesión';
+                
+                // Manejar diferentes tipos de errores
+                if (status === 'timeout') {
+                    errorMessage = 'El servidor está tardando demasiado en responder. Por favor, intente nuevamente.';
+                } else if (xhr.status === 0) {
+                    errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a Internet.';
+                } else if (xhr.status === 403) {
+                    errorMessage = 'Error de autenticación. Por favor, recargue la página e intente nuevamente.';
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                
+                // Mostrar mensaje de error
+                var errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 15px;">' +
+                              '<div class="d-flex align-items-center">' +
+                              '<i class="fas fa-exclamation-triangle fa-2x me-3"></i>' +
+                              '<div><h5 class="alert-heading mb-1">Error de autenticación</h5>' +
+                              '<p class="mb-0">' + errorMessage + '</p></div></div>' +
+                              '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+                
+                $('.modal-body').prepend(errorHtml);
+                
+                // Hacer scroll al mensaje de error
+                $('html, body').animate({
+                    scrollTop: $('.alert').offset().top - 100
+                }, 500);
+                
+                // No cerrar el modal automáticamente para que el usuario pueda ver el mensaje
+            },
+            complete: function(xhr, status) {
+                console.log('Solicitud completada con estado:', status);
+                // Restaurar el botón (ya se hace en el complete del AJAX)
+                
+                // Forzar recarga de la página si hay un error de CSRF
+                if (xhr.status === 403 && xhr.responseJSON && 
+                    xhr.responseJSON.message && 
+                    xhr.responseJSON.message.includes('CSRF')) {
+                    console.warn('Error CSRF detectado, recargando página...');
+                    // Mostrar mensaje antes de recargar
+                    var csrfErrorHtml = '<div class="alert alert-warning" role="alert">' +
+                                      '<i class="fas fa-sync-alt fa-spin me-2"></i>Recargando la página debido a un problema de seguridad...</div>';
+                    $('.modal-body').prepend(csrfErrorHtml);
+                    
+                    // Recargar después de mostrar el mensaje
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1500);
+                }
+            }
+        });
+    });
+    
+    // Limpiar mensajes cuando se cierre el modal manualmente
+    $('#loginModal').on('hidden.bs.modal', function () {
+        $('.modal-body .alert').remove();
+    });
+});
+</script>
+
                             <br>
                             <div class="row">
                                 <div class="col-md-12 text-center">

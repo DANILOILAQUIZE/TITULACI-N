@@ -239,9 +239,20 @@
                                             <td>{{ credencial.cedula }}</td>
                                             <td>{{ credencial.correo }}</td>
                                             <td>
-                                                <span class="badge {% if credencial.estado == 'cambiada' %}bg-success{% else %}bg-primary{% endif %}">
-                                                    {{ credencial.estado }}
+                                                <!-- Depuración: {{ credencial.get_estado_display|default:'SIN_ESTADO' }} ({{ credencial.estado|default:'NONE' }}) -->
+                                                {% with estado=credencial.estado|default:'activo' %}
+                                                <span class="badge {% if estado == 'cambiada' %}bg-success{% else %}bg-primary{% endif %} p-2" style="min-width: 120px; display: inline-block;">
+                                                    {% if estado == 'activo' %}
+                                                        <i class="fas fa-check-circle me-1"></i> Activo
+                                                    {% elif estado == 'inactivo' %}
+                                                        <i class="fas fa-times-circle me-1"></i> Inactivo
+                                                    {% elif estado == 'cambiada' %}
+                                                        <i class="fas fa-key me-1"></i> Contraseña Cambiada
+                                                    {% else %}
+                                                        <i class="fas fa-question-circle me-1"></i> {{ estado|capfirst }}
+                                                    {% endif %}
                                                 </span>
+                                                {% endwith %}
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">

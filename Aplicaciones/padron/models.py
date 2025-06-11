@@ -2,6 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from Aplicaciones.periodo.models import Periodo
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 class Grado(models.Model):
     """Modelo para grados académicos (1ro, 2do, etc.)"""
@@ -131,10 +134,19 @@ class CredencialUsuario(models.Model):
         verbose_name="Nombre de usuario"
     )
     
-    # Contraseña encriptada
-    contrasena = models.CharField(
+    # Contraseña encriptada (se almacena encriptada, pero se puede acceder a la versión en texto plano)
+    _contrasena_plana = models.CharField(
         max_length=128,
-        verbose_name="Contraseña"
+        verbose_name="Contraseña (texto plano)",
+        blank=True,
+        null=True,
+        help_text="Se almacena temporalmente para mostrarla al administrador"
+    )
+    contrasena_encriptada = models.CharField(
+        max_length=128,
+        verbose_name="Contraseña (encriptada)",
+        blank=True,
+        null=True
     )
     
     fecha_generacion = models.DateTimeField(
@@ -178,37 +190,118 @@ class CredencialUsuario(models.Model):
         self.save()
         return True
 
-    def generar_contrasena(self):
-        """Genera una nueva contraseña aleatoria"""
+    def generar_contrasena(self, forzar=False):
+        """
+        Genera una nueva contraseña aleatoria solo si no existe una previamente
+        
+        Args:
+            forzar (bool): Si es True, genera una nueva contraseña incluso si ya existe una
+        """
+        # Si ya existe una contraseña y no se está forzando, retornar la existente
+        if not forzar and self._contrasena_plana:
+            return self._contrasena_plana
+            
         import random
         import string
-        nueva_contrasena = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        
+        # Generar una contraseña segura con mayúsculas, minúsculas y números
+        caracteres = string.ascii_letters + string.digits
+        while True:
+            nueva_contrasena = ''.join(random.choices(caracteres, k=8))
+            # Asegurarse de que tenga al menos un número, una mayúscula y una minúscula
+            if (any(c.isdigit() for c in nueva_contrasena) and 
+                any(c.isupper() for c in nueva_contrasena) and
+                any(c.islower() for c in nueva_contrasena)):
+                break
+                
+        # Guardar la contraseña (se encriptará automáticamente)
         self.contrasena = nueva_contrasena
+        # Solo establecer como 'activo' si es una nueva cuenta
+        if not self.pk:
+            self.estado = 'activo'
         self.save()
         return nueva_contrasena
 
     @property
+    def contrasena(self):
+        """Propiedad para compatibilidad con código existente"""
+        return self._contrasena_plana or ''
+
+    @contrasena.setter
+    def contrasena(self, value):
+        """Setter para guardar tanto la versión en texto plano como la encriptada"""
+        if value:  # Solo actualizar si se proporciona un valor
+            self._contrasena_plana = value
+            self.contrasena_encriptada = make_password(value)
+    
+    @property
     def get_contrasena_plana(self):
-        """Devuelve la contraseña en texto plano (sólo para mostrar)"""
-        # La contraseña se almacena en texto plano en la base de datos
-        return str(self.contrasena)
+        """
+        Devuelve la contraseña en texto plano si está disponible.
+        Si no hay contraseña en texto plano, devuelve una cadena vacía.
+        """
+        # Si _contrasena_plana es None o está vacío, devolvemos cadena vacía
+        if not self._contrasena_plana:
+            # Si tenemos la contraseña encriptada pero no en texto plano, 
+            # no podemos recuperar la contraseña original
+            return ""
+        
+        # Si parece ser una contraseña encriptada, no la devolvemos
+        if (isinstance(self._contrasena_plana, str) and 
+            (self._contrasena_plana.startswith('bcrypt$') or 
+             self._contrasena_plana.startswith('pbkdf2_sha256$') or
+             len(self._contrasena_plana) > 50)):  # Las contraseñas encriptadas suelen ser largas
+            return ""
+            
+        # Si llegamos aquí, es una contraseña en texto plano válida
+        return self._contrasena_plana
 
     def get_contrasena_encriptada(self):
         """Devuelve la contraseña encriptada"""
-        from django.contrib.auth.hashers import make_password
-        return make_password(self.contrasena)
+        if not self.contrasena_encriptada and self._contrasena_plana:
+            self.contrasena_encriptada = make_password(self._contrasena_plana)
+            self.save(update_fields=['contrasena_encriptada'])
+        return self.contrasena_encriptada
+
+    def save(self, *args, **kwargs):
+        # Si se está actualizando una instancia existente
+        if self.pk:
+            # Obtener la instancia actual de la base de datos
+            old_instance = CredencialUsuario.objects.get(pk=self.pk)
+            
+            # Si la contraseña en texto plano no ha cambiado, mantener la encriptada existente
+            if (self._contrasena_plana == old_instance._contrasena_plana and 
+                old_instance.contrasena_encriptada):
+                self.contrasena_encriptada = old_instance.contrasena_encriptada
+            # Si la contraseña en texto plano ha cambiado, actualizar la encriptada
+            elif self._contrasena_plana:
+                self.contrasena_encriptada = make_password(self._contrasena_plana)
+        # Si es una nueva instancia y hay contraseña en texto plano, encriptarla
+        elif self._contrasena_plana:
+            self.contrasena_encriptada = make_password(self._contrasena_plana)
+        
+        # Validar que la contraseña en texto plano no esté encriptada
+        if (self._contrasena_plana and 
+            isinstance(self._contrasena_plana, str) and 
+            (self._contrasena_plana.startswith('bcrypt$') or 
+             self._contrasena_plana.startswith('pbkdf2_sha256$'))):
+            # Si parece estar encriptada, limpiar el campo
+            self._contrasena_plana = ""
+            
+        # Llamar al save del padre
+        super().save(*args, **kwargs)
 
     def verificar_contrasena(self, contrasena):
         """Verifica si la contraseña proporcionada coincide con la almacenada"""
-        from django.contrib.auth.hashers import check_password
-        return check_password(contrasena, self.get_contrasena_encriptada())
-
-# Importar después de definir los modelos para evitar errores de importación circular
-from django.contrib.auth.hashers import make_password, check_password
-
-# Validaciones adicionales
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
+        # Obtener la contraseña encriptada
+        contrasena_encriptada = self.get_contrasena_encriptada()
+        
+        # Si no hay contraseña encriptada, verificar contra la versión en texto plano
+        if not contrasena_encriptada and self._contrasena_plana:
+            return contrasena == self._contrasena_plana
+            
+        # Verificar la contraseña usando el método seguro de Django
+        return check_password(contrasena, contrasena_encriptada)
 
 @receiver(pre_save, sender=CredencialUsuario)
 def validar_credencial(sender, instance, **kwargs):
