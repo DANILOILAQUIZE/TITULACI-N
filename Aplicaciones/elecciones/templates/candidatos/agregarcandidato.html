@@ -274,19 +274,20 @@
                         </div>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label class="form-label">Foto</label>
+                        <label for="imagen_principal" class="form-label">Foto</label>
                         <div class="image-upload-container">
                             <div class="image-container">
                                 <img id="preview_principal" src="{% if candidato_principal and candidato_principal.imagen %}{{ candidato_principal.imagen.url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18c4a8a3d5b%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18c4a8a3d5b%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2272.5%22%20y%3D%22104.5%22%3E100x100%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E{% endif %}" class="preview-image" alt="Vista previa">
-                                <label for="imagen_principal" class="upload-icon" title="Cambiar imagen">
-                                    <i class="fas fa-camera"></i>
-                                </label>
+                                <button type="button" class="btn btn-link p-0 border-0 bg-transparent" id="btn-cambiar-imagen" title="Cambiar imagen" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; background-color: #4e73df; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('imagen_principal').click()">
+                            <i class="fas fa-camera"></i>
+                            <span class="visually-hidden">Cambiar imagen</span>
+                        </button>
                             </div>
-                            <input type="file" class="file-input" id="imagen_principal" name="imagen_principal" accept="" onchange="previewImage(event, 'preview_principal')" {% if not candidato_principal or not candidato_principal.imagen %}required{% endif %}>
+                            <input type="file" class="file-input" id="imagen_principal" name="imagen_principal" accept="image/*" onchange="previewImage(event, 'preview_principal'); toggleImageError(this);" aria-describedby="imagen_help" style="display: none;">
                             <div class="form-text small mt-1">Haz clic en la cámara</div>
                         </div>
-                        <div class="invalid-feedback">
-                            Por favor seleccione una imagen.
+                        <div class="invalid-feedback" id="imagen_principal_error" role="alert" style="display: none;">
+                            Por favor seleccione una imagen para el candidato principal.
                         </div>
                     </div>
                 </div>
@@ -418,15 +419,34 @@
 
 <!-- Scripts -->
 <script>
+// Función para mostrar/ocultar el error de imagen
+function toggleImageError(input) {
+    const errorElement = document.getElementById('imagen_principal_error');
+    if (input.files && input.files.length > 0) {
+        // Si hay un archivo seleccionado, ocultar el mensaje de error
+        errorElement.style.display = 'none';
+        input.classList.remove('is-invalid');
+    } else {
+        // Si no hay archivo seleccionado, mostrar el mensaje de error
+        errorElement.style.display = 'block';
+        input.classList.add('is-invalid');
+    }
+}
+
+// Validar el formulario antes de enviar
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    // Inicializar tooltips si bootstrap está disponible
+    if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
     
     // Inicializar la búsqueda de candidatos
-    inicializarBusquedaCandidatos();
+    if (typeof inicializarBusquedaCandidatos === 'function') {
+        inicializarBusquedaCandidatos();
+    }
     
     // Obtener el formulario
     const form = document.querySelector('form.needs-validation');
@@ -438,23 +458,46 @@ document.addEventListener('DOMContentLoaded', function() {
             let formIsValid = true;
             const requiredFields = this.querySelectorAll('[required]');
             
-            // Validar campos requeridos
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
+            // Validación simplificada de campos requeridos
+            let primerError = null;
+            
+            for (const field of requiredFields) {
+                let isValid = true;
+                const container = field.closest('.mb-3, .form-group');
+                const feedback = container ? container.querySelector('.invalid-feedback') : null;
+                
+                // Validar según el tipo de campo
+                if (field.type === 'file') {
+                    isValid = field.files && field.files.length > 0;
+                } else if (field.type === 'select-one') {
+                    isValid = field.value !== '' && field.value !== null;
+                } else {
+                    isValid = field.value.trim() !== '';
+                }
+                
+                // Manejar estado de validación
+                if (!isValid) {
                     field.classList.add('is-invalid');
+                    if (feedback) feedback.style.display = 'block';
                     formIsValid = false;
+                    
+                    // Guardar referencia al primer error
+                    if (!primerError) {
+                        primerError = field;
+                    }
                 } else {
                     field.classList.remove('is-invalid');
+                    if (feedback) feedback.style.display = 'none';
                 }
-            });
-            
-            // Validar imagen
-            const imagenPrincipal = document.getElementById('imagen_principal');
-            if (imagenPrincipal && !imagenPrincipal.files[0] && !'{{ candidato_principal.imagen }}') {
-                alert('Por favor, seleccione una imagen para el candidato principal');
-                return false;
             }
             
+            // Desplazarse al primer error encontrado
+            if (primerError) {
+                primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                primerError.focus();
+            }
+            
+            // Si el formulario es válido, enviarlo
             if (formIsValid) {
                 // Mostrar loader
                 const submitBtn = this.querySelector('button[type="submit"]');

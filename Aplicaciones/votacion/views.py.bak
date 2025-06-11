@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count
+from django.urls import reverse
+from django.http import JsonResponse
 from .models import ProcesoElectoral, Voto
 from Aplicaciones.periodo.models import Periodo
 from Aplicaciones.elecciones.models import Lista, Candidato
@@ -135,12 +137,24 @@ def obtener_proceso_activo(request):
 def papeleta_votacion(request, proceso_id):
     # Verificar si el usuario está autenticado
     if not request.user.is_authenticated:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Debe iniciar sesión para acceder a la papeleta de votación',
+                'redirect': reverse('administracion:index')
+            }, status=403)
         messages.error(request, 'Debe iniciar sesión para acceder a la papeleta de votación')
         return redirect('administracion:index')
     
     # Obtener el ID del padrón de la sesión
     padron_id = request.session.get('padron_id')
     if not padron_id:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'No se encontró la información del padrón. Por favor, inicie sesión nuevamente.',
+                'redirect': reverse('administracion:index')
+            }, status=400)
         messages.error(request, 'No se encontró la información del padrón. Por favor, inicie sesión nuevamente.')
         return redirect('administracion:index')
     

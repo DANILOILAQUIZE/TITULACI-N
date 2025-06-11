@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 from .models import ProcesoElectoral, Voto
 from Aplicaciones.periodo.models import Periodo
-from Aplicaciones.elecciones.models import Lista, Candidato, Cargo
+from Aplicaciones.elecciones.models import Lista, Candidato
 from Aplicaciones.padron.models import PadronElectoral
 import hashlib
 
@@ -269,47 +269,44 @@ def registrar_voto(request, proceso_id):
             messages.error(request, 'Usted ya ha emitido su voto para este proceso electoral')
             return redirect('administracion:index')
         
-        # Obtener el tipo de voto
-        tipo_voto = request.POST.get('tipo_voto')
+        # Obtener la lista seleccionada
+        lista_id = request.POST.get('lista')
+        if not lista_id:
+            messages.error(request, 'Debe seleccionar una lista para votar')
+            return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
         
-        # Inicializar variables
-        lista = None
+        try:
+            lista = Lista.objects.get(id=lista_id)
+        except Lista.DoesNotExist:
+            messages.error(request, 'La lista seleccionada no es válida')
+            return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
+        
+        # Obtener los candidatos seleccionados
         candidatos_seleccionados = {}
+        for key, value in request.POST.items():
+            if key.startswith('candidato_'):
+                cargo_id = key.split('_')[1]
+                candidatos_seleccionados[cargo_id] = value
         
-        # Si no es voto en blanco ni nulo, obtener la lista y candidatos
-        if tipo_voto not in ['blanco', 'nulo']:
-            lista_id = request.POST.get('lista')
-            if not lista_id:
-                messages.error(request, 'Debe seleccionar una lista para votar')
+        # Validar que se hayan seleccionado todos los cargos obligatorios
+        cargos_obligatorios = lista.cargo_set.filter(obligatorio=True)
+        for cargo in cargos_obligatorios:
+            if str(cargo.id) not in candidatos_seleccionados:
+                messages.error(request, f'Debe seleccionar un candidato para el cargo: {cargo.nombre_cargo}')
                 return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
-            
-            try:
-                lista = Lista.objects.get(id=lista_id)
-            except Lista.DoesNotExist:
-                messages.error(request, 'La lista seleccionada no es válida')
-                return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
-            
-            # Obtener los candidatos seleccionados solo si es un voto por lista
-            for key, value in request.POST.items():
-                if key.startswith('candidato_'):
-                    cargo_id = key.split('_')[1]
-                    candidatos_seleccionados[cargo_id] = value
         
         # Crear el voto
         timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
         hash_voto = generar_hash_voto(proceso_id, padron_id, timestamp)
         
-        # Determinar si es voto en blanco o nulo
-        es_blanco = tipo_voto == 'blanco'
-        es_nulo = tipo_voto == 'nulo'
-        
         voto = Voto(
             proceso_electoral=proceso,
             votante=padron,
-            lista=lista if not (es_blanco or es_nulo) else None,
-            es_blanco=es_blanco,
-            es_nulo=es_nulo,
-            hash_voto=hash_voto
+            lista_votada=lista,
+            hash_voto=hash_voto,
+            fecha_hora_voto=timezone.now(),
+            ip_voto=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
         )
         voto.save()
         
@@ -318,25 +315,24 @@ def registrar_voto(request, proceso_id):
             padron.voto = True
             padron.save()
         
-        # Registrar los votos por candidato
-        for candidato_id in candidatos_seleccionados.values():
+        # Registrar los votos por cargo
+        for cargo_id, candidato_id in candidatos_seleccionados.items():
             try:
-                candidato = Candidato.objects.get(id=candidato_id, lista=lista)
+                cargo = Cargo.objects.get(id=cargo_id)
+                candidato = Candidato.objects.get(id=candidato_id)
                 voto.candidatos.add(candidato)
-            except Candidato.DoesNotExist:
+            except (Cargo.DoesNotExist, Candidato.DoesNotExist):
                 continue
         
         # Registrar el voto en el log
         print(f"\nVOTO REGISTRADO - Proceso: {proceso.nombre}")
         print(f"Estudiante: {padron.nombre} {padron.apellidos}, Cédula: {padron.cedula}")
-        if lista:
-            print(f"Lista seleccionada: {lista.nombre_lista}")
-        else:
-            print("Voto en blanco o nulo")
+        print(f"Lista seleccionada: {lista.nombre_lista}")
+        print(f"Candidatos seleccionados: {candidatos_seleccionados}")
         print(f"Hash del voto: {hash_voto}")
         
         messages.success(request, '¡Su voto ha sido registrado exitosamente!')
-        return redirect('administracion:index')
+        return redirect('votacion:gracias_por_votar')
         
     except PadronElectoral.DoesNotExist:
         messages.error(request, 'No se encontró su registro en el padrón electoral')
