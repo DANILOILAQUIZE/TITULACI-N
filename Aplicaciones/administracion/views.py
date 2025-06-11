@@ -60,8 +60,17 @@ def login_padron(request):
                 }, status=400)
                 
             # Verificar la contraseña
+            print(f"[DEBUG] Iniciando verificación de contraseña para usuario: {username}")
+            print(f"[DEBUG] Contraseña proporcionada: {password}")
+            print(f"[DEBUG] Contraseña encriptada almacenada: {credencial.contrasena_encriptada}")
+            print(f"[DEBUG] Contraseña en texto plano: {credencial._contrasena_plana if hasattr(credencial, '_contrasena_plana') else 'No disponible'}")
+            
+            from django.contrib.auth.hashers import check_password
+            print(f"[DEBUG] Usando check_password directamente: {check_password(password, credencial.contrasena_encriptada)}")
+            
             if not credencial.verificar_contrasena(password):
-                print(f"Error: Contraseña incorrecta para el usuario {username}")
+                print(f"[ERROR] La verificación de contraseña falló para el usuario {username}")
+                print(f"[DEBUG] Detalles de la credencial: {credencial.__dict__}")
                 return JsonResponse({
                     'success': False,
                     'message': 'Cédula o contraseña incorrectos'
@@ -89,10 +98,19 @@ def login_padron(request):
         from django.contrib.auth import login as auth_login
         
         User = get_user_model()
-        user, created = User.objects.get_or_create(
-            username=credencial.usuario,
-            defaults={'is_active': True}
-        )
+        
+        # Intentar obtener el usuario existente o crearlo con un correo único
+        try:
+            user = User.objects.get(username=credencial.usuario)
+        except User.DoesNotExist:
+            # Crear un correo único basado en el nombre de usuario si no existe
+            email = f"{credencial.usuario}@sistema-voto.com"
+            user = User.objects.create_user(
+                username=credencial.usuario,
+                email=email,
+                password=None,  # No necesitamos contraseña ya que usamos autenticación personalizada
+                is_active=True
+            )
         
         if user:
             auth_login(request, user)

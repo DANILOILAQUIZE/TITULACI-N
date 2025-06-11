@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import ListView
+from django.contrib.auth.hashers import make_password
 from .models import Grado, Periodo, Paralelo, PadronElectoral, CredencialUsuario
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
@@ -14,22 +15,26 @@ from django.core.mail import send_mail
 
 #CRUD GRADOS
 def generar_credenciales(request):
+    # Inicializar el diccionario de credenciales generadas
+    if not hasattr(request, 'session'):
+        request.session = {}
+    if 'credenciales_generadas' not in request.session:
+        request.session['credenciales_generadas'] = {}
+    
     if request.method == 'POST':
-        # Obtener solo los padrones que no tienen credenciales
-        padrones_sin_credencial = PadronElectoral.objects.filter(
+        # Obtener todos los usuarios del padrón que no tienen credencial
+        usuarios_sin_credencial = PadronElectoral.objects.filter(
             credencial__isnull=True
         )
         
-        if not padrones_sin_credencial.exists():
-            messages.info(request, 'Todos los estudiantes ya tienen credenciales generadas.')
-            return redirect('generar_credenciales')
+        credenciales_generadas = []
         
-        # Iniciar una transacción atómica
-        with transaction.atomic():
-            credenciales_generadas = []
+        for padron in usuarios_sin_credencial:
+            # Generar una contraseña aleatoria de 8 caracteres
+            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
             
-            for padron in padrones_sin_credencial:
-                # Generar contraseña aleatoria de 8 caracteres
+            try:
+                # Generar una contraseña aleatoria de 8 caracteres
                 password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
                 
                 # Crear la nueva credencial con la contraseña en texto plano
@@ -37,35 +42,55 @@ def generar_credenciales(request):
                     padron=padron,
                     usuario=padron.cedula,
                     estado='activo',
-                    _contrasena_plana=password  # Guardar en texto plano
+                    _contrasena_plana=password  # Establecer la contraseña en texto plano
                 )
-                # Esto activará el setter que también guardará la versión encriptada
-                credencial.save()
                 
-                # Asegurarnos de que la contraseña en texto plano esté disponible para mostrarla
-                credencial._contrasena_plana = password
-                credenciales_generadas.append(credencial)
-            
-            messages.success(request, f'Se generaron {len(credenciales_generadas)} nuevas credenciales.')
+                # Guardar el objeto para generar el hash
+                credencial.save()  # Esto generará automáticamente el hash en contrasena_encriptada
+                
+                # Guardar la contraseña en la sesión
+                request.session['credenciales_generadas'][str(credencial.id)] = password
+                request.session.modified = True
+                
+                credenciales_generadas.append({
+                    'id': credencial.id,
+                    'nombre': f"{padron.nombre} {padron.apellidos}",
+                    'cedula': padron.cedula,
+                    'contrasena': password,
+                    'correo': padron.correo,
+                    'estado': 'activo'
+                })
+                
+                print(f"[DEBUG] Credencial creada para {padron.cedula} con contraseña: {password}")
+                
+            except Exception as e:
+                print(f"[ERROR] Error al crear credencial para {padron.cedula}: {e}")
         
-        # Obtener todas las credenciales para mostrarlas
-        credenciales = []
-        for cred in CredencialUsuario.objects.select_related('padron').all():
-            # Asegurarse de que tenemos la contraseña en texto plano
-            contrasena_plana = ''
-            if hasattr(cred, '_contrasena_plana') and cred._contrasena_plana:
-                contrasena_plana = cred._contrasena_plana
-            else:
-                contrasena_plana = cred.get_contrasena_plana  # Sin paréntesis, es una propiedad
-                
-            credenciales.append({
-                'id': cred.id,
-                'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
-                'cedula': cred.padron.cedula,
-                'contrasena': contrasena_plana,  # Usar la contraseña en texto plano
-                'correo': cred.padron.correo,
-                'estado': cred.estado
+        if credenciales_generadas:
+            messages.success(request, f'Se generaron {len(credenciales_generadas)} nuevas credenciales.')
+            return render(request, 'padron/credenciales.html', {
+                'credenciales': credenciales_generadas,
+                'mostrar_credenciales': True
             })
+        else:
+            messages.info(request, 'No hay usuarios sin credenciales para generar.')
+    
+    # Si es GET o no se generaron credenciales, mostrar todas las credenciales
+    credenciales = []
+    for cred in CredencialUsuario.objects.select_related('padron').all():
+        # Obtener la contraseña de la sesión si existe
+        contrasena_plana = request.session.get('credenciales_generadas', {}).get(str(cred.id), "")
+        
+        print(f"[DEBUG] Mostrando credencial para {cred.padron.cedula}. Contraseña: {contrasena_plana}")
+            
+        credenciales.append({
+            'id': cred.id,
+            'nombre': f"{cred.padron.nombre} {cred.padron.apellidos}",
+            'cedula': cred.padron.cedula,
+            'contrasena': contrasena_plana,
+            'correo': cred.padron.correo,
+            'estado': cred.estado
+        })
             
         return render(request, 'padron/credenciales.html', {
             'credenciales': credenciales,
@@ -130,13 +155,20 @@ def enviar_credenciales(request):
                             print(f'Error de validación de correo: {str(e)}')
                             raise ValueError(f'Correo electrónico inválido: {credencial.padron.correo}')
                         
+                        # Obtener la contraseña de la sesión
+                        contrasena_plana = request.session.get('credenciales_generadas', {}).get(str(credencial.id), "")
+                        
+                        if not contrasena_plana:
+                            print(f"[ADVERTENCIA] No se encontró contraseña en texto plano para la credencial {credencial.id}")
+                            contrasena_plana = "[CONTRASEÑA NO DISPONIBLE]"
+                        
                         subject = 'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba'
                         message = f"""Hola {credencial.padron.nombre} {credencial.padron.apellidos},
 
 Tus credenciales de acceso al sistema son las siguientes:
 
 Usuario (Cédula): {credencial.padron.cedula}
-Contraseña: {credencial.get_contrasena_plana}
+Contraseña: {contrasena_plana}
 
 Por seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión por primera vez.
 
@@ -153,10 +185,9 @@ Consejo Electoral - Unidad Educativa Riobamba"""
                         )
                         print('Correo enviado exitosamente')
                         
-                        # Actualizar estado de la credencial
-                        credencial.estado = 'cambiada'
-                        credencial.save()
-                        print('Estado actualizado a cambiada')
+                        # No cambiar el estado al enviar el correo
+                        # El estado se actualizará cuando el usuario cambie su contraseña
+                        print('Correo enviado exitosamente sin cambiar el estado')
                         
                     except Exception as e:
                         import traceback
