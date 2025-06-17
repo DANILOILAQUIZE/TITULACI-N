@@ -1,16 +1,15 @@
 // Menú reutilizable para todo el sitio
-console.log('Cargando menú de navegación...');
 document.addEventListener('DOMContentLoaded', function() {
     // Insertar el menú
     var menuHTML = `
     <nav id="menu" class="main-nav" role="navigation">
         <ul class="main-menu">
-            <li><a href="/" class="external">Inicio</a></li>
-            <li><a href="/mision-vision/" class="external">Misión y Visión</a></li>
-            <li><a href="/nosotros/" class="external">Nosotros</a></li>
-            <li><a href="/docentes-nuevo/" class="external">Nuestros Docentes</a></li>
-            <li><a href="/noticias/" class="scroll-to-section">Noticias</a></li>
-            <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+            <li><a href="/" class="external"><i class="fa fa-home"></i> Inicio</a></li>
+            <li><a href="/mision-vision/" class="external"><i class="fa fa-bullseye"></i> Misión y Visión</a></li>
+            <li><a href="/nosotros/" class="external"><i class="fa fa-users"></i> Nosotros</a></li>
+            <li><a href="/docentes-nuevo/" class="external"><i class="fa fa-chalkboard-teacher"></i> Nuestros Docentes</a></li>
+            <li><a href="/noticias/" class="scroll-to-section"><i class="fa fa-newspaper"></i> Noticias</a></li>
+            <li><a href="#" class="login-link" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fa fa-sign-in-alt"></i> Login</a></li>
         </ul>
     </nav>`;
 
@@ -20,21 +19,51 @@ document.addEventListener('DOMContentLoaded', function() {
         menuButton.insertAdjacentHTML('afterend', menuHTML);
     }
 
-    // Manejar el clic en el botón del menú móvil
+    // Elementos del menú
     var menuLink = document.querySelector('.menu-link');
     var menu = document.getElementById('menu');
     
-    if (menuLink && menu) {
-        menuLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            menu.classList.toggle('active');
-        });
+    // Función para alternar el menú
+    function toggleMenu(e) {
+        if (e) e.preventDefault();
+        
+        menu.classList.toggle('active');
+        
+        // Cambiar el ícono del botón
+        var icon = menuLink.querySelector('i');
+        if (menu.classList.contains('active')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
     }
+    
+    // Manejar clic en el botón del menú móvil
+    if (menuLink && menu) {
+        menuLink.addEventListener('click', toggleMenu);
+    }
+    
+    // Cerrar menú al hacer clic fuera de él
+    document.addEventListener('click', function(e) {
+        if (menu && menu.classList.contains('active') && 
+            !menu.contains(e.target) && 
+            e.target !== menuLink && 
+            !menuLink.contains(e.target)) {
+            toggleMenu();
+        }
+    });
 
-    // Cerrar el menú al hacer clic en un enlace
+    // Cerrar menú al hacer clic en un enlace
     var menuLinks = document.querySelectorAll('.main-menu a');
     menuLinks.forEach(function(link) {
         link.addEventListener('click', function(e) {
+            // Si es un enlace de login, no hacer nada especial
+            if (this.classList.contains('login-link')) {
+                return;
+            }
+            
             // Si el enlace es interno (no tiene clase 'external') y no es un enlace de sección
             if (this.getAttribute('href').startsWith('#')) {
                 e.preventDefault();
@@ -47,10 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Cerrar el menú móvil si está abierto
             if (menu && menu.classList.contains('active')) {
-                menu.classList.remove('active');
+                toggleMenu();
             }
         });
     });
-
-    // El footer ahora está en base.html
 });
