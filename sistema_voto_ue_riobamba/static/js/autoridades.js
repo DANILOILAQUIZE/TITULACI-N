@@ -6,34 +6,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const authorityCards = document.querySelectorAll('.authority-container');
     
     // Crear efecto de partículas en el fondo (opcional)
-    const particlesContainer = document.createElement('div');
-    particlesContainer.classList.add('particles');
-    document.querySelector('.autoridades').appendChild(particlesContainer);
-    
-    // Crear partículas (opcional)
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.width = Math.random() * 5 + 3 + 'px';
-        particle.style.height = particle.style.width;
-        particle.style.opacity = Math.random() * 0.5 + 0.1;
-        particlesContainer.appendChild(particle);
+    const autoridadesSection = document.querySelector('.autoridades');
+    if (autoridadesSection) {
+        const particlesContainer = document.createElement('div');
+        particlesContainer.classList.add('particles');
+        autoridadesSection.appendChild(particlesContainer);
         
-        // Animar partículas con anime.js
-        anime({
-            targets: particle,
-            translateX: () => anime.random(-30, 30) + 'px',
-            translateY: () => anime.random(-30, 30) + 'px',
-            opacity: [0.1, 0.5, 0.1],
-            scale: [1, 1.2, 1],
-            easing: 'easeInOutSine',
-            duration: () => anime.random(3000, 8000),
-            loop: true,
-            delay: anime.random(0, 2000)
-        });
+        // Crear partículas (opcional)
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 5 + 3 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            particlesContainer.appendChild(particle);
+            
+            // Animar partículas con anime.js
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: particle,
+                    translateX: () => anime.random(-30, 30) + 'px',
+                    translateY: () => anime.random(-30, 30) + 'px',
+                    opacity: [0.1, 0.5, 0.1],
+                    scale: [1, 1.2, 1],
+                    easing: 'easeInOutSine',
+                    duration: () => anime.random(3000, 8000),
+                    loop: true,
+                    delay: anime.random(0, 2000)
+                });
+            }
+        }
     }
+    
+    // El código de partículas se movió dentro de la verificación de autoridadSection
+    // para evitar errores de referencia
     
     // Efecto de movimiento 3D al mover el mouse
     authorityCards.forEach((card, index) => {

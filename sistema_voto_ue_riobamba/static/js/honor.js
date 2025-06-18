@@ -281,9 +281,15 @@ function closeAchievementModal() {
     
 // Función para crear partículas
 function createParticles() {
+    const honorBoard = document.querySelector('.honor-board');
+    if (!honorBoard) {
+        console.warn('No se encontró el elemento .honor-board para agregar partículas');
+        return;
+    }
+    
     const particlesContainer = document.createElement('div');
     particlesContainer.classList.add('honor-particles');
-    document.querySelector('.honor-board').appendChild(particlesContainer);
+    honorBoard.appendChild(particlesContainer);
     
     // Crear partículas
     for (let i = 0; i < 30; i++) {
