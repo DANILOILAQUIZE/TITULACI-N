@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'Aplicaciones.autenticacion',
     'Aplicaciones.configuracion',
     'Aplicaciones.resultados',
+    'Aplicaciones.noticias',
     
 ]
 

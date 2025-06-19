@@ -27,5 +27,7 @@ urlpatterns = [
     path('', include('Aplicaciones.periodo.urls')),
     path('',include('Aplicaciones.autenticacion.urls')),
     path('', include('Aplicaciones.configuracion.urls')),
+
+    path('', include('Aplicaciones.noticias.urls')),
     path('resultados/', include('Aplicaciones.resultados.urls')),
 ]
