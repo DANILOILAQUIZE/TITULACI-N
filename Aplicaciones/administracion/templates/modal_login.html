@@ -166,19 +166,23 @@ $(document).ready(function() {
                     // Mostrar mensaje de error con la función mejorada
                     showModalError(response.message || 'Error al iniciar sesión', response.voto_ya_emitido);
                     
-                    // Restaurar el botón
+                    // Restaurar el botón inmediatamente
                     restoreButton(submitBtn, originalBtnText);
                     
-                    // Si es un error de voto ya emitido, cerrar el modal después de 5 segundos
+                    // Limpiar los campos del formulario
+                    document.getElementById('loginForm').reset();
+                    
+                    // Si es un error de voto ya emitido, deshabilitar el formulario
                     if (response.voto_ya_emitido) {
-                        // Deshabilitar el formulario
                         $('#loginForm :input').prop('disabled', true);
                         
-                        // Cerrar el modal después de 5 segundos
+                        // Cerrar el modal después de 5 segundos para este caso específico
                         setTimeout(function() {
-                            $('#loginModal').modal('hide');
-                            // Recargar la página después de cerrar el modal
-                            window.location.reload();
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                            if (modal) modal.hide();
+                            document.body.classList.remove('modal-open');
+                            const backdrop = document.querySelector('.modal-backdrop');
+                            if (backdrop) backdrop.remove();
                         }, 5000);
                     }
                 }
@@ -251,10 +255,27 @@ $(document).ready(function() {
     });
     
     // Limpiar mensajes cuando se cierre el modal manualmente
-    $('#loginModal').on('hidden.bs.modal', function () {
-        $('.modal-body .alert').remove();
-    });
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.addEventListener('hidden.bs.modal', function () {
+            // Limpiar el formulario cuando se cierra el modal
+            const form = document.getElementById('loginForm');
+            if (form) form.reset();
+            
+            // Limpiar mensajes de validación
+            const invalidFields = document.querySelectorAll('.is-invalid');
+            invalidFields.forEach(field => field.classList.remove('is-invalid'));
+            
+            const feedbacks = document.querySelectorAll('.invalid-feedback');
+            feedbacks.forEach(feedback => feedback.remove());
+            
+            // Restaurar el botón de envío
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa fa-arrow-right me-2"></i>Ingresar al sistema de votación';
+            }
+        });
+    }
 });
 </script>
-
-            

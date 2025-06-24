@@ -24,7 +24,6 @@ def login_padron(request):
     print("\n=== INICIO DE SOLICITUD DE INICIO DE SESIÓN ===")
     print(f"Método: {request.method}")
     print(f"POST data: {request.POST}")
-    print(f"Headers: {request.headers}")
     
     # Verificar el token CSRF
     if not request.META.get('CSRF_COOKIE'):
@@ -38,15 +37,55 @@ def login_padron(request):
     password = request.POST.get('password', '').strip()
     
     if not username or not password:
-        print(f"Error: Usuario o contraseña vacíos. Usuario: '{username}', Contraseña: {'*' * len(password)}")
         return JsonResponse({
             'success': False,
-            'message': 'Por favor ingrese su cédula y contraseña'
+            'message': 'Por favor ingrese su usuario y contraseña'
         }, status=400)
     
+    # 1. Primero intentar autenticar como usuario del sistema
+    from django.contrib.auth import authenticate, login as auth_login
+    from Aplicaciones.usuarios.models import Usuarios
+    
+    user = authenticate(request, username=username, password=password)
+    
+    if user is not None:
+        # Usuario del sistema autenticado correctamente
+        if user.is_active:
+            auth_login(request, user)
+            print(f"Usuario del sistema {username} autenticado correctamente")
+            
+            # Verificar si el usuario es del padrón (tiene un padrón asociado)
+            if hasattr(user, 'padron'):
+                # Si es del padrón, redirigir a la papeleta
+                from Aplicaciones.votacion.models import ProcesoElectoral
+                try:
+                    proceso_activo = ProcesoElectoral.objects.get(estado='activo')
+                    redirect_url = f'/votacion/papeleta/{proceso_activo.id}/'
+                    return JsonResponse({
+                        'success': True,
+                        'redirect_url': redirect_url,
+                        'message': 'Redirigiendo a la papeleta de votación...'
+                    })
+                except ProcesoElectoral.DoesNotExist:
+                    pass  # Continuar con la redirección al dashboard
+            
+            # Para usuarios del sistema que no son del padrón, redirigir al dashboard
+            return JsonResponse({
+                'success': True,
+                'redirect_url': '/rol/dashboard/',  # Redirigir al dashboard
+                'message': 'Inicio de sesión exitoso'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Su cuenta está desactivada'
+            }, status=400)
+    
+    # 2. Si no es un usuario del sistema, intentar autenticar como padrón
     try:
+        from Aplicaciones.padron.models import CredencialUsuario
         print(f"Buscando credencial para el usuario: {username}")
-        # Buscar la credencial del usuario (sin filtrar por estado primero)
+        
         try:
             credencial = CredencialUsuario.objects.get(usuario=username)
             print(f"Credencial encontrada: {credencial}")
@@ -58,63 +97,42 @@ def login_padron(request):
                     'success': False,
                     'message': 'Su cuenta no está activa. Por favor, contacte al administrador.'
                 }, status=400)
-                
-            # Verificar la contraseña
-            print(f"[DEBUG] Iniciando verificación de contraseña para usuario: {username}")
-            print(f"[DEBUG] Contraseña proporcionada: {password}")
-            print(f"[DEBUG] Contraseña encriptada almacenada: {credencial.contrasena_encriptada}")
-            print(f"[DEBUG] Contraseña en texto plano: {credencial._contrasena_plana if hasattr(credencial, '_contrasena_plana') else 'No disponible'}")
             
-            from django.contrib.auth.hashers import check_password
-            print(f"[DEBUG] Usando check_password directamente: {check_password(password, credencial.contrasena_encriptada)}")
-            
+            # Verificar la contraseña del padrón
             if not credencial.verificar_contrasena(password):
                 print(f"[ERROR] La verificación de contraseña falló para el usuario {username}")
-                print(f"[DEBUG] Detalles de la credencial: {credencial.__dict__}")
                 return JsonResponse({
                     'success': False,
                     'message': 'Cédula o contraseña incorrectos'
                 }, status=400)
-                
-        except CredencialUsuario.DoesNotExist:
-            print(f"Error: No se encontró el usuario {username}")
-            # No revelamos que el usuario no existe por seguridad
-            return JsonResponse({
-                'success': False,
-                'message': 'Cédula o contraseña incorrectos'
-            }, status=400)
-        
-        # Verificar si ya votó
-        if hasattr(credencial.padron, 'voto') and credencial.padron.voto:
-            print(f"Usuario {username} intentó votar nuevamente - Voto ya emitido")
-            return JsonResponse({
-                'success': False,
-                'message': 'Usted ya ha emitido su voto para este proceso electoral. No puede votar nuevamente.',
-                'voto_ya_emitido': True
-            }, status=400)
-        
-        # Iniciar sesión manualmente
-        from django.contrib.auth import get_user_model
-        from django.contrib.auth import login as auth_login
-        
-        User = get_user_model()
-        
-        # Intentar obtener el usuario existente o crearlo con un correo único
-        try:
-            user = User.objects.get(username=credencial.usuario)
-        except User.DoesNotExist:
-            # Crear un correo único basado en el nombre de usuario si no existe
-            email = f"{credencial.usuario}@sistema-voto.com"
-            user = User.objects.create_user(
-                username=credencial.usuario,
-                email=email,
-                password=None,  # No necesitamos contraseña ya que usamos autenticación personalizada
-                is_active=True
-            )
-        
-        if user:
+            
+            # Verificar si ya votó
+            if hasattr(credencial.padron, 'voto') and credencial.padron.voto:
+                print(f"Usuario {username} intentó votar nuevamente - Voto ya emitido")
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Usted ya ha emitido su voto para este proceso electoral. No puede votar nuevamente.',
+                    'voto_ya_emitido': True
+                }, status=400)
+            
+            # Iniciar sesión para el padrón
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            
+            try:
+                user = User.objects.get(username=credencial.usuario)
+            except User.DoesNotExist:
+                # Crear un usuario temporal para el padrón
+                email = f"{credencial.usuario}@sistema-voto.com"
+                user = User.objects.create_user(
+                    username=credencial.usuario,
+                    email=email,
+                    password=None,
+                    is_active=True,
+                    is_staff=False
+                )
+            
             auth_login(request, user)
-            # Guardar el ID del padrón en la sesión
             request.session['padron_id'] = credencial.padron.id
             
             # Obtener el proceso electoral activo
@@ -123,7 +141,6 @@ def login_padron(request):
                 proceso_activo = ProcesoElectoral.objects.get(estado='activo')
                 redirect_url = f'/votacion/papeleta/{proceso_activo.id}/'
             except ProcesoElectoral.DoesNotExist:
-                # Si no hay proceso activo, redirigir a una página de error
                 return JsonResponse({
                     'success': False,
                     'message': 'No hay un proceso electoral activo en este momento.'
@@ -131,16 +148,17 @@ def login_padron(request):
             
             return JsonResponse({
                 'success': True,
-                'redirect_url': redirect_url
+                'redirect_url': redirect_url,
+                'message': 'Autenticación exitosa para votación'
             })
             
-    except CredencialUsuario.DoesNotExist as e:
-        print(f"Error: No se encontró el usuario o la cuenta no está activa - {str(e)}")
-        return JsonResponse({
-            'success': False,
-            'message': 'Cédula o contraseña incorrectos',
-            'error': 'Credencial no encontrada o inactiva'
-        }, status=400)
+        except CredencialUsuario.DoesNotExist:
+            print(f"Error: No se encontró el usuario {username} en el padrón")
+            return JsonResponse({
+                'success': False,
+                'message': 'Usuario o contraseña incorrectos'
+            }, status=400)
+            
     except Exception as e:
         print(f"Error inesperado: {str(e)}")
         import traceback
