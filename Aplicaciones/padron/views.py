@@ -605,12 +605,12 @@ def exportar_padron_excel(request):
     # Crear el libro de trabajo y la hoja
     wb = Workbook()
     ws = wb.active
-    ws.title = "Padrón Electoral"
+    ws.title = "PADRON_ELECTORAL_FORMATO"
     
     # Encabezados
     headers = [
         'Cédula', 'Apellidos', 'Nombres', 'Grado', 'Paralelo', 
-        'Período', 'Correo Electrónico', 'Teléfono', 'Estado'
+        'Correo Electrónico', 'Teléfono(Opcional)'
     ]
     
     for col_num, header in enumerate(headers, 1):
@@ -622,19 +622,18 @@ def exportar_padron_excel(request):
     estudiantes = PadronElectoral.objects.select_related('grado', 'paralelo', 'periodo').all()
     
     for row_num, estudiante in enumerate(estudiantes, 2):
+        # Asegurarse de que las columnas coincidan con los encabezados
         ws[f'A{row_num}'] = estudiante.cedula
         ws[f'B{row_num}'] = estudiante.apellidos
         ws[f'C{row_num}'] = estudiante.nombre
-        ws[f'D{row_num}'] = estudiante.grado.nombre
-        ws[f'E{row_num}'] = estudiante.paralelo.nombre
-        ws[f'F{row_num}'] = estudiante.periodo.nombre if estudiante.periodo else ''
-        ws[f'G{row_num}'] = estudiante.correo
-        ws[f'H{row_num}'] = estudiante.telefono if estudiante.telefono else ''
-        ws[f'I{row_num}'] = estudiante.get_estado_display()
+        ws[f'D{row_num}'] = estudiante.grado.nombre if estudiante.grado else ''
+        ws[f'E{row_num}'] = estudiante.paralelo.nombre if estudiante.paralelo else ''
+        ws[f'F{row_num}'] = estudiante.correo if estudiante.correo else ''
+        ws[f'G{row_num}'] = estudiante.telefono if estudiante.telefono else ''
     
     # Preparar la respuesta
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=padron_electoral.xlsx'
+    response['Content-Disposition'] = 'attachment; filename=PADRON_ELECTORAL_FORMATO.xlsx'
     
     # Guardar el libro en la respuesta
     with io.BytesIO() as buffer:
