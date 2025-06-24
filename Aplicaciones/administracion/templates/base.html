@@ -38,14 +38,11 @@
 </head>
 
 <body>
-  <!-- Contenedor para mensajes -->
-  <div class="container mt-3">
+  <!-- Contenedor para mensajes (oculto, se muestran con SweetAlert2) -->
+  <div id="messages-container" style="display: none;">
     {% if messages %}
       {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+      <div data-tags="{{ message.tags }}">{{ message|escapejs }}</div>
       {% endfor %}
     {% endif %}
   </div>
@@ -76,10 +73,14 @@
   <!-- Menú móvil -->
   <link rel="stylesheet" href="{% static 'css/mobile-menu.css' %}">
   <script src="{% static 'js/mobile-menu.js' %}"></script>
+
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
+
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
   <!-- Template Scripts -->
   <script src="{% static 'plantillas/assets/assets_informativo/js/isotope.min.js' %}"></script>
@@ -88,40 +89,88 @@
   <script src="{% static 'plantillas/assets/assets_informativo/js/video.js' %}"></script>
   <script src="{% static 'plantillas/assets/assets_informativo/js/slick-slider.js' %}"></script>
 
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <!-- Custom Scripts -->
   <script src="{% static 'js/menu.js' %}?v=1.1"></script>
   <script src="{% static 'js/features.js' %}"></script>
   <script src="{% static 'js/cards.js' %}"></script>
 
   <script>
-    // Verificar si Bootstrap está cargado
-    document.addEventListener('DOMContentLoaded', function () {
-      if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap no se ha cargado correctamente');
-      } else {
-        console.log('Bootstrap está cargado correctamente');
-
-        // Inicializar tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-
-        // Inicializar pestañas de Bootstrap 5
-        var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
-        tabEls.forEach(function (tabEl) {
-          tabEl.addEventListener('click', function (e) {
-            e.preventDefault();
-            var tab = new bootstrap.Tab(tabEl);
-            tab.show();
-          });
-        });
-
-        // Inicializar pestañas de jQuery UI (si es necesario)
-        if (typeof $.fn.tabs === 'function') {
-          $(".tabs").tabs();
-        }
+    // Función para inicializar el año en el footer
+    function initializeYear() {
+      const yearElement = document.getElementById('currentYear');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
       }
+    }
+    
+    // Función para inicializar tooltips de Bootstrap
+    function initializeTooltips() {
+      if (typeof bootstrap === 'undefined') return;
+      
+      const tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      );
+      
+      tooltipTriggerList.forEach(function(tooltipEl) {
+        new bootstrap.Tooltip(tooltipEl);
+      });
+    }
+    
+    // Función para inicializar pestañas de Bootstrap
+    function initializeTabs() {
+      if (typeof bootstrap === 'undefined') return;
+      
+      const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+      
+      tabEls.forEach(function(tabEl) {
+        tabEl.addEventListener('click', function(e) {
+          e.preventDefault();
+          new bootstrap.Tab(tabEl).show();
+        });
+      });
+    }
+    
+    // Función para inicializar pestañas de jQuery UI
+    function initializeJqueryTabs() {
+      if (window.jQuery && typeof window.jQuery.fn.tabs === 'function') {
+        window.jQuery(".tabs").tabs();
+      }
+    }
+    
+    // Función para mostrar notificaciones
+    function showNotifications() {
+      const messagesContainer = document.getElementById('messages-container');
+      if (!messagesContainer) return;
+      
+      const messageElements = messagesContainer.querySelectorAll('div[data-tags]');
+      
+      messageElements.forEach(function(element) {
+        const tags = element.getAttribute('data-tags');
+        const text = element.textContent;
+        
+        window.Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true
+        }).fire({
+          icon: tags,
+          title: text
+        });
+      });
+    }
+    
+    // Inicialización cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeYear();
+      initializeTooltips();
+      initializeTabs();
+      initializeJqueryTabs();
+      showNotifications();
     });
   </script>
   <!-- Botón de Inicio de Sesión -->
@@ -150,15 +199,11 @@
     </div>
   </footer>
 
-  <script>
-    // Actualizar el año actual en el footer
-    document.addEventListener('DOMContentLoaded', function () {
-      const yearElement = document.getElementById('currentYear');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      }
-    });
-  </script>
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

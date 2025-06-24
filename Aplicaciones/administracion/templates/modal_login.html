@@ -70,51 +70,33 @@ $(document).ready(function() {
         }
     }
     
-    // Función para mostrar mensajes en el modal
+    // Función para mostrar mensajes con SweetAlert
     function showModalError(message, isWarning = false, type = 'error') {
-        // Limpiar mensajes anteriores
-        $('.modal-body .alert').remove();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
         
-        // Determinar la clase y el ícono según el tipo de mensaje
-        var alertClass, icon;
+        let icon = 'error';
+        if (type === 'success') icon = 'success';
+        else if (type === 'warning' || isWarning) icon = 'warning';
         
-        switch(type) {
-            case 'success':
-                alertClass = 'alert-success';
-                icon = 'fa-check-circle';
-                break;
-            case 'warning':
-                alertClass = 'alert-warning';
-                icon = 'fa-exclamation-circle';
-                break;
-            case 'error':
-            default:
-                alertClass = isWarning ? 'alert-warning' : 'alert-danger';
-                icon = isWarning ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
-        }
-        
-        // Crear el HTML del mensaje
-        var messageHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert" style="margin: 10px 0;">
-                <div class="d-flex align-items-center">
-                    <i class="fas ${icon} me-2"></i>
-                    <div>${message}</div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-        
-        // Insertar el mensaje al principio del cuerpo del modal
-        $('.modal-body').prepend(messageHtml);
-        
-        // Hacer scroll al mensaje
-        $('html, body').animate({
-            scrollTop: $('.alert').offset().top - 100
-        }, 500);
+        Toast.fire({
+            icon: icon,
+            title: message
+        });
         
         // Si es un mensaje de éxito, cerrar automáticamente después de 3 segundos
         if (type === 'success') {
             setTimeout(function() {
-                $('.alert').alert('close');
+                Swal.close();
             }, 3000);
         }
     }
