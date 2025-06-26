@@ -1,0 +1,149 @@
+{% extends 'noticias/base_noticias.html' %}
+{% load static %}
+
+{% block titulo %}{% if form.instance.pk %}Editar{% else %}Nueva{% endif %} Noticia{% endblock %}
+
+{% block titulo_pagina %}{% if form.instance.pk %}Editar Noticia{% else %}Nueva Noticia{% endif %}{% endblock %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.titulo.id_for_label }}" class="form-label">
+                            {{ form.titulo.label }}
+                            {% if form.titulo.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.titulo.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.contenido.id_for_label }}" class="form-label">
+                            {{ form.contenido.label }}
+                            {% if form.contenido.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {{ form.contenido }}
+                        {% if form.contenido.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.contenido.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Escribe el contenido detallado de la noticia.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.imagen.id_for_label }}" class="form-label">
+                                {{ form.imagen.label }}
+                            </label>
+                            {{ form.imagen }}
+                            {% if form.instance.imagen %}
+                                <div class="mt-2">
+                                    <img src="{{ form.instance.imagen.url }}" alt="Imagen actual" class="img-thumbnail" style="max-height: 150px;">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" name="imagen-clear" id="imagen-clear">
+                                        <label class="form-check-label" for="imagen-clear">
+                                            Eliminar imagen actual
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if form.imagen.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.imagen.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Formato recomendado: JPG, PNG o WEBP. Tamaño máximo: 2MB.</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_publicacion.id_for_label }}" class="form-label">
+                                    {{ form.fecha_publicacion.label }}
+                                    {% if form.fecha_publicacion.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.fecha_publicacion }}
+                                {% if form.fecha_publicacion.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.fecha_publicacion.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if user.is_staff or user == form.instance.autor %}
+                            <div class="form-check form-switch mb-3">
+                                {{ form.activo }}
+                                <label class="form-check-label" for="{{ form.activo.id_for_label }}">
+                                    {{ form.activo.label }}
+                                </label>
+                                {% if form.activo.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.activo.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% if form.instance.pk %}{% url 'noticias:detalle' form.instance.slug %}{% else %}{% url 'noticias:lista' %}{% endif %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <div class="btn-group">
+                            <button type="submit" name="guardar" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Guardar
+                            </button>
+                            <button type="submit" name="seguir_editando" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-1"></i> Guardar y seguir editando
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    // Inicializar CKEditor
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar el editor
+        const editor = initCKEditor('editor');
+        
+        // Validación del formulario
+        const forms = document.querySelectorAll('.needs-validation');
+        
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
+{% endblock %}
