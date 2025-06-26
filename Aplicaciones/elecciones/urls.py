@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('buscar_nombre_por_cedula/', views.buscar_nombre_por_cedula, name='buscar_nombre_por_cedula'),
+    path('verificar_estudiante/', views.verificar_estudiante_lista, name='verificar_estudiante_lista'),
     path('buscar_cedula_por_nombre/', views.buscar_cedula_por_nombre, name='buscar_cedula_por_nombre'),
     path('listas/', views.listar_listas, name='listar_listas'),
     path('lista/nueva/', views.agregar_lista, name='nueva_lista'),
@@ -18,7 +19,7 @@ urlpatterns = [
 
     # Rutas de Candidatos
     path('candidatos/', views.listar_candidatos, name='listar_candidatos'),
-    path('candidato/nuevo/', views.agregar_candidato, name='agregar_candidato'),
-    path('candidato/editar/<int:candidato_id>/', views.editar_candidato, name='editar_candidato'),
-    path('candidato/eliminar/<int:candidato_id>/', views.eliminar_candidato, name='eliminar_candidato'),
+    path('candidatos/agregar/', views.agregar_candidato, name='agregar_candidato'),
+    path('candidatos/editar/<int:candidato_id>/', views.editar_candidato, name='editar_candidato'),
+    path('candidatos/eliminar/<int:candidato_id>/', views.eliminar_candidato, name='eliminar_candidato'),
 ]

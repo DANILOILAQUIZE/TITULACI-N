@@ -1,0 +1,99 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card mb-3">
+        <div class="card-body bg-light text-center">
+            <h5 class="card-title mb-3"><strong>Gestión Electoral</strong></h5>
+            <p class="card-text mb-4">
+                Administración de listas y cargos para elecciones estudiantiles.
+            </p>
+        </div>
+        <nav class="navbar navbar-light bg-light border rounded shadow-sm">
+            <div class="container-fluid justify-content-around">
+                <a href="{% url 'listar_listas' %}" class="text-decoration-none text-center">
+                    <i class="la la-list-ol text-muted fs-2 d-block"></i>
+                    <div>
+                        <strong class="d-block">Listas</strong>
+                        <small class="text-muted">Gestionar listas</small>
+                    </div>
+                </a>
+                <a href="{% url 'listar_cargos' %}" class="text-decoration-none text-center">
+                    <i class="la la-briefcase text-muted fs-2 d-block"></i>
+                    <div>
+                        <strong class="d-block">Cargos</strong>
+                        <small class="text-muted">Gestionar cargos</small>
+                    </div>
+                </a>
+                <a href="{% url 'listar_candidatos' %}" class="text-decoration-none text-center position-relative">
+                    <div>
+                        <i class="la la-users text-primary fs-2 d-block"></i>
+                        <span class="position-absolute" style="top: -15px; right: 70%; z-index: 1000;">
+                            <i class="fas fa-hand-point-left" style="font-size: 2rem; transform: scaleX(1) rotate(-30deg); color: #1cbed3e6;"></i>
+                        </span>
+                        <div>
+                            <strong class="d-block">Candidatos</strong>
+                            <small class="text-muted">Gestionar candidatos</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Listado de Candidatos</h2>
+        <a href="{% url 'agregar_candidato' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Agregar Candidato
+        </a>
+    </div>
+
+    
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Lista</th>
+                    <th>Cargo</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidato in candidatos %}
+                <tr>
+                    <td>
+                        {% if candidato.imagen %}
+                            <img src="{{ candidato.imagen.url }}" alt="{{ candidato.nombre_candidato }}" class="img-thumbnail" style="width: 50px;">
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ candidato.nombre_candidato }}</td>
+                    <td>{{ candidato.lista.nombre_lista }}</td>
+                    <td>{{ candidato.cargo.nombre_cargo }}</td>
+                    <td>{{ candidato.get_tipo_candidato_display }}</td>
+                    <td>
+                        <a href="{% url 'editar_candidato' candidato.id %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'eliminar_candidato' candidato.id %}" class="btn btn-sm btn-danger" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No hay candidatos registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock contenido %}

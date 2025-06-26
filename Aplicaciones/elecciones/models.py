@@ -31,6 +31,7 @@ class Candidato(models.Model):
         ('ALTERNO', 'Alterno'),
     ]
     
+    # Información del candidato
     nombre_candidato = models.CharField(max_length=100) 
     lista = models.ForeignKey(Lista, on_delete=models.CASCADE)  
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE) 
@@ -44,6 +45,11 @@ class Candidato(models.Model):
         null=True,
         blank=True
     )
+    
+    # Campos para almacenar las cédulas de cada tipo de candidato
+    cedula_principal = models.CharField(max_length=20, null=True, blank=True, verbose_name='Cédula del candidato principal')
+    cedula_suplente = models.CharField(max_length=20, null=True, blank=True, verbose_name='Cédula del suplente')
+    cedula_alterno = models.CharField(max_length=20, null=True, blank=True, verbose_name='Cédula del alterno')
 
     def __str__(self):
         return f"{self.nombre_candidato} - {self.cargo.nombre_cargo} ({self.lista.nombre_lista})"

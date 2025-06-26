@@ -18,11 +18,48 @@
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/papeleta.css' %}">
     
     <style>
-        /* Estilos inline adicionales si son necesarios */
+        /* Estilos adicionales específicos para esta plantilla */
+        .hidden-radio {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .voter-info {
+            margin-top: 1rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.95rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .voter-info i {
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        
+        /* Ajustes responsivos */
+        @media (max-width: 768px) {
+            .header-card h1 {
+                font-size: 1.75rem;
+            }
+            
+            .voting-options {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -51,90 +88,131 @@
             </div>
         </div>
 
-        <form method="POST" action="{% url 'votacion:registrar_voto' proceso.id %}">
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <!-- Sección de Instrucciones -->
+        <div class="instructions-card mb-4" data-aos="fade-up">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle me-3" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                <div>
+                    <h3 class="h5 mb-1">Instrucciones</h3>
+                    <p class="mb-0">Selecciona una lista o una opción de voto y luego haz clic en "Confirmar Voto"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Votación -->
+        <form method="POST" action="{% url 'votacion:registrar_voto' proceso.id %}" id="votingForm">
+            {% csrf_token %}
             <input type="hidden" name="lista" id="lista_seleccionada">
             
+            <!-- Listas de Candidatos -->
             {% if listas_con_candidatos %}
-            <div class="list-grid">
-                {% for item in listas_con_candidatos %}
-                <div class="list-item">
-                    <input type="radio" 
-                           id="lista_{{ item.lista.id }}" 
-                           name="tipo_voto" 
-                           value="lista" 
-                           class="hidden-radio" 
-                           data-lista="{{ item.lista.id }}">
-                    <label for="lista_{{ item.lista.id }}" class="list-card">
-                        <div class="selected-badge">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="list-header">
-                            {% if item.lista.imagen %}
-                                <img src="{{ item.lista.imagen.url }}" alt="{{ item.lista.nombre_lista }}" class="list-logo">
-                            {% else %}
-                                <div class="list-logo">
-                                    <i class="fas fa-landmark" style="font-size: 2.5rem; color: #6c757d; margin-top: 15px;"></i>
-                                </div>
-                            {% endif %}
-                            <h3 class="list-name">{{ item.lista.nombre_lista }}</h3>
-                            {% if item.lista.frase %}
-                                <p class="list-slogan">"{{ item.lista.frase }}"</p>
-                            {% endif %}
-                        </div>
-                        <div class="candidates-grid">
-                            {% for candidato in item.candidatos %}
-                            <div class="candidate-item">
-                                {% if candidato.imagen %}
-                                    <img src="{{ candidato.imagen.url }}" 
-                                         alt="{{ candidato.nombre_candidato }}" 
-                                         class="candidate-photo"
-                                         title="{{ candidato.cargo.nombre_cargo }}: {{ candidato.nombre_candidato }}">
+            <section class="mb-5" data-aos="fade-up">
+                <h2 class="h4 mb-4">Listas de Candidatos</h2>
+                <div class="list-grid">
+                    {% for item in listas_con_candidatos %}
+                    <div class="list-item" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 100 %}">
+                        <input type="radio" 
+                               id="lista_{{ item.lista.id }}" 
+                               name="tipo_voto" 
+                               value="lista" 
+                               class="hidden-radio" 
+                               data-lista="{{ item.lista.id }}"
+                               aria-labelledby="lista_label_{{ item.lista.id }}">
+                        <label for="lista_{{ item.lista.id }}" class="list-card h-100" id="lista_label_{{ item.lista.id }}" tabindex="0">
+                            <div class="selected-badge">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="list-header">
+                                {% if item.lista.imagen %}
+                                    <img src="{{ item.lista.imagen.url }}" 
+                                         alt="{{ item.lista.nombre_lista }}" 
+                                         class="list-logo"
+                                         loading="lazy">
                                 {% else %}
-                                    <div class="candidate-photo" style="background-color: #f0f2f5; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-user" style="font-size: 1.5rem; color: #6c757d;"></i>
+                                    <div class="list-logo">
+                                        <i class="fas fa-landmark" aria-hidden="true"></i>
                                     </div>
                                 {% endif %}
-                                <div class="candidate-role" title="{{ candidato.cargo.nombre_cargo }}">
-                                    {{ candidato.cargo.nombre_cargo }}
+                                <h3 class="list-name">{{ item.lista.nombre_lista }}</h3>
+                                {% if item.lista.frase %}
+                                    <p class="list-slogan">"{{ item.lista.frase }}"</p>
+                                {% endif %}
+                                <div class="mt-2">
+                                    <span class="badge bg-primary-soft text-primary">
+                                        <i class="fas fa-users me-1"></i>
+                                        {{ item.candidatos|length }} candidatos
+                                    </span>
                                 </div>
                             </div>
-                            {% endfor %}
+                            <div class="candidates-grid">
+                                {% for candidato in item.candidatos %}
+                                <div class="candidate-item">
+                                    <div class="candidate-photo-container">
+                                        {% if candidato.imagen %}
+                                            <img src="{{ candidato.imagen.url }}" 
+                                                 alt="{{ candidato.nombre_candidato }}" 
+                                                 class="candidate-photo"
+                                                 loading="lazy"
+                                                 title="{{ candidato.cargo.nombre_cargo }}: {{ candidato.nombre_candidato }}">
+                                        {% else %}
+                                            <div class="candidate-photo">
+                                                <i class="fas fa-user" aria-hidden="true"></i>
+                                            </div>
+                                        {% endif %}
+                                        <span class="candidate-badge" title="{{ candidato.cargo.nombre_cargo }}">
+                                            <i class="fas {% if 'presidente' in candidato.cargo.nombre_cargo|lower %}fa-crown{% else %}fa-user-tie{% endif %}"></i>
+                                        </span>
+                                    </div>
+                                    <div class="candidate-role" title="{{ candidato.cargo.nombre_cargo }}">
+                                        {{ candidato.cargo.nombre_cargo|truncatechars:20 }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Opciones de Voto -->
+            <section class="mb-5" data-aos="fade-up">
+                <h2 class="h4 mb-4">Otras Opciones de Voto</h2>
+                <div class="voting-options">
+                    <label class="voting-option" for="voto_blanco" tabindex="0">
+                        <input type="radio" id="voto_blanco" name="tipo_voto" value="blanco" class="hidden-radio">
+                        <div class="voting-option-content">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>Voto en Blanco</h3>
+                            <p>No voto por ninguna lista</p>
+                        </div>
+                    </label>
+                    
+                    <label class="voting-option" for="voto_nulo" tabindex="0">
+                        <input type="radio" id="voto_nulo" name="tipo_voto" value="nulo" class="hidden-radio">
+                        <div class="voting-option-content">
+                            <i class="fas fa-ban"></i>
+                            <h3>Voto Nulo</h3>
+                            <p>Mi voto no será contabilizado</p>
                         </div>
                     </label>
                 </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+            </section>
 
-            <div class="voting-options">
-                <label class="voting-option" for="voto_blanco">
-                    <input type="radio" id="voto_blanco" name="tipo_voto" value="blanco" class="hidden-radio">
-                    <i class="fas fa-file-alt"></i>
-                    <h3>Voto en Blanco</h3>
-                    <p>No voto por ninguna lista</p>
-                </label>
-                
-                <label class="voting-option" for="voto_nulo">
-                    <input type="radio" id="voto_nulo" name="tipo_voto" value="nulo" class="hidden-radio">
-                    <i class="fas fa-ban"></i>
-                    <h3>Voto Nulo</h3>
-                    <p>Mi voto no será contabilizado</p>
-                </label>
-            </div>
-
-            <div class="text-center my-5">
-                <button type="submit" class="btn btn-primary btn-vote me-3">
+            <!-- Acciones -->
+            <div class="text-center my-5" data-aos="fade-up">
+                <button type="submit" class="btn btn-primary btn-lg btn-vote me-3" id="confirmVoteBtn" disabled>
                     <i class="fas fa-check-circle me-2"></i>Confirmar Voto
                 </button>
-                <a href="{% url 'votacion:lista_procesos' %}" class="btn btn-outline-secondary btn-vote">
+                <a href="{% url 'administracion:index' %}" class="btn btn-outline-secondary btn-lg btn-vote">
                     <i class="fas fa-times-circle me-2"></i>Cancelar
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- jQuery -->
+        <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- Bootstrap Bundle with Popper -->
@@ -143,55 +221,107 @@
     <!-- AOS Animation -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
-    <script>
-    // Inicializar AOS
-    AOS.init({
-        duration: 800,
-        once: true
-    });
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    // Manejar la selección de opciones
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar AOS
+        AOS.init({
+            duration: 600,
+            once: true,
+            easing: 'ease-out-cubic',
+            offset: 50
+        });
+
+        // Elementos del DOM
+        const form = document.getElementById('votingForm');
         const radioButtons = document.querySelectorAll('input[name="tipo_voto"]');
         const listaSeleccionada = document.getElementById('lista_seleccionada');
-        
+        const confirmBtn = document.getElementById('confirmVoteBtn');
+        let selectedOption = null;
+
+        // Función para habilitar/deshabilitar el botón de confirmación
+        function updateConfirmButton() {
+            confirmBtn.disabled = !selectedOption;
+        }
+
         // Función para remover la clase 'selected' de todas las opciones
         function clearSelections() {
             document.querySelectorAll('.list-card, .voting-option').forEach(el => {
                 el.classList.remove('selected');
             });
         }
-        
+
+        // Función para manejar la selección de una opción
+        function handleSelection(radio) {
+            clearSelections();
+            selectedOption = radio.value;
+            
+            // Marcar como seleccionado el elemento padre correspondiente
+            if (radio.id.startsWith('lista_')) {
+                radio.closest('.list-item').querySelector('.list-card').classList.add('selected');
+                listaSeleccionada.value = radio.dataset.lista;
+            } else {
+                radio.closest('.voting-option').classList.add('selected');
+                listaSeleccionada.value = '';
+            }
+            
+            // Habilitar botón de confirmación
+            updateConfirmButton();
+            
+            // Desplazamiento suave hacia arriba en móviles
+            if (window.innerWidth < 768) {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Agregar clase de feedback visual
+            const selectedElement = radio.closest('.list-card') || radio.closest('.voting-option');
+            selectedElement.classList.add('selected-pulse');
+            setTimeout(() => {
+                selectedElement.classList.remove('selected-pulse');
+            }, 500);
+        }
+
         // Manejar cambios en los radio buttons
         radioButtons.forEach(radio => {
-            radio.addEventListener('change', function() {
-                clearSelections();
-                
-                // Marcar como seleccionado el elemento padre correspondiente
-                if (this.id.startsWith('lista_')) {
-                    this.closest('.list-item').querySelector('.list-card').classList.add('selected');
-                    listaSeleccionada.value = this.dataset.lista;
-                } else {
-                    this.closest('.voting-option').classList.add('selected');
-                    listaSeleccionada.value = '';
+            // Manejar clic en la tarjeta completa
+            const parent = radio.closest('.list-item') || radio.closest('label');
+            parent.addEventListener('click', function(e) {
+                // Prevenir la propagación para no activar múltiples veces
+                if (e.target !== radio) {
+                    e.preventDefault();
+                    radio.checked = true;
+                    handleSelection(radio);
                 }
-                
-                // Desplazamiento suave hacia arriba en móviles
-                if (window.innerWidth < 768) {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
+            });
+            
+            // Manejar cambio directo en el radio
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    handleSelection(this);
+                }
+            });
+            
+            // Manejar teclado para accesibilidad
+            parent.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    radio.checked = true;
+                    handleSelection(radio);
                 }
             });
         });
-        
+
         // Efecto hover para las tarjetas de lista
-        document.querySelectorAll('.list-card').forEach(card => {
+        document.querySelectorAll('.list-card, .voting-option').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 if (!this.classList.contains('selected')) {
                     this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
                 }
             });
             
@@ -201,7 +331,79 @@
                     this.style.boxShadow = '';
                 }
             });
+            
+            // Mejorar accesibilidad con focus
+            card.addEventListener('focus', function() {
+                this.style.outline = 'none';
+                this.style.boxShadow = '0 0 0 3px rgba(67, 97, 238, 0.5)';
+            });
+            
+            card.addEventListener('blur', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.boxShadow = '';
+                }
+            });
         });
+
+        // Validación del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedOption) {
+                Swal.fire({
+                    title: 'Selección requerida',
+                    text: 'Por favor, selecciona una opción de voto antes de continuar.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#4361ee'
+                });
+                return false;
+            }
+            
+            // Mostrar diálogo de confirmación
+            Swal.fire({
+                title: '¿Estás seguro?',
+                html: `Vas a emitir tu voto por <strong>${getSelectedOptionText()}</strong>.<br>¿Deseas continuar?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4361ee',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, confirmar voto',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Deshabilitar botones para evitar múltiples envíos
+                    confirmBtn.disabled = true;
+                    confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+                    
+                    // Enviar el formulario después de un pequeño retraso para la animación
+                    setTimeout(() => {
+                        form.submit();
+                    }, 500);
+                }
+            });
+        });
+        
+        // Función para obtener el texto de la opción seleccionada
+        function getSelectedOptionText() {
+            const selectedRadio = document.querySelector('input[name="tipo_voto"]:checked');
+            if (!selectedRadio) return '';
+            
+            if (selectedRadio.id === 'voto_blanco') return 'Voto en Blanco';
+            if (selectedRadio.id === 'voto_nulo') return 'Voto Nulo';
+            
+            // Para listas de candidatos
+            const listCard = selectedRadio.closest('.list-item');
+            if (listCard) {
+                return listCard.querySelector('.list-name').textContent;
+            }
+            
+            return '';
+        }
+        
+        // Inicializar el estado del botón de confirmación
+        updateConfirmButton();
     });
     </script>
 </body>

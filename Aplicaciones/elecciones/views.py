@@ -415,6 +415,183 @@ def eliminar_cargo(request, cargo_id):
 
 
 #APARTADO DE CANDIDATOS
+def listar_candidatos(request):
+    periodo_actual = Periodo.objects.get(
+        fecha_inicio__lte=timezone.now(),
+        fecha_fin__gte=timezone.now()
+    )
+    candidatos = Candidato.objects.filter(periodo=periodo_actual).select_related('lista', 'cargo', 'periodo')
+    return render(request, 'candidatos/listar.html', {
+        'candidatos': candidatos, 
+        'periodo_actual': periodo_actual
+    })
+
+def agregar_candidato(request):
+    if request.method == 'POST':
+        try:
+            print("Datos recibidos en POST:", request.POST)
+            print("Archivos recibidos:", request.FILES)
+            
+            # Obtener datos comunes del formulario
+            lista_id = request.POST.get('lista')
+            periodo_id = request.POST.get('periodo')
+            
+            if not lista_id or not periodo_id:
+                messages.error(request, 'Debe seleccionar una lista y un período')
+                return redirect('agregar_candidato')
+            
+            # Obtener instancias relacionadas
+            lista = Lista.objects.get(pk=lista_id)
+            periodo = Periodo.objects.get(pk=periodo_id)
+            
+            # Procesar cada tipo de candidato
+            tipos_candidato = ['principal', 'suplente', 'alterno']
+            candidatos_creados = 0
+            
+            for tipo in tipos_candidato:
+                # Obtener datos específicos del tipo de candidato
+                nombre = request.POST.get(f'nombre_{tipo}')
+                cargo_id = request.POST.get(f'cargo_{tipo}')
+                cedula = request.POST.get(f'cedula_{tipo}')
+                
+                print(f"Procesando {tipo}:", {
+                    'nombre': nombre,
+                    'cargo_id': cargo_id,
+                    'cedula': cedula
+                })
+                
+                # Si no hay nombre o cargo, continuar con el siguiente tipo
+                if not nombre or not cargo_id:
+                    print(f"Saltando {tipo}: falta nombre o cargo")
+                    continue
+                
+                try:
+                    cargo = Cargo.objects.get(pk=cargo_id)
+                    
+                    # Verificar si el estudiante ya es candidato en otra lista en el mismo período
+                    candidato_existente = Candidato.objects.filter(
+                        Q(cedula_principal=cedula) | 
+                        Q(cedula_suplente=cedula) | 
+                        Q(cedula_alterno=cedula),
+                        periodo=periodo
+                    ).exclude(lista=lista).first()
+                    
+                    if candidato_existente:
+                        messages.warning(
+                            request, 
+                            f'El estudiante {nombre} ya es candidato en la lista {candidato_existente.lista.nombre_lista} como {candidato_existente.get_tipo_candidato_display()}.'
+                        )
+                        continue
+                    
+                    # Crear el candidato
+                    candidato = Candidato(
+                        nombre_candidato=nombre,
+                        lista=lista,
+                        cargo=cargo,
+                        periodo=periodo,
+                        tipo_candidato=tipo.upper(),
+                        **{f'cedula_{tipo}': cedula}  # Guardar la cédula en el campo correspondiente
+                    )
+                    
+                    # Manejar la imagen si se subió
+                    imagen_field = f'foto_{tipo}'
+                    if imagen_field in request.FILES:
+                        print(f"Imagen encontrada para {tipo}")
+                        candidato.imagen = request.FILES[imagen_field]
+                    
+                    candidato.save()
+                    print(f"Candidato {tipo} guardado correctamente")
+                    candidatos_creados += 1
+                    
+                except Cargo.DoesNotExist:
+                    print(f"Error: No se encontró el cargo para {tipo} con ID {cargo_id}")
+                    messages.warning(request, f'No se encontró el cargo para el {tipo}')
+                    continue
+                except Exception as e:
+                    print(f"Error al guardar {tipo}:", str(e))
+                    messages.warning(request, f'Error al guardar el {tipo}: {str(e)}')
+                    continue
+            
+            if candidatos_creados > 0:
+                messages.success(request, f'Se agregaron {candidatos_creados} candidatos correctamente')
+            else:
+                messages.warning(request, 'No se agregó ningún candidato. Verifica los datos e inténtalo de nuevo.')
+            
+            return redirect('listar_candidatos')
+            
+        except (Lista.DoesNotExist, Periodo.DoesNotExist) as e:
+            print("Error de lista o período no encontrado:", str(e))
+            messages.error(request, 'Error: La lista o el período seleccionado no existe')
+            return redirect('agregar_candidato')
+        except Exception as e:
+            print("Error general:", str(e))
+            messages.error(request, f'Error al procesar el formulario: {str(e)}')
+            return redirect('agregar_candidato')
+    
+    # GET request - Mostrar el formulario
+    try:
+        listas = Lista.objects.all()
+        cargos = Cargo.objects.all()
+        periodos = Periodo.objects.all()
+        
+        return render(request, 'candidatos/agregar.html', {
+            'listas': listas,
+            'cargos': cargos,
+            'periodos': periodos,
+            'tipos_candidato': Candidato.TIPOS_CANDIDATO
+        })
+    except Exception as e:
+        print("Error al cargar el formulario:", str(e))
+        messages.error(request, f'Error al cargar el formulario: {str(e)}')
+        return redirect('listar_candidatos')
+
+def editar_candidato(request, candidato_id):
+    candidato = get_object_or_404(Candidato, pk=candidato_id)
+    
+    if request.method == 'POST':
+        try:
+            # Actualizar datos del formulario
+            candidato.nombre_candidato = request.POST.get('nombre_candidato')
+            candidato.lista_id = request.POST.get('lista')
+            candidato.cargo_id = request.POST.get('cargo')
+            candidato.periodo_id = request.POST.get('periodo')
+            candidato.tipo_candidato = request.POST.get('tipo_candidato', 'PRINCIPAL')
+            
+            # Manejar la imagen si se subió una nueva
+            if 'imagen' in request.FILES:
+                candidato.imagen = request.FILES['imagen']
+                
+            candidato.save()
+            messages.success(request, 'Candidato actualizado correctamente')
+            return redirect('listar_candidatos')
+            
+        except Exception as e:
+            messages.error(request, f'Error al actualizar el candidato: {str(e)}')
+    
+    # Obtener datos para el formulario
+    listas = Lista.objects.all()
+    cargos = Cargo.objects.all()
+    periodos = Periodo.objects.all()
+    
+    return render(request, 'candidatos/editar.html', {
+        'candidato': candidato,
+        'listas': listas,
+        'cargos': cargos,
+        'periodos': periodos,
+        'tipos_candidato': Candidato.TIPOS_CANDIDATO
+    })
+
+def eliminar_candidato(request, candidato_id):
+    candidato = get_object_or_404(Candidato, pk=candidato_id)
+    if request.method == 'POST':
+        try:
+            candidato.delete()
+            messages.success(request, 'Candidato eliminado correctamente')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar el candidato: {str(e)}')
+        return redirect('listar_candidatos')
+    return render(request, 'candidatos/eliminar.html', {'candidato': candidato})
+
 def buscar_nombre_por_cedula(request):
     busqueda = request.GET.get('cedula', '').strip()
     
@@ -451,413 +628,73 @@ def buscar_nombre_por_cedula(request):
         print(f'Error en búsqueda: {str(e)}')
         return JsonResponse({'nombre': None}, status=400)
 
-def listar_candidatos(request):
-    # Obtener candidatos ordenados por periodo y lista
-    candidatos = Candidato.objects.select_related('lista', 'cargo', 'periodo').order_by('periodo__nombre', 'lista__nombre_lista')
-    
-    # Obtener datos para el formulario
-    listas = Lista.objects.all()
-    cargos = Cargo.objects.all()
-    periodos = Periodo.objects.all()
-    
-    # Convertir mensajes a JSON para manejar en frontend
-    messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
-    
-    return render(request, 'candidatos/listarcandidatos.html', {
-        'candidatos': candidatos,
-        'listas': listas,
-        'cargos': cargos,
-        'periodos': periodos,
-        'messages_json': json.dumps(messages_list)
-    })
-
-def agregar_candidato(request):
-    print('\n' + '='*50)
-    print('DEPURACIÓN: Vista de Agregar Candidato')
-    print('='*50)
-    print(f'Método de solicitud: {request.method}')
-    print(f'GET parameters: {request.GET}')
-    print(f'POST parameters: {request.POST}')
-    print(f'FILES: {request.FILES}')
-    
-    # Obtener el ID de la lista si se pasa como parámetro
-    lista_id = request.GET.get('lista') or request.POST.get('lista')
-    lista_preseleccionada = None
-    candidatos_existentes = None
-    
-    if lista_id:
+def buscar_nombre_por_cedula(request):
+    if 'cedula' in request.GET:
+        cedula = request.GET.get('cedula')
         try:
-            lista_preseleccionada = Lista.objects.get(id=lista_id)
-            # Obtener los candidatos existentes de la lista
-            candidatos_existentes = Candidato.objects.filter(lista=lista_preseleccionada)
-        except (Lista.DoesNotExist, ValueError):
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'message': 'Lista no encontrada'}, status=404)
-            messages.error(request, 'Lista no encontrada')
-            return redirect('listar_candidatos')
-    
-    if request.method == 'POST':
-        # Campos para candidato principal
-        cargo_principal_id = request.POST.get('cargo_principal')
-        cedula_principal = request.POST.get('cedula_principal', '').strip()
-        nombre_principal = request.POST.get('nombre_candidato_principal', '').strip()
-        imagen_principal = request.FILES.get('imagen_principal')
-        
-        # Campos para candidato suplente
-        cargo_suplente_id = request.POST.get('cargo_suplente')
-        cedula_suplente = request.POST.get('cedula_suplente', '').strip()
-        nombre_suplente = request.POST.get('nombre_candidato_suplente', '').strip()
-        imagen_suplente = request.FILES.get('imagen_suplente')
-        
-        # Campos para candidato alterno (opcional)
-        cargo_alterno_id = request.POST.get('cargo_alterno')
-        cedula_alterno = request.POST.get('cedula_alterno', '').strip()
-        nombre_alterno = request.POST.get('nombre_candidato_alterno', '').strip()
-        imagen_alterno = request.FILES.get('imagen_alterno')
-        
-        # Campos comunes
-        lista_id = request.POST.get('lista')
-        periodo_id = request.POST.get('periodo')
-        
-        # Validaciones básicas
-        if not (nombre_principal and nombre_suplente):
-            messages.error(request, 'Los nombres de los candidatos no pueden estar vacíos')
-            return redirect('agregar_candidato')
-        
-        try:
-            # Obtener instancias de los modelos
-            lista = Lista.objects.get(id=lista_id)
-            cargo_principal = Cargo.objects.get(id=cargo_principal_id)
-            cargo_suplente = Cargo.objects.get(id=cargo_suplente_id)
-            periodo = Periodo.objects.get(id=periodo_id)
+            # Buscar en el padrón electoral
+            persona = PadronElectoral.objects.get(cedula=cedula)
             
-            # Crear candidatos en una transacción atómica
-            from django.db import transaction
+            # Verificar si ya está en alguna lista
+            periodo_actual = Periodo.objects.filter(
+                fecha_inicio__lte=timezone.now(),
+                fecha_fin__gte=timezone.now()
+            ).first()
             
-            try:
-                with transaction.atomic():
-                    # Buscar en el padrón electoral (sin fallar si no existe)
-                    padron_principal = None
-                    padron_suplente = None
-                    padron_alterno = None
-                    
-                    # Validar cédulas únicas
-                    if cedula_principal and cedula_principal == cedula_suplente:
-                        error_msg = 'Las cédulas del candidato principal y suplente no pueden ser iguales'
-                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
-                        messages.error(request, error_msg)
-                        return redirect('agregar_candidato')
-                        
-                    if cedula_alterno and (cedula_alterno == cedula_principal or cedula_alterno == cedula_suplente):
-                        error_msg = 'La cédula del candidato alterno no puede coincidir con las de los otros candidatos'
-                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
-                        messages.error(request, error_msg)
-                        return redirect('agregar_candidato')
-                    
-                    try:
-                        if cedula_principal:
-                            padron_principal = PadronElectoral.objects.get(cedula=cedula_principal)
-                    except PadronElectoral.DoesNotExist:
-                        print(f"Advertencia: Cédula {cedula_principal} no encontrada en el padrón")
-                        
-                    try:
-                        if cedula_suplente:
-                            padron_suplente = PadronElectoral.objects.get(cedula=cedula_suplente)
-                    except PadronElectoral.DoesNotExist:
-                        print(f"Advertencia: Cédula {cedula_suplente} no encontrada en el padrón")
-                    
-                    # Validar cédulas únicas
-                    if cedula_principal and cedula_suplente and cedula_principal == cedula_suplente:
-                        error_msg = 'Las cédulas de los candidatos deben ser únicas'
-                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                            return JsonResponse({'success': False, 'message': error_msg}, status=400)
-                        messages.error(request, error_msg)
-                        return redirect('agregar_candidato')
-                    
-                    # Crear candidatos en una transacción atómica
-                    from django.db import transaction
-                    
-                    with transaction.atomic():
-                        # Crear candidato principal
-                        candidato_principal = Candidato.objects.create(
-                            nombre_candidato=nombre_principal,
-                            lista=lista,
-                            cargo=cargo_principal,
-                            periodo=periodo,
-                            imagen=imagen_principal,
-                            padron=padron_principal,
-                            tipo_candidato='PRINCIPAL'
-                        )
-                        
-                        # Crear candidato suplente
-                        candidato_suplente = Candidato.objects.create(
-                            nombre_candidato=nombre_suplente,
-                            lista=lista,
-                            cargo=cargo_suplente,
-                            periodo=periodo,
-                            imagen=imagen_suplente,
-                            padron=padron_suplente,
-                            tipo_candidato='SUPLENTE'
-                        )
-                        
-                        # Crear candidato alterno si se proporciona
-                        if cargo_alterno_id and nombre_alterno:
-                            try:
-                                if cedula_alterno:
-                                    padron_alterno = PadronElectoral.objects.get(cedula=cedula_alterno)
-                                
-                                Candidato.objects.create(
-                                    nombre_candidato=nombre_alterno,
-                                    lista=lista,
-                                    cargo=Cargo.objects.get(id=cargo_alterno_id),
-                                    periodo=periodo,
-                                    imagen=imagen_alterno,
-                                    padron=padron_alterno,
-                                    tipo_candidato='ALTERNO'
-                                )
-                            except PadronElectoral.DoesNotExist:
-                                print(f"Advertencia: Cédula {cedula_alterno} no encontrada en el padrón")
-                                Candidato.objects.create(
-                                    nombre_candidato=nombre_alterno,
-                                    lista=lista,
-                                    cargo=Cargo.objects.get(id=cargo_alterno_id),
-                                    periodo=periodo,
-                                    imagen=imagen_alterno,
-                                    tipo_candidato='ALTERNO'
-                                )
-                        
-            except Exception as e:
-                error_msg = f'Error al crear candidatos: {str(e)}'
-                print(error_msg)
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({'success': False, 'message': error_msg}, status=500)
-                messages.error(request, error_msg)
-                return redirect('agregar_candidato')
+            en_otra_lista = None
+            if periodo_actual:
+                en_otra_lista = Candidato.objects.filter(
+                    (Q(cedula_principal=cedula) | Q(cedula_suplente=cedula) | Q(cedula_alterno=cedula)) &
+                    Q(periodo=periodo_actual)
+                ).first()
             
-            # Si llegamos aquí, todo salió bien
-            success_msg = 'Candidatos guardados exitosamente'
-            print(success_msg)
-            
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': True, 
-                    'message': success_msg,
-                    'redirect_url': reverse('listar_candidatos')
-                })
-                
-            messages.success(request, success_msg)
-            return redirect('listar_candidatos')
-            
-        except (Lista.DoesNotExist, Cargo.DoesNotExist, Periodo.DoesNotExist) as e:
-            error_msg = f'Error al procesar los datos: {str(e)}'
-            print(error_msg)
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'message': error_msg}, status=400)
-            messages.error(request, error_msg)
-            return redirect('agregar_candidato')
-            
+            return JsonResponse({
+                'success': True,
+                'nombre': persona.nombre_completo,
+                'cedula': persona.cedula,
+                'grado': persona.grado.nombre if hasattr(persona, 'grado') and persona.grado else None,
+                'paralelo': persona.paralelo.nombre if hasattr(persona, 'paralelo') and persona.paralelo else None,
+                'en_otra_lista': {
+                    'lista': en_otra_lista.lista.nombre_lista if en_otra_lista else None,
+                    'tipo': en_otra_lista.get_tipo_candidato_display() if en_otra_lista else None
+                } if en_otra_lista else None
+            })
+        except PadronElectoral.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'No se encontró ninguna persona con esta cédula'}, status=404)
         except Exception as e:
-            error_msg = f'Error inesperado: {str(e)}'
-            print(error_msg)
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'message': 'Ocurrió un error inesperado'}, status=500)
-            messages.error(request, 'Ocurrió un error inesperado')
-            return redirect('agregar_candidato')
-    
-    # Si es una petición AJAX, devolver JSON
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({
-            'success': True,
-            'data': {
-                'listas': [{'id': l.id, 'nombre': l.nombre} for l in Lista.objects.all()],
-                'cargos': [{'id': c.id, 'nombre': c.nombre_cargo} for c in Cargo.objects.all()],
-                'periodos': [{'id': p.id, 'nombre': p.nombre_periodo} for p in Periodo.objects.all()],
-                'lista_preseleccionada': lista_preseleccionada.id if lista_preseleccionada else None
-            }
-        })
-    
-    # Cargar datos para el formulario en petición normal
-    listas = Lista.objects.all()
-    cargos = list(Cargo.objects.all())
-    periodos = Periodo.objects.all()
-    
-    # Inicializar variables para el contexto
-    context = {
-        'listas': listas,
-        'cargos': cargos,
-        'periodos': periodos,
-        'lista_preseleccionada': lista_preseleccionada,
-        'candidatos_existentes': candidatos_existentes or [],
-        'candidato_principal': None,
-        'candidato_suplente': None,
-        'candidato_alterno': None
-    }
-    
-    # Si hay candidatos existentes, cargarlos
-    if candidatos_existentes:
-        for candidato in candidatos_existentes:
-            if candidato.cargo.nombre_cargo.lower() == 'principal':
-                context['candidato_principal'] = candidato
-            elif candidato.cargo.nombre_cargo.lower() == 'suplente':
-                context['candidato_suplente'] = candidato
-            elif candidato.cargo.nombre_cargo.lower() == 'alterno':
-                context['candidato_alterno'] = candidato
-    
-    return render(request, 'candidatos/agregarcandidato.html', context)
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    return JsonResponse({'success': False, 'error': 'No se proporcionó cédula'}, status=400)
 
-def editar_candidato(request, candidato_id=None):
-    # Obtener datos comunes para GET y POST
-    listas = Lista.objects.all()
-    cargos = Cargo.objects.all()
-    periodos = Periodo.objects.all()
+def verificar_estudiante_lista(request):
+    """
+    Vista para verificar si un estudiante ya está en otra lista
+    """
+    cedula = request.GET.get('cedula')
+    if not cedula:
+        return JsonResponse({'error': 'No se proporcionó cédula'}, status=400)
     
-    if request.method == 'POST':
-        try:
-            # Obtener datos del formulario
-            lista_id = request.POST.get('lista')
-            periodo_id = request.POST.get('periodo')
-            
-            # Validar datos requeridos
-            if not (lista_id and periodo_id):
-                messages.error(request, 'Faltan datos requeridos')
-                return redirect('listar_candidatos')
-                
-            # Obtener instancias de modelos
-            lista = Lista.objects.get(id=lista_id)
-            periodo = Periodo.objects.get(id=periodo_id)
-            
-            # Función para procesar cada tipo de candidato
-            def procesar_candidato(tipo_candidato):
-                prefix = tipo_candidato.lower()
-                candidato_id = request.POST.get(f'{prefix}_id')
-                
-                if not candidato_id:  # No hay candidato de este tipo
-                    return None
-                    
-                # Obtener datos del formulario
-                nombre = request.POST.get(f'nombre_candidato_{prefix}', '').strip()
-                cedula = request.POST.get(f'cedula_{prefix}', '').strip()
-                cargo_id = request.POST.get(f'cargo_{prefix}')
-                imagen = request.FILES.get(f'imagen_{prefix}')
-                
-                if not (nombre and cedula and cargo_id):
-                    return None
-                
-                # Buscar en el padrón electoral
-                try:
-                    padron = PadronElectoral.objects.get(cedula=cedula)
-                except PadronElectoral.DoesNotExist:
-                    messages.warning(request, f'Cédula {cedula} no encontrada en el padrón electoral')
-                    padron = None
-                
-                # Obtener o crear el cargo
-                cargo = Cargo.objects.get(id=cargo_id)
-                
-                # Actualizar o crear el candidato
-                try:
-                    if candidato_id != 'new':  # Actualizar existente
-                        candidato = Candidato.objects.get(
-                            id=candidato_id,
-                            lista=lista,
-                            tipo_candidato=tipo_candidato
-                        )
-                        candidato.nombre_candidato = nombre
-                        candidato.cargo = cargo
-                        if imagen:
-                            candidato.imagen = imagen
-                        candidato.padron = padron
-                        candidato.save()
-                    else:  # Crear nuevo
-                        candidato = Candidato.objects.create(
-                            nombre_candidato=nombre,
-                            lista=lista,
-                            cargo=cargo,
-                            periodo=periodo,
-                            imagen=imagen,
-                            padron=padron,
-                            tipo_candidato=tipo_candidato
-                        )
-                    return candidato
-                    
-                except Candidato.DoesNotExist:
-                    messages.error(request, f'Error al procesar el {tipo_candidato.lower()}')
-                    return None
-            
-            # Procesar cada tipo de candidato
-            with transaction.atomic():
-                # Procesar candidato principal
-                candidato_principal = procesar_candidato('PRINCIPAL')
-                if not candidato_principal:
-                    raise Exception('El candidato principal es requerido')
-                
-                # Procesar candidato suplente
-                candidato_suplente = procesar_candidato('SUPLENTE')
-                if not candidato_suplente:
-                    raise Exception('El candidato suplente es requerido')
-                
-                # Procesar candidato alterno (opcional)
-                candidato_alterno = procesar_candidato('ALTERNO')
-            
-            messages.success(request, 'Candidatos actualizados exitosamente')
-            return redirect('listar_candidatos')
-            
-        except Exception as e:
-            messages.error(request, f'Error al procesar el formulario: {str(e)}')
-            return redirect('listar_candidatos')
-    
-    # GET request - Mostrar formulario de edición
-    context = {
-        'listas': listas,
-        'cargos': cargos,
-        'periodos': periodos,
-        'candidato_principal': None,
-        'candidato_suplente': None,
-        'candidato_alterno': None
-    }
-    
-    if candidato_id:
-        try:
-            # Obtener el candidato principal
-            candidato_principal = get_object_or_404(Candidato, id=candidato_id)
-            lista = candidato_principal.lista
-            
-            # Obtener los otros candidatos de la misma lista
-            otros_candidatos = Candidato.objects.filter(
-                lista=lista,
-                periodo=candidato_principal.periodo
-            ).exclude(id=candidato_id)
-            
-            # Asignar a las variables según su tipo
-            for candidato in [candidato_principal] + list(otros_candidatos):
-                if candidato.tipo_candidato == 'PRINCIPAL':
-                    context['candidato_principal'] = candidato
-                elif candidato.tipo_candidato == 'SUPLENTE':
-                    context['candidato_suplente'] = candidato
-                elif candidato.tipo_candidato == 'ALTERNO':
-                    context['candidato_alterno'] = candidato
-            
-        except Exception as e:
-            messages.error(request, f'Error al cargar los datos: {str(e)}')
-            return redirect('listar_candidatos')
-    
-    return render(request, 'candidatos/agregarcandidato.html', context)
-
-
-def eliminar_candidato(request, candidato_id):
     try:
-        candidato = get_object_or_404(Candidato, id=candidato_id)
-        nombre_candidato = candidato.nombre_candidato
-        lista_id = candidato.lista.id if candidato.lista else None
-        candidato.delete()
-        messages.success(request, f'Candidato {nombre_candidato} eliminado exitosamente')
+        periodo_actual = Periodo.objects.filter(
+            fecha_inicio__lte=timezone.now(),
+            fecha_fin__gte=timezone.now()
+        ).first()
         
-        # Redirigir a la lista de candidatos o a la página anterior
-        if lista_id:
-            return redirect('listar_candidatos') + f'?lista={lista_id}'
-        return redirect('listar_candidatos')
+        if not periodo_actual:
+            return JsonResponse({'en_otra_lista': False})
+            
+        candidato = Candidato.objects.filter(
+            (Q(cedula_principal=cedula) | Q(cedula_suplente=cedula) | Q(cedula_alterno=cedula)) &
+            Q(periodo=periodo_actual)
+        ).first()
+        
+        if candidato:
+            return JsonResponse({
+                'en_otra_lista': True,
+                'lista': candidato.lista.nombre_lista,
+                'tipo': candidato.get_tipo_candidato_display()
+            })
+            
+        return JsonResponse({'en_otra_lista': False})
+        
     except Exception as e:
-        messages.error(request, f'Error al eliminar candidato: {str(e)}')
-        return redirect('listar_candidatos')
-    return redirect('listar_candidatos')
+        return JsonResponse({'error': str(e)}, status=500)

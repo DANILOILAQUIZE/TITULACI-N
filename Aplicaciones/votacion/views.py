@@ -43,8 +43,9 @@ def iniciar_proceso(request):
             messages.error(request, f'Error al crear el proceso: {str(e)}')
             return redirect('votacion:iniciar_proceso')
 
-    # Obtener los períodos activos
-    periodos = Periodo.objects.filter(estado='activo')
+    # Obtener los períodos activos (insensible a mayúsculas/minúsculas)
+    periodos = Periodo.objects.filter(estado__iexact='activo')
+    print(f"Períodos encontrados: {list(periodos.values_list('nombre', flat=True))}")
     return render(request, 'votacion/proceso/iniciar.html', {'periodos': periodos})
 
 def lista_procesos(request):
@@ -54,7 +55,7 @@ def lista_procesos(request):
     for proceso in procesos:
         proceso.actualizar_estado()
     
-    periodos = Periodo.objects.filter(estado='activo')
+    periodos = Periodo.objects.filter(estado__iexact='activo')
     
     return render(request, 'votacion/proceso/lista.html', {
         'procesos': procesos,
@@ -65,7 +66,7 @@ def lista_procesos(request):
 def editar_proceso(request, proceso_id):
     try:
         proceso = get_object_or_404(ProcesoElectoral, id=proceso_id)
-        periodos = Periodo.objects.filter(estado='activo')
+        periodos = Periodo.objects.filter(estado__iexact='activo')
         
         if request.method == 'POST':
             nombre = request.POST.get('nombre')
