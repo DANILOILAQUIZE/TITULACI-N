@@ -123,7 +123,6 @@
                             <th>Cédula</th>
                             <th>Cargo</th>
                             <th>Lista</th>
-                            <th>Período</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -149,7 +148,6 @@
                                 </span>
                                 {% endwith %}
                             </td>
-                            <td>{{ candidato.periodo.nombre_periodo }}</td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{% url 'editar_candidato' candidato.id %}" class="btn btn-sm btn-warning" title="Editar">
@@ -200,18 +198,25 @@
 
 {% block extra_js %}
 <script>
+// Asegurarse de que jQuery esté cargado
+if (typeof jQuery == 'undefined') {
+    console.error('jQuery no está cargado correctamente');
+} else {
+    console.log('jQuery versión:', jQuery.fn.jquery);
+}
+
 // Establecer el color de fondo de los badges
 function actualizarColoresBadges() {
-    document.querySelectorAll('.badge-lista').forEach(badge => {
-        const bgColor = badge.getAttribute('data-bg-color');
-        if (bgColor) {
-            badge.style.backgroundColor = `#${bgColor}`;
+    $('.badge-lista').each(function() {
+        var color = $(this).data('bg-color');
+        if (color) {
+            $(this).css('background-color', '#' + color);
         }
     });
 }
 
 // Ejecutar cuando el documento esté listo
-$(document).ready(function() {
+jQuery(document).ready(function($) {
     // Inicializar DataTables
     var table = $('#tabla-candidatos').DataTable({
         language: {
@@ -233,34 +238,95 @@ $(document).ready(function() {
         table.column(3).search(cargo).draw();    // Columna de cargo
     });
 
-    // Manejar eliminación de candidatos
-    $('.btn-eliminar').on('click', function() {
-        var id = $(this).data('id');
-        var url = '{% url "eliminar_candidato" 0 %}'.replace('0', id);
-        $('#formEliminar').attr('action', url);
-        $('#candidato_id').val(id);
-        $('#confirmarEliminarModal').modal('show');
-    });
-    
-    // Manejar envío del formulario de eliminación
-    $('#formEliminar').on('submit', function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var url = form.attr('action');
-        
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: form.serialize(),
-            success: function(response) {
-                // Recargar la página para ver los cambios
-                window.location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error al eliminar el candidato: ' + error);
-            }
+    // Función para configurar el modal de eliminación
+    function configurarEliminacion() {
+        // Usar delegación de eventos para manejar clics en botones de eliminar
+        $(document).off('click', '.btn-eliminar').on('click', '.btn-eliminar', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var url = '{% url "eliminar_candidato" 0 %}'.replace('0', id);
+            $('#formEliminar').attr('action', url);
+            $('#candidato_id').val(id);
+            
+            // Mostrar el modal
+            var modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+            modal.show();
         });
-    });
+        
+        // Manejar envío del formulario de eliminación
+        $('#formEliminar').off('submit').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            var csrftoken = $('[name=csrfmiddlewaretoken]').val();
+            
+            // Mostrar indicador de carga
+            var submitBtn = form.find('button[type="submit"]');
+            var originalText = submitBtn.html();
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Eliminando...');
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                data: form.serialize(),
+                success: function(response) {
+                    // Cerrar el modal
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal'));
+                    modal.hide();
+                    
+                    // Mostrar mensaje de éxito
+                    var alert = $(
+                        '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        'Candidato eliminado correctamente.' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>' +
+                        '</div>'
+                    );
+                    $('.card-body').prepend(alert);
+                    
+                    // Recargar la tabla después de un breve retraso
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1500);
+                },
+                error: function(xhr, status, error) {
+                    // Restaurar botón
+                    submitBtn.prop('disabled', false).html(originalText);
+                    
+                    // Mostrar mensaje de error
+                    var errorMsg = 'Error al eliminar el candidato.';
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.message) {
+                            errorMsg = response.message;
+                        }
+                    } catch (e) {
+                        console.error('Error al procesar la respuesta del servidor:', e);
+                    }
+                    
+                    var alert = $(
+                        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                        errorMsg +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>' +
+                        '</div>'
+                    );
+                    $('.card-body').prepend(alert);
+                }
+            });
+        });
+    }
+    
+    // Configurar la eliminación al cargar la página
+    configurarEliminacion();
+    
+    // Reconfigurar la eliminación después de cada búsqueda/filtrado
+    if (typeof table !== 'undefined') {
+        table.on('draw.dt', function() {
+            configurarEliminacion();
+        });
+    }
 
     // Mostrar mensajes de Django
     var messagesJson = '{{ messages_json|escapejs|safe }}';

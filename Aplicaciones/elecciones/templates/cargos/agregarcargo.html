@@ -95,28 +95,32 @@
                                                     </a>
 
                                                     <!-- Botón para eliminar -->
-                                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarCargoModal{{ cargo.id }}">
-                                                        <i class="la la-trash"></i>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarCargoModal{{ cargo.id }}">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                     
                                                     <!-- Modal Confirmar Eliminación -->
-                                                    <div class="modal fade" id="eliminarCargoModal{{ cargo.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarCargoModalLabel{{ cargo.id }}" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
+                                                    <div class="modal fade" id="eliminarCargoModal{{ cargo.id }}" tabindex="-1" aria-labelledby="eliminarCargoModalLabel{{ cargo.id }}" aria-hidden="true">
+                                                        <div class="modal-dialog">
                                                             <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="eliminarCargoModalLabel{{ cargo.id }}">Confirmar Eliminación</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
+                                                                <div class="modal-header bg-danger text-white">
+                                                                    <h5 class="modal-title" id="eliminarCargoModalLabel{{ cargo.id }}">
+                                                                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                                 </div>
                                                                 <div class="modal-body">
-                                                                    ¿Está seguro de que desea eliminar el cargo "{{ cargo.nombre_cargo }}"?
+                                                                    <p>¿Está seguro de que desea eliminar el cargo <strong>"{{ cargo.nombre_cargo }}"</strong>?</p>
+                                                                    <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                                                    <form method="POST" action="{% url 'eliminar_cargo' cargo.id %}" class="d-inline">
-                                                                        {% csrf_token %}
-                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                        <i class="fas fa-times me-1"></i> Cancelar
+                                                                    </button>
+                                                                    <form method="POST" action="{% url 'eliminar_cargo' cargo.id %}" class="d-inline" id="formEliminarCargo{{ cargo.id }}">
+                                                                        {% csrf_token %n                                                                        <button type="button" class="btn btn-danger" onclick="confirmarEliminacion('{{ cargo.id }}', '{{ cargo.nombre_cargo }}')">
+                                                                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                                                        </button>
                                                                     </form>
                                                                 </div>
                                                             </div>
@@ -200,8 +204,65 @@
         });
     }
 
-    // Verificar si hay mensajes de Django para mostrar
+    // Función para confirmar la eliminación de un cargo
+    function confirmarEliminacion(cargoId, cargoNombre) {
+        // Mostrar un modal de confirmación personalizado
+        if (confirm(`¿Está seguro de eliminar el cargo "${cargoNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+            // Mostrar indicador de carga
+            const botonEliminar = document.querySelector(`#formEliminarCargo${cargoId} button[type="button"]`);
+            const textoOriginal = botonEliminar.innerHTML;
+            botonEliminar.disabled = true;
+            botonEliminar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Eliminando...';
+            
+            // Enviar el formulario
+            const form = document.getElementById(`formEliminarCargo${cargoId}`);
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    showMessage('success', `El cargo "${cargoNombre}" ha sido eliminado correctamente.`);
+                    
+                    // Cerrar el modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById(`eliminarCargoModal${cargoId}`));
+                    if (modal) modal.hide();
+                    
+                    // Recargar la página después de un breve retraso
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Error al eliminar el cargo');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', error.message || 'Ocurrió un error al intentar eliminar el cargo');
+                botonEliminar.disabled = false;
+                botonEliminar.innerHTML = textoOriginal;
+            });
+        }
+    }
+
+    // Inicializar tooltips de Bootstrap
     document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Verificar si hay mensajes de Django para mostrar
         try {
             var messagesJson = '{{ messages_json|default:"[]" }}';
             console.log('Mensajes recibidos:', messagesJson);

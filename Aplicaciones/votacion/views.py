@@ -12,6 +12,7 @@ import hashlib
 
 def generar_hash_voto(proceso_id, votante_id, timestamp):
     texto = f"{proceso_id}-{votante_id}-{timestamp}"
+    
     return hashlib.sha256(texto.encode()).hexdigest()
 
 def iniciar_proceso(request):
