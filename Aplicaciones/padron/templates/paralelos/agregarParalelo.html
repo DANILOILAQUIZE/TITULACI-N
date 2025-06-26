@@ -4,23 +4,41 @@
 
 <div class="card mb-3">
   <div class="card-body bg-light text-center">
-    <h5 class="card-title mb-4"><strong>Gestión Académica</strong></h5>
+    <h5 class="card-title mb-3"><strong>Gestión Académica</strong></h5>
     <p class="card-text mb-4">
-      Administración de grados académicos del sistema.
+      Administra los grados, paralelos y el padrón electoral del sistema.
     </p>
-    <nav class="d-flex justify-content-center gap-3">
-      <span class="text-muted">•</span>
-      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-dark {% if request.path == '/grados/' %} text-decoration-underline {% endif %}">GRADOS</a>
-      <span>&nbsp;&nbsp;</span>
-      <span class="text-muted">|</span>
-      <span>&nbsp;&nbsp;</span>
-      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-dark {% if request.path == '/paralelos/' %} text-decoration-underline {% endif %}">PARALELOS</a>
-      <span>&nbsp;&nbsp;</span>
-      <span class="text-muted">|</span>
-      <span>&nbsp;&nbsp;</span>
-      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-dark  text-decoration-underline ">PADRON</a>
-    </nav>
   </div>
+  <nav class="navbar navbar-light bg-light border rounded shadow-sm">
+    <div class="container-fluid justify-content-around">
+      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-center">
+        <i class="la la-graduation-cap text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Grados</strong>
+          <small class="text-muted">Crear, editar, eliminar</small>
+        </div>
+      </a>
+      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-center position-relative">
+        <div class="position-relative">
+          <i class="la la-sitemap text-primary fs-2 d-block"></i>
+          <span class="position-absolute" style="top: -15px; right: 70%; z-index: 1000;">
+            <i class="fas fa-hand-point-left" style="font-size: 2rem; transform: scaleX(1) rotate(-30deg); color: #1cbed3e6;"></i>
+          </span>
+        </div>
+        <div>
+          <strong class="d-block">Paralelos</strong>
+          <small class="text-muted">Gestionar paralelos</small>
+        </div>
+      </a>
+      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-center">
+        <i class="la la-users text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Padrón</strong>
+          <small class="text-muted">Estudiantes</small>
+        </div>
+      </a>
+    </div>
+  </nav>
 </div>
 
 <section id="listar-paralelos" class="row match-height">
@@ -29,7 +47,6 @@
       <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <h4 class="card-title mb-2 mb-md-0">Lista de Paralelos</h4>
         <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
-          <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar paralelo..." id="buscarParalelo">
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarParalelo">
             <i class="la la-plus"></i> Nuevo 
           </button>
@@ -45,7 +62,7 @@
                   <th>Nombre</th>
                   <th>Grado</th>
                   <th>Período</th>
-                  <th>Acciones</th>
+                  <th class="text-center" style="width: 80px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -54,16 +71,27 @@
                     <td>{{ paralelo.nombre }}</td>
                     <td>{{ paralelo.grado.nombre }}</td>
                     <td>{{ paralelo.grado.periodo.nombre|default:"Sin período" }}</td>
-                    <td class="action-buttons">
+                    <td class="text-center" style="white-space: nowrap;">
                       <!-- Botón Editar -->
-                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarParaleloModal{{ paralelo.id }}">
+                      <button class="btn-action btn-edit" 
+                              data-toggle="modal" 
+                              data-target="#editarParaleloModal{{ paralelo.id }}"
+                              title="Editar"
+                              data-toggle-tooltip="tooltip"
+                              data-placement="top">
                         <i class="la la-edit"></i>
                       </button>
-
                       <!-- Botón Eliminar -->
-                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarParaleloModal{{ paralelo.id }}">
+                      <button class="btn-action btn-delete" 
+                              data-toggle="modal"
+                              data-target="#eliminarParaleloModal{{ paralelo.id }}"
+                              title="Eliminar"
+                              data-toggle-tooltip="tooltip"
+                              data-placement="top"
+                              {% if paralelo.padronelectoral_set.count > 0 %}disabled{% endif %}>
                         <i class="la la-trash"></i>
                       </button>
+                      
 
                       <!-- Modal Eliminar -->
                       <div class="modal fade" id="eliminarParaleloModal{{ paralelo.id }}" tabindex="-1" role="dialog" aria-hidden="true">
@@ -115,13 +143,21 @@
                                   </select>
                                 </div>
                                 
-                                <div class="form-group text-center mt-4">
-                                  <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-                                  <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
-                                </div>
+                               
+                                
                               </form>
                             </div>
+                            <div class="form-group text-center mt-4">
+                              <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                                <i class="la la-save"></i> GUARDAR
+                              </button>
+                              
+                              <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                                <i class="la la-times"></i> CANCELAR
+                              </button>
+                            </div>
                           </div>
+                          
                         </div>
                       </div>
                     </td>
@@ -170,8 +206,8 @@
           </div>
           
           <div class="form-group text-center mt-4">
-            <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
+            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4 mr-2">GUARDAR</button>
+            <button type="button" class="btn btn-secondary btn-lg rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
           </div>
         </form>
       </div>
@@ -235,8 +271,21 @@
         });
     }
 
-    // Intentar inicializar DataTables
-    initDataTables();
+    // Inicializar DataTables cuando el DOM esté listo
+    $(document).ready(function() {
+        // Inicializar tooltips
+        $('[data-toggle-tooltip="tooltip"]').tooltip({
+            trigger: 'hover',
+            placement: 'top'
+        });
+
+        // Inicializar DataTables
+        if (typeof $.fn.DataTable === 'function') {
+            initDataTables();
+        } else {
+            console.error('DataTables no está cargado correctamente');
+        }
+    });
 </script>
 
 {% endblock %}

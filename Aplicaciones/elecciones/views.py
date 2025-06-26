@@ -332,7 +332,7 @@ def agregar_cargo(request, cargo_id=None):
                 cargo.descripcion = descripcion or None
                 cargo.periodo = periodo
                 cargo.save()
-                mensaje = f'El cargo "{cargo.nombre_cargo}" ha sido actualizado exitosamente'
+                messages.success(request, 'Cargo actualizado correctamente')
             else:
                 # Crear nuevo cargo
                 cargo = Cargo.objects.create(
@@ -340,9 +340,8 @@ def agregar_cargo(request, cargo_id=None):
                     descripcion=descripcion or None,
                     periodo=periodo
                 )
-                mensaje = f'El cargo "{cargo.nombre_cargo}" ha sido creado exitosamente'
+                messages.success(request, 'Cargo creado correctamente')
             
-            messages.success(request, f'{mensaje} en el periodo {periodo.nombre}')
             return redirect('listar_cargos')
         
         except Periodo.DoesNotExist:
@@ -392,7 +391,7 @@ def eliminar_cargo(request, cargo_id):
             cargo.delete()
             
             # Agregar mensaje de éxito
-            messages.success(request, f'Cargo {nombre_cargo} eliminado exitosamente')
+            messages.success(request, 'Cargo eliminado correctamente')
             
             # Redirigir a la lista de cargos con el mensaje
             return redirect('listar_cargos')

@@ -1,127 +1,46 @@
 {% extends 'plantilla.html' %}
 
-{% block scripts %}
-<script>
-    // Función para inicializar DataTables de manera segura
-    function initDataTables() {
-        // Usar jQuery.ready para asegurar que el DOM esté completamente cargado
-        jQuery(function($) {
-            var $table = $('#tablaGrados');
-
-            // Verificar si DataTables está disponible
-            if (!$.fn.DataTable) {
-                console.error('DataTables no está cargado');
-                return;
-            }
-
-            // Destruir cualquier instancia de DataTable existente
-            if ($.fn.DataTable.isDataTable($table)) {
-                $table.DataTable().destroy();
-            }
-
-            // Inicializar DataTable
-            $table.DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                },
-                responsive: true,
-                pageLength: 10,
-                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
-                columnDefs: [
-                    { orderable: false, targets: [3, 4, 5] },
-                    { searchable: false, targets: [3, 4, 5] }
-                ],
-                order: [[1, 'asc']],
-                scrollX: true,
-                drawCallback: function() {
-                    console.log('DataTable renderizada');
-                }
-            });
-
-            console.log('DataTables inicializada correctamente');
-        });
-    }
-
-    // Inicializar DataTables cuando el documento esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDataTables);
-    } else {
-        initDataTables();
-    }
-</script>
-
-<script>
-    // Función para mostrar mensajes con Izitoast
-    function showMessage(type, message) {
-        iziToast[type]({
-            title: '',
-            message: message,
-            position: 'topRight',
-            timeout: 5000,
-            closeOnClick: true,
-            pauseOnHover: true
-        });
-    }
-
-    // Verificar si hay mensajes de Django para mostrar
-    document.addEventListener('DOMContentLoaded', function() {
-        try {
-            var messagesJson = '{{ messages_json|default:"[]" }}';
-            console.log('Mensajes recibidos:', messagesJson);
-            
-            var messages = messagesJson ? JSON.parse(messagesJson) : [];
-            
-            messages.forEach(function(msg) {
-                var toastType = msg.tags || 'info';
-                
-                // Mapear tags de Django a tipos de iziToast
-                var toastMapping = {
-                    'success': 'success',
-                    'error': 'error',
-                    'warning': 'warning',
-                    'info': 'info'
-                };
-                
-                var finalType = toastMapping[toastType] || 'info';
-                
-                iziToast[finalType]({
-                    title: '',
-                    message: msg.message,
-                    position: 'topRight',
-                    timeout: 5000,
-                    closeOnClick: true,
-                    pauseOnHover: true
-                });
-            });
-        } catch (error) {
-            console.error('Error al procesar mensajes:', error);
-        }
-    });
-</script>
-{% endblock scripts %}
-
 {% block contenido %}
-
 <div class="card mb-3">
   <div class="card-body bg-light text-center">
-    <h5 class="card-title mb-4"><strong>Gestión Académica</strong></h5>
+    <h5 class="card-title mb-3"><strong>Gestión Académica</strong></h5>
     <p class="card-text mb-4">
-      Administración de grados académicos del sistema.
+      Administra los grados, paralelos y el padrón electoral del sistema.
     </p>
-    <nav class="d-flex justify-content-center gap-3">
-      <span class="text-muted">•</span>
-      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-dark {% if request.path == '/grados/' %} text-decoration-underline {% endif %}">GRADOS</a>
-      <span>&nbsp;&nbsp;</span>
-      <span class="text-muted">|</span>
-      <span>&nbsp;&nbsp;</span>
-      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-dark {% if request.path == '/paralelos/' %} text-decoration-underline {% endif %}">PARALELOS</a>
-      <span>&nbsp;&nbsp;</span>
-      <span class="text-muted">|</span>
-      <span>&nbsp;&nbsp;</span>
-      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-dark  text-decoration-underline ">PADRON</a>
-    </nav>
   </div>
+  <nav class="navbar navbar-light bg-light border rounded shadow-sm">
+    <div class="container-fluid justify-content-around">
+      <a href="{% url 'listar_grados' %}" class="text-decoration-none text-center position-relative">
+        <div class="position-relative">
+          <i class="la la-graduation-cap text-primary fs-2 d-block"></i>
+          <span class="position-absolute" style="top: -15px; right: 70%; z-index: 1000;">
+            <i class="fas fa-hand-point-left" style="font-size: 2rem; transform: scaleX(1) rotate(-30deg); color: #1cbed3e6;"></i>
+          </span>
+        </div>
+        <div>
+          <strong class="d-block">Grados</strong>
+          <small class="text-muted">Crear, editar, eliminar</small>
+        </div>
+      </a>
+      <a href="{% url 'listar_paralelos' %}" class="text-decoration-none text-center">
+        <i class="la la-sitemap text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Paralelos</strong>
+          <small class="text-muted">Gestionar paralelos</small>
+        </div>
+      </a>
+      <a href="{% url 'gestion_padron' %}" class="text-decoration-none text-center">
+        <i class="la la-users text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Padrón</strong>
+          <small class="text-muted">Estudiantes</small>
+        </div>
+      </a>
+    </div>
+  </nav>
 </div>
+
+
 
 <section id="listar-grados" class="row match-height">
   <div class="col-sm-12">
@@ -129,7 +48,6 @@
       <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <h4 class="card-title mb-2 mb-md-0">Lista de Grados</h4>
         <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
-          <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="Buscar grado..." id="buscarGrado">
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarGrado">
             <i class="la la-plus"></i> Nuevo 
           </button>
@@ -177,22 +95,27 @@
                     <td>
                       <span class="badge badge-info">{{ grado.padronelectoral_set.count }}</span>
                     </td>
-                    <td class="action-buttons">
+                    <td class="text-center" style="white-space: nowrap;">
                       <!-- Editar -->
-                      <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarGradoModal{{ grado.id }}">
+                      <button class="btn btn-sm btn-outline-primary btn-editar mx-1" 
+                              data-toggle="modal" 
+                              data-target="#editarGradoModal{{ grado.id }}"
+                              title="Editar"
+                              data-toggle-tooltip="tooltip"
+                              data-placement="top">
                         <i class="la la-edit"></i>
                       </button>
-
                       <!-- Eliminar -->
-                      {% if grado.padronelectoral_set.count == 0 %}
-                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarGradoModal{{ grado.id }}">
-                          <i class="la la-trash"></i>
-                        </button>
-                      {% else %}
-                        <button type="button" class="btn btn-danger btn-sm" disabled title="No se puede eliminar (tiene estudiantes)">
-                          <i class="la la-trash"></i>
-                        </button>
-                      {% endif %}
+                      <button type="button" class="btn btn-sm btn-outline-danger mx-1" 
+                              data-toggle="modal"
+                              data-target="#eliminarGradoModal{{ grado.id }}"
+                              title="Eliminar"
+                              data-toggle-tooltip="tooltip"
+                              data-placement="top"
+                              {% if grado.padronelectoral_set.count > 0 %}disabled{% endif %}>
+                        <i class="la la-trash"></i>
+                      </button>
+                    </td>
 
                       <!-- Modal Eliminar -->
                       <div class="modal fade" id="eliminarGradoModal{{ grado.id }}" tabindex="-1" role="dialog" aria-hidden="true">
@@ -328,13 +251,120 @@
     const searchTerm = this.value.toLowerCase();
     const rows = document.querySelectorAll('#tablaGrados tbody tr');
     
-    rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
-      row.style.display = text.includes(searchTerm) ? '' : 'none';
     });
-  });
 </script>
 
+{% endblock %}
 
+{% block scripts %}
+{{ block.super }}
+<script>
+// Función para mostrar mensajes con iziToast
+function showMessage(type, message) {
+    iziToast[type]({
+        title: '',
+        message: message,
+        position: 'topRight',
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnHover: true
+    });
+}
 
+// Verificar si hay mensajes de Django para mostrar
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        var messagesJson = '{{ messages_json|default:"[]"|escapejs }}';
+        console.log('Mensajes recibidos:', messagesJson);
+        
+        var messages = messagesJson ? JSON.parse(messagesJson) : [];
+        
+        messages.forEach(function(msg) {
+            var toastType = msg.tags || 'info';
+            
+            // Mapear tags de Django a tipos de iziToast
+            var toastMapping = {
+                'success': 'success',
+                'error': 'error',
+                'warning': 'warning',
+                'info': 'info'
+            };
+            
+            var finalType = toastMapping[toastType] || 'info';
+            
+            showMessage(finalType, msg.message);
+        });
+    } catch (error) {
+        console.error('Error al procesar mensajes:', error);
+    }
+
+    // Inicializar DataTables
+    function initDataTables() {
+        var $table = $('#tablaGrados');
+        
+        // Verificar si la tabla existe
+        if ($table.length === 0) {
+            console.error('No se encontró la tabla con ID tablaGrados');
+            return;
+        }
+        
+        // Verificar si ya está inicializada
+        if ($.fn.DataTable.isDataTable($table)) {
+            return; // Ya está inicializada, no hacer nada
+        }
+
+        // Inicializar DataTable con configuración
+        try {
+            $table.DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                },
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
+                columnDefs: [
+                    { orderable: false, targets: [3, 4, 5] },
+                    { searchable: false, targets: [3, 4, 5] }
+                ],
+                order: [[1, 'asc']],
+                scrollX: true,
+                initComplete: function() {
+                    console.log('DataTable inicializada correctamente');
+                }
+            });
+        } catch (error) {
+            console.error('Error al inicializar DataTable:', error);
+        }
+    }
+    
+    // Inicializar DataTables cuando el DOM esté listo
+    $(document).ready(function() {
+        // Inicializar tooltips
+        $('[data-toggle-tooltip="tooltip"]').tooltip({
+            trigger: 'hover',
+            placement: 'top'
+        });
+
+        if (typeof $.fn.DataTable === 'function') {
+            initDataTables();
+        } else {
+            console.error('DataTables no está cargado correctamente');
+        }
+    });
+
+    // Búsqueda en tiempo real
+    var buscarGrado = document.getElementById('buscarGrado');
+    if (buscarGrado) {
+        buscarGrado.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#tablaGrados tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

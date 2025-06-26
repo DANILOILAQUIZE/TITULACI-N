@@ -2,52 +2,30 @@
 
 {% block contenido %}
 
-<div class="card mb-3">
-    <div class="card-body bg-light">
-        <h5 class="card-title">Gestión de Periodo Académico</h5>
-        <p class="card-text">
-            Aquí puedes administrar los periodos académicos del sistema, permitiendo agregar, editar o eliminar los periodos según sea necesario.
-            <br>Cada periodo académico debe contener información como el nombre, fecha de inicio y fecha de fin.
-            <br>Es importante mantener actualizada esta información para asegurar el correcto funcionamiento de las evaluaciones, inscripciones y planificación académica del sistema.
-        </p>
-    </div>
-</div>
-
-<!-- Gestión de Periodos Académicos -->
-<section id="periodos-academicos" class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="row w-100">
-                    <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
-                        <h4 class="card-title mb-0">Periodos Académicos</h4>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
-                            <input type="text" class="form-control mb-2 mb-md-0 mr-md-2" placeholder="BUSCAR TODO">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarPeriodo">
-                                <i class="la la-plus"></i> Nuevo
-                            </button>
-                        </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Gestión de Períodos Académicos</h4>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarPeriodo">
+                            <i class="la la-plus"></i> Nuevo Período
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="card-content">
                 <div class="card-body">
-                    
-                    
                     {% if periodos.exists %}
                     <div class="table-responsive">
-                        <table id="tablaPeriodos" class="table table-custom">
+                        <table id="tablaPeriodos" class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>nombre</th>
-                                    <th>fecha inicio</th>
-                                    <th>fecha fin</th>
-                                    <th>duración</th>
-                                    <th>estado</th>
-                                    <th>acciones</th>
+                                    <th>Período</th>
+                                    <th>Inicio</th>
+                                    <th>Fin</th>
+                                    <th class="text-center">Duración</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,19 +34,35 @@
                                     <td>{{ periodo.nombre }}</td>
                                     <td>{{ periodo.fecha_inicio|date:"d/m/Y" }}</td>
                                     <td>{{ periodo.fecha_fin|date:"d/m/Y" }}</td>
-                                    <td>{{ periodo.duracion }} días</td>
-                                    <td>
-                                        <span class="status-badge {% if periodo.estado == 'Activo' %}status-active{% else %}status-inactive{% endif %}">
-                                            {{ periodo.estado }}
-                                        </span>
-                                        
+                                    <td class="text-center">{{ periodo.duracion }} días</td>
+                                    <td class="text-center">
+                                        {% if periodo.estado == 'Activo' %}
+                                            <span class="badge badge-success">Activo</span>
+                                        {% elif periodo.estado == 'Finalizado' %}
+                                            <span class="badge badge-secondary">Finalizado</span>
+                                        {% else %}
+                                            <span class="badge badge-light">Inactivo</span>
+                                        {% endif %}
                                     </td>
-                                    <td class="action-buttons">
-                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#editarPeriodoModal{{ periodo.id }}">
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary btn-editar" 
+                                                data-toggle="modal" 
+                                                data-target="#editarPeriodoModal{{ periodo.id }}"
+                                                title="Editar"
+                                                data-toggle-tooltip="tooltip"
+                                                data-placement="top">
                                             <i class="la la-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarPeriodoModal{{ periodo.id }}">
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                data-toggle="modal"
+                                                data-target="#eliminarPeriodoModal{{ periodo.id }}"
+                                                title="Eliminar"
+                                                data-toggle-tooltip="tooltip"
+                                                data-placement="top">
                                             <i class="la la-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" data-toggle="tooltip" data-placement="top" title="Ver Reportes" onclick="mostrarReportes('{{ periodo.id }}')">
+                                            <i class="fas fa-file-pdf"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -78,169 +72,185 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info text-center">
-                        <i class="la la-info-circle"></i> No hay periodos académicos registrados.
+                        <i class="la la-info-circle"></i> No hay períodos académicos registrados.
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Modal Agregar Periodo -->
-<div class="modal fade" id="modalAgregarPeriodo" tabindex="-1" role="dialog" aria-labelledby="modalAgregarPeriodoLabel">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<!-- Modal Agregar Período -->
+<div class="modal fade" id="modalAgregarPeriodo" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="POST" action="{% url 'guardarPeriodo' %}" id="formPeriodo">
+            <form method="POST" action="{% url 'guardarPeriodo' %}">
                 {% csrf_token %}
-                <div class="modal-body">
-                    <h5 class="mb-3"><i class="la la-plus-circle"></i> Nuevo Periodo Académico</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Período Académico</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
                     </button>
+                </div>
+                <div class="modal-body">
                     <div class="form-group">
-                        <label for="nombre">Nombre del Periodo <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="nombre" required>
-                        <small class="form-text text-muted">Ejemplo: "2023-2024", "Primer Semestre 2024"</small>
+                        <label>Nombre del Período</label>
+                        <input type="text" name="nombre" class="form-control" required>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="fecha_inicio">Fecha Inicio <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" name="fecha_inicio" required>
+                            <label>Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio" class="form-control" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="fecha_fin">Fecha Fin <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" name="fecha_fin" required>
+                            <label>Fecha Fin</label>
+                            <input type="date" name="fecha_fin" class="form-control" required>
                         </div>
                     </div>
-                    
-                    <div class="form-group text-center mt-4">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
-                    </div>
+                </div>
+                <div class="form-group text-center mt-4 mb-3">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                        <i class="la la-save"></i> GUARDAR
+                    </button>
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                        <i class="la la-times"></i> CANCELAR
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<!-- Modal Editar Periodo -->
+<!-- Modal Editar Período -->
 {% for periodo in periodos %}
 <div class="modal fade" id="editarPeriodoModal{{ periodo.id }}" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title"><i class="la la-edit"></i> Editar Periodo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="{% url 'editar_periodo' periodo.id %}">
-                    {% csrf_token %}
+            <form method="POST" action="{% url 'editar_periodo' periodo.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Período Académico</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
                     <div class="form-group">
-                        <label>Nombre del Periodo</label>
-                        <input type="text" class="form-control" name="nombre" value="{{ periodo.nombre }}" required>
+                        <label>Nombre del Período</label>
+                        <input type="text" name="nombre" class="form-control" value="{{ periodo.nombre }}" required>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Fecha Inicio</label>
-                                <input type="date" class="form-control" name="fecha_inicio" value="{{ periodo.fecha_inicio|date:'Y-m-d' }}" required>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio" class="form-control" 
+                                   value="{{ periodo.fecha_inicio|date:'Y-m-d' }}" required>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Fecha Fin</label>
-                                <input type="date" class="form-control" name="fecha_fin" value="{{ periodo.fecha_fin|date:'Y-m-d' }}" required>
-                            </div>
+                        <div class="form-group col-md-6">
+                            <label>Fecha Fin</label>
+                            <input type="date" name="fecha_fin" class="form-control" 
+                                   value="{{ periodo.fecha_fin|date:'Y-m-d' }}" required>
                         </div>
                     </div>
-                    <div class="form-group text-center mt-4">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">GUARDAR</button>
-                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">CANCELAR</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="form-group text-center mt-4 mb-3">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 mr-2">
+                        <i class="la la-save"></i> GUARDAR
+                    </button>
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                        <i class="la la-times"></i> CANCELAR
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-{% endfor %}
 
-<!-- Modal Eliminar Periodo -->
-{% for periodo in periodos %}
+<!-- Modal Eliminar Período -->
 <div class="modal fade" id="eliminarPeriodoModal{{ periodo.id }}" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="la la-trash"></i> Confirmar Eliminación</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="la la-exclamation-triangle text-danger"></i> Confirmar Eliminación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el periodo académico <strong>"{{ periodo.nombre }}"</strong>?</p>
-                <p class="text-danger">Esta acción no se puede deshacer y eliminará todos los grados, paralelos y estudiantes asociados.</p>
+                <p>¿Está seguro de eliminar el período <strong>{{ periodo.nombre }}</strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <a href="{% url 'eliminar_periodo' periodo.id %}" class="btn btn-danger">Eliminar</a>
+            <div class="form-group text-center mt-4 mb-3">
+                <form method="POST" action="{% url 'eliminar_periodo' periodo.id %}" style="display: inline-block;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 mr-2">
+                        <i class="la la-trash"></i> ELIMINAR
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                    <i class="la la-times"></i> CANCELAR
+                </button>
             </div>
+
         </div>
     </div>
 </div>
 {% endfor %}
 
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
 <script>
-$(document).ready(function() {
-    // Validación de fechas en el formulario
-    $('#formPeriodo').submit(function(e) {
-        const fechaInicio = new Date($('input[name="fecha_inicio"]').val());
-        const fechaFin = new Date($('input[name="fecha_fin"]').val());
+// Usar una función autoejecutable para evitar conflictos
+(function($) {
+    $(document).ready(function() {
+        // Inicializar tooltips primero
+        $('[data-toggle-tooltip="tooltip"]').tooltip({
+            trigger: 'hover',
+            animation: true,
+            delay: {"show": 300, "hide": 100}
+        });
+
+        // Verificar si la tabla existe
+        var $tabla = $('#tablaPeriodos');
         
-        if (fechaFin <= fechaInicio) {
-            e.preventDefault();
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
+        if ($tabla.length) {
+            // Verificar si DataTables está definido
+            if (typeof $.fn.DataTable === 'function') {
+                // Destruir la tabla si ya está inicializada
+                if ($.fn.DataTable.isDataTable($tabla)) {
+                    $tabla.DataTable().destroy();
+                }
+                
+                // Inicializar DataTable con opciones básicas
+                try {
+                    $tabla.DataTable({
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                        },
+                        responsive: true,
+                        order: [[1, 'desc']],
+                        pageLength: 10,
+                        lengthMenu: [5, 10, 25, 50, 100],
+                        initComplete: function() {
+                            console.log('DataTable inicializado correctamente');
+                            // Re-inicializar tooltips después de que DataTable haya terminado
+                            $('[data-toggle-tooltip="tooltip"]').tooltip('dispose').tooltip({
+                                trigger: 'hover',
+                                animation: true,
+                                delay: {"show": 300, "hide": 100}
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error al inicializar DataTable:', e);
+                }
+            } else {
+                console.warn('DataTables no está disponible');
+            }
         }
     });
-
-    // Inicializar DataTables de manera robusta
-    function initDataTables() {
-        var $table = $('#tablaPeriodos');
-        if ($table.length) {
-            try {
-                $table.DataTable({
-                    language: {
-                        url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                    },
-                    responsive: true,
-                    pageLength: 10,
-                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Todos']],
-                    columnDefs: [
-                        { orderable: false, targets: 5 },
-                        { width: '10%', targets: 5 }
-                    ],
-                    order: [[0, 'asc']],
-                    scrollX: true
-                });
-                console.log('DataTables inicializado correctamente');
-            } catch (error) {
-                console.error('Error al inicializar DataTables:', error);
-            }
-        } else {
-            console.warn('No se encontró la tabla para inicializar DataTables');
-        }
-    }
-
-    // Intentar inicializar DataTables
-    initDataTables();
-
-    // Intentar de nuevo después de un breve retraso
-    setTimeout(initDataTables, 500);
-});
+})(jQuery);
 </script>
-
-
 {% endblock %}

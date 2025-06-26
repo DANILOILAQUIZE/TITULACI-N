@@ -3,22 +3,152 @@
 {% block contenido %}
 {% load static %}
 
+<style>
+  /* Estilos para los botones de acción */
+  .btn-action {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 0 2px;
+    font-size: 0.75rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-action i {
+    transition: transform 0.3s ease;
+  }
+  
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  .btn-action:hover i {
+    transform: scale(1.2);
+  }
+  
+  .btn-action:active {
+    transform: translateY(0);
+  }
+  
+  .btn-edit {
+    background-color: #6b0cd7; /* Color morado */
+  }
+  
+  .btn-edit:hover {
+    background-color: #5a0bb8; /* Morado oscuro */
+  }
+  
+  .btn-delete {
+    background-color: #d31b2d; /* Rojo */
+  }
+  
+  .btn-delete:hover {
+    background-color: #b31625; /* Rojo oscuro */
+  }
+  
+  .btn-add {
+    background-color: #28a745; /* Verde */
+  }
+  
+  .btn-add:hover {
+    background-color: #218838; /* Verde oscuro */
+  }
+  
+  .btn-delete:disabled,
+  .btn-edit:disabled,
+  .btn-add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Efecto de ondas al hacer clic */
+  .btn-action:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%, -50%);
+    transform-origin: 50% 50%;
+  }
+  
+  .btn-action:focus:not(:active)::after {
+    animation: ripple 0.6s ease-out;
+  }
+  
+  @keyframes ripple {
+    0% {
+      transform: scale(0, 0);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(20, 20);
+      opacity: 0;
+    }
+  }
+  
+  /* Mejora en las tarjetas de lista */
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+</style>
+
 <div class="card mb-3">
-    <div class="card-body bg-light text-center">
-      <h5 class="card-title mb-4"><strong>Gestión Electoral</strong></h5>
-      <p class="card-text mb-4">
-        Administración de listas y cargos para elecciones estudiantiles.
-      </p>
-      <nav class="d-flex justify-content-center gap-3">
-        <span class="text-muted">•</span>
-        <a href="{% url 'listar_listas' %}" class="text-decoration-none text-dark {% if request.path == '/listas/' %} text-decoration-underline {% endif %}">LISTAS</a>
-        <span>&nbsp;&nbsp;</span>
-        <span class="text-muted">|</span>
-        <span>&nbsp;&nbsp;</span>
-        <a href="" class="text-decoration-none text-dark {% if request.path == '/cargos/' %} text-decoration-underline {% endif %}">CARGOS</a>
-      </nav>
-    </div>
+  <div class="card-body bg-light text-center">
+    <h5 class="card-title mb-3"><strong>Gestión Electoral</strong></h5>
+    <p class="card-text mb-4">
+      Administración de listas y cargos para elecciones estudiantiles.
+    </p>
   </div>
+  <nav class="navbar navbar-light bg-light border rounded shadow-sm">
+    <div class="container-fluid justify-content-around">
+      <a href="{% url 'listar_listas' %}" class="text-decoration-none text-center position-relative">
+        <div>
+          <i class="la la-list-ol text-primary fs-2 d-block"></i>
+          <span class="position-absolute" style="top: -15px; right: 70%; z-index: 1000;">
+            <i class="fas fa-hand-point-left" style="font-size: 2rem; transform: scaleX(1) rotate(-30deg); color: #1cbed3e6;"></i>
+          </span>
+          <div>
+            <strong class="d-block">Listas</strong>
+            <small class="text-muted">Gestionar listas</small>
+          </div>
+        </div>
+      </a>
+      <a href="{% url 'listar_cargos' %}" class="text-decoration-none text-center">
+        <i class="la la-briefcase text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Cargos</strong>
+          <small class="text-muted">Gestionar cargos</small>
+        </div>
+      </a>
+      <a href="{% url 'listar_candidatos' %}" class="text-decoration-none text-center">
+        <i class="la la-users text-muted fs-2 d-block"></i>
+        <div>
+          <strong class="d-block">Candidatos</strong>
+          <small class="text-muted">Gestionar candidatos</small>
+        </div>
+      </a>
+    </div>
+  </nav>
+</div>
   
 
   <!-- Sección de Listas -->
@@ -46,15 +176,15 @@
                         <h5 class="card-title mb-2 text-center">{{ lista.lista.nombre_lista }}</h5>
                         <div class="d-flex justify-content-center" style="gap: 8px;">
                           <!-- Editar -->
-                          <button type="button" class="btn btn-info p-0" style="font-size: 0.75rem; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" data-toggle="modal" data-target="#editarListaModal{{ lista.lista.id }}">
+                          <button type="button" class="btn-action btn-edit" data-toggle="modal" data-target="#editarListaModal{{ lista.lista.id }}" title="Editar lista">
                             <i class="la la-edit"></i>
                           </button>
                           <!-- Eliminar -->
-                          <button type="button" class="btn btn-danger p-0 btn-eliminar-lista" style="font-size: 0.75rem; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" data-lista-id="{{ lista.lista.id }}">
+                          <button type="button" class="btn-action btn-delete btn-eliminar-lista" data-lista-id="{{ lista.lista.id }}" title="Eliminar lista">
                             <i class="la la-trash"></i>
                           </button>
                           <!-- Agregar Candidato -->
-                          <a href="{% url 'agregar_candidato' %}?lista={{ lista.lista.id }}" class="btn btn-success p-0" style="font-size: 0.75rem; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;">
+                          <a href="{% url 'agregar_candidato' %}?lista={{ lista.lista.id }}" class="btn-action btn-add" title="Agregar candidato">
                             <i class="la la-user-plus"></i>
                           </a>
                         </div>
