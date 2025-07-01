@@ -16,4 +16,7 @@ urlpatterns = [
     path('registrar-voto/<int:proceso_id>/', views.registrar_voto, name='registrar_voto'),
     
     path('resultados/<int:proceso_id>/', views.resultados_votacion, name='resultados_votacion'),
+    
+    # Ruta para mostrar el carnet de votación
+    path('carnet-votacion/', views.mostrar_carnet, name='mostrar_carnet'),
 ]

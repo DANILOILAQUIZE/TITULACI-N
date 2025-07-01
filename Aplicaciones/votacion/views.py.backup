@@ -1,14 +1,19 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count
 from django.urls import reverse
-from django.http import JsonResponse
-from .models import ProcesoElectoral, Voto
+from django.http import JsonResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
+from django.utils.text import slugify
+from .models import ProcesoElectoral, Voto, CarnetVotacion
 from Aplicaciones.periodo.models import Periodo
 from Aplicaciones.elecciones.models import Lista, Candidato, Cargo
 from Aplicaciones.padron.models import PadronElectoral
 import hashlib
+import qrcode
+from io import BytesIO
+import base64
 
 def generar_hash_voto(proceso_id, votante_id, timestamp):
     texto = f"{proceso_id}-{votante_id}-{timestamp}"
@@ -257,64 +262,46 @@ def registrar_voto(request, proceso_id):
         return redirect('administracion:index')
     
     from Aplicaciones.padron.models import PadronElectoral
-    try:
-        padron = PadronElectoral.objects.get(id=padron_id)
-        proceso = get_object_or_404(ProcesoElectoral, id=proceso_id)
         
-        # Verificar si ya existe un voto para este proceso y votante
-        if Voto.objects.filter(proceso_electoral=proceso, votante=padron).exists():
-            messages.error(request, 'Usted ya ha emitido su voto para este proceso electoral')
-            return redirect('administracion:index')
+        # Validar que se haya seleccionado una opción
+        if not (lista_id or es_blanco or es_nulo):
+            messages.error(request, 'Debe seleccionar una opción de voto.')
+            return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
         
-        # Verificar si el usuario ya votó (compatibilidad con el campo voto en PadronElectoral)
-        if hasattr(padron, 'voto') and padron.voto:
-            messages.error(request, 'Usted ya ha emitido su voto para este proceso electoral')
-            return redirect('administracion:index')
+        # Validar que no se haya seleccionado más de una opción
+        if sum([bool(lista_id), es_blanco, es_nulo]) > 1:
+            messages.error(request, 'Solo puede seleccionar una opción de voto.')
+            return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
         
-        # Obtener el tipo de voto
-        tipo_voto = request.POST.get('tipo_voto')
-        
-        # Inicializar variables
+        # Obtener la lista seleccionada si existe
         lista = None
-        candidatos_seleccionados = {}
-        
-        # Si no es voto en blanco ni nulo, obtener la lista y candidatos
-        if tipo_voto not in ['blanco', 'nulo']:
-            lista_id = request.POST.get('lista')
-            if not lista_id:
-                messages.error(request, 'Debe seleccionar una lista para votar')
-                return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
+        if lista_id:
+            lista = get_object_or_404(Lista, id=lista_id)
             
-            try:
-                lista = Lista.objects.get(id=lista_id)
-            except Lista.DoesNotExist:
-                messages.error(request, 'La lista seleccionada no es válida')
+            # Verificar que la lista pertenezca al proceso electoral
+            if lista.proceso_electoral != proceso:
+                messages.error(request, 'La lista seleccionada no pertenece a este proceso electoral.')
                 return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
-            
-            # Obtener los candidatos seleccionados solo si es un voto por lista
-            for key, value in request.POST.items():
-                if key.startswith('candidato_'):
-                    cargo_id = key.split('_')[1]
-                    candidatos_seleccionados[cargo_id] = value
         
         # Crear el voto
-        timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
-        hash_voto = generar_hash_voto(proceso_id, padron_id, timestamp)
-        
-        # Determinar si es voto en blanco o nulo
-        es_blanco = tipo_voto == 'blanco'
-        es_nulo = tipo_voto == 'nulo'
-        
         voto = Voto(
             proceso_electoral=proceso,
-            votante=padron,
-            lista=lista if not (es_blanco or es_nulo) else None,
+            votante=request.user.padronelectoral,
+            lista=lista,
             es_blanco=es_blanco,
-            es_nulo=es_nulo,
-            hash_voto=hash_voto
+            es_nulo=es_nulo
         )
+        
+        # Generar hash del voto
+        timestamp = str(timezone.now().timestamp())
+        voto.hash_voto = generar_hash_voto(proceso.id, request.user.id, timestamp)
+        
+        # Guardar el voto
         voto.save()
         
+        # Crear el carnet de votación
+        carnet = CarnetVotacion(voto=voto)
+        carnet.save()
         # Actualizar el campo voto en el padrón (para compatibilidad)
         if hasattr(padron, 'voto'):
             padron.voto = True
@@ -337,57 +324,14 @@ def registrar_voto(request, proceso_id):
             print("Voto en blanco o nulo")
         print(f"Hash del voto: {hash_voto}")
         
-        # Generar el carnet de votación
-        from .utils import generar_carnet_votacion
-        carnet = generar_carnet_votacion(voto)
-        
-        # Guardar el ID del carnet en la sesión para mostrarlo en la confirmación
-        request.session['carnet_id'] = carnet.id
-        
-        messages.success(request, '¡Su voto ha sido registrado exitosamente! Por favor, guarde su comprobante de votación.')
-        return redirect('votacion:mostrar_carnet')
+        messages.success(request, '¡Su voto ha sido registrado exitosamente!')
+        return redirect('administracion:index')
         
     except PadronElectoral.DoesNotExist:
         messages.error(request, 'No se encontró su registro en el padrón electoral')
         return redirect('administracion:index')
     except Exception as e:
         messages.error(request, f'Error al registrar el voto: {str(e)}')
-        return redirect('administracion:index')
-
-
-def mostrar_carnet(request):
-    """
-    Muestra el carnet de votación después de un voto exitoso
-    """
-    if not request.user.is_authenticated:
-        messages.error(request, 'Debe iniciar sesión para ver el carnet de votación')
-        return redirect('administracion:index')
-    
-    carnet_id = request.session.get('carnet_id')
-    if not carnet_id:
-        messages.error(request, 'No se encontró información del carnet de votación')
-        return redirect('administracion:index')
-    
-    from .models import CarnetVotacion
-    try:
-        carnet = CarnetVotacion.objects.get(id=carnet_id)
-        
-        # Eliminar el ID del carnet de la sesión para que no se muestre de nuevo
-        if 'carnet_id' in request.session:
-            del request.session['carnet_id']
-            
-        return render(request, 'votacion/carnet_votacion.html', {
-            'carnet': carnet,
-            'fecha_emision': carnet.fecha_emision.strftime('%d/%m/%Y %H:%M:%S'),
-            'fecha_votacion': carnet.fecha_votacion.strftime('%d/%m/%Y %H:%M:%S')
-        })
-        
-    except CarnetVotacion.DoesNotExist:
-        messages.error(request, 'El carnet de votación solicitado no existe')
-        return redirect('administracion:index')
-    except Exception as e:
-        messages.error(request, f'Error al mostrar el carnet de votación: {str(e)}')
-        return redirect('administracion:index')
         return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
 
 def resultados_votacion(request, proceso_id):

@@ -155,6 +155,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Configuración de correo electrónico
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Servidor SMTP de Gmail
+EMAIL_PORT = 587  # Puerto para TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tucorreo@gmail.com'  # Reemplaza con tu correo
+EMAIL_HOST_PASSWORD = 'tu_contraseña'  # Reemplaza con tu contraseña de aplicación
+DEFAULT_FROM_EMAIL = 'tucorreo@gmail.com'  # Mismo que EMAIL_HOST_USER
+
+# Configuración para el envío de correos en desarrollo
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Muestra correos en consola en desarrollo
+
 
 AUTH_USER_MODEL = 'usuarios.Usuarios'  # Esto debe estar definido
 

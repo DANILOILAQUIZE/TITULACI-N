@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Comprobante de Votación - {{ carnet.proceso_electoral }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        .verification-code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 15px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>COMPROBANTE DE VOTACIÓN</h2>
+        <h3>ESCUELA RIOBAMBA</h3>
+        <p>Sistema de Votación Electrónica</p>
+    </div>
+    
+    <div class="content">
+        <p>Estimado/a {{ carnet.nombre_completo|upper }},</p>
+        
+        <p>Su voto ha sido registrado exitosamente en el sistema de votación electrónica. A continuación, encontrará los detalles de su participación:</p>
+        
+        <div class="info-box">
+            <p><strong>Proceso Electoral:</strong> {{ carnet.proceso_electoral|upper }}</p>
+            <p><strong>Fecha y Hora:</strong> {{ fecha_votacion }}</p>
+            <p><strong>Cédula:</strong> {{ carnet.cedula }}</p>
+        </div>
+        
+        <div class="qr-container">
+            <h4>CÓDIGO DE VERIFICACIÓN</h4>
+            <div class="qr-code">
+                <img src="cid:comprobante_qr.png" alt="Código QR de verificación" style="max-width: 100%;">
+            </div>
+            <div class="verification-code">
+                <small>Código:</small><br>
+                <strong>{{ carnet.codigo_verificacion|slice:":8" }}...{{ carnet.codigo_verificacion|slice:"-8:" }}</strong>
+            </div>
+            <p><small>Escanee este código para verificar su voto</small></p>
+        </div>
+        
+        <div class="info-box">
+            <p><strong>Nota importante:</strong> Este correo electrónico sirve como comprobante de su participación en el proceso electoral. Por favor, consérvelo para futuras referencias.</p>
+        </div>
+        
+        <p>Gracias por participar en nuestro proceso democrático.</p>
+        
+        <p>Atentamente,<br>
+        <strong>Comisión Electoral</strong><br>
+        ESCUELA RIOBAMBA</p>
+    </div>
+    
+    <div class="footer">
+        <p>Este es un mensaje automático, por favor no responda a este correo.</p>
+        <p>© {% now "Y" %} ESCUELA RIOBAMBA - Todos los derechos reservados</p>
+    </div>
+</body>
+</html>

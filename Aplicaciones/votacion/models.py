@@ -91,4 +91,30 @@ class Voto(models.Model):
             return f"Voto Nulo - {self.votante}"
         elif self.es_blanco:
             return f"Voto Blanco - {self.votante}"
+        else:
+            return f"Voto Válido - {self.votante} - {self.lista}"
+
+
+class CarnetVotacion(models.Model):
+    """
+    Modelo para almacenar la información del carnet de votación
+    """
+    voto = models.OneToOneField(Voto, on_delete=models.CASCADE, related_name='carnet', null=True, blank=True)
+    codigo_qr = models.CharField(max_length=255, blank=True, help_text='Código QR del voto')
+    fecha_emision = models.DateTimeField(auto_now_add=True)
+    codigo_verificacion = models.CharField(max_length=64, unique=True, null=True, blank=True, help_text='Código único para verificar el voto')
+    
+    # Información adicional que se mostrará en el carnet
+    nombre_completo = models.CharField(max_length=200, blank=True, null=True)
+    cedula = models.CharField(max_length=20, blank=True, null=True)
+    proceso_electoral = models.CharField(max_length=200, blank=True, null=True)
+    fecha_votacion = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = 'Carnet de Votación'
+        verbose_name_plural = 'Carnets de Votación'
+        ordering = ['-fecha_emision']
+    
+    def __str__(self):
+        return f"Carnet de {self.nombre_completo} - {self.proceso_electoral}"
         return f"Voto para {self.lista} - {self.votante}"
