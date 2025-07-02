@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import GenerarCarnetPDF
 
 app_name = 'votacion'
 
@@ -19,4 +20,10 @@ urlpatterns = [
     
     # Ruta para mostrar el carnet de votación
     path('carnet-votacion/', views.mostrar_carnet, name='mostrar_carnet'),
+    
+    # Ruta para descargar el carnet en PDF
+    path('descargar-carnet/<int:carnet_id>/', GenerarCarnetPDF.as_view(), name='descargar_carnet'),
+    
+    # Ruta para verificar un carnet de votación
+    path('verificar-carnet/<str:codigo_verificacion>/', views.verificar_carnet, name='verificar_carnet'),
 ]

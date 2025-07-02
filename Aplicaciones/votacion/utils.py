@@ -40,13 +40,25 @@ def generar_carnet_votacion(voto):
         fecha_votacion=voto.fecha_voto
     )
     
-    # Generar código QR con la información del voto
+    # Crear la URL de verificación del carnet
+    from django.urls import reverse
+    from django.contrib.sites.shortcuts import get_current_site
+    
+    # Obtener el dominio actual
+    domain = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+    
+    # Crear la URL de verificación
+    verification_url = f"{domain}{reverse('votacion:verificar_carnet', kwargs={'codigo_verificacion': codigo_verificacion})}"
+    
+    # Generar código QR con la URL de verificación
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
         border=4,
     )
+    qr.add_data(verification_url)
+    qr.make(fit=True)
     
     # Crear el contenido del QR con la información del voto
     qr_data = f"""
@@ -74,6 +86,7 @@ def generar_carnet_votacion(voto):
     # Convertir la imagen a base64 para mostrarla en el HTML
     qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
     
+    
     # Guardar el carnet con la imagen del QR en base64
     carnet.codigo_qr = f"data:image/png;base64,{qr_base64}"
     carnet.save()
@@ -89,7 +102,12 @@ def enviar_comprobante_email(carnet):
     Envía el comprobante de votación por correo electrónico al votante
     """
     try:
-        from django.core.mail import send_mail
+        from django.core.mail import EmailMultiAlternatives
+        from django.conf import settings
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+        from email.mime.image import MIMEImage
+        import os
         
         # Obtener el correo del votante
         email_destino = carnet.voto.votante.correo
@@ -100,10 +118,19 @@ def enviar_comprobante_email(carnet):
             
         print(f'=== ENVIANDO COMPROBANTE A: {email_destino} ===')
         
+        # Obtener la configuración del logo
+        from Aplicaciones.configuracion.models import LogoConfig
+        logo_config = LogoConfig.objects.first()
+        
+        # Obtener el dominio para construir URLs absolutas
+        dominio = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+        
         # Renderizar el template HTML del correo
         context = {
             'carnet': carnet,
-            'fecha_votacion': carnet.fecha_votacion.strftime("%d/%m/%Y %H:%M"),
+            'logo_config': logo_config,
+            'dominio': dominio,
+            'fecha_emision': carnet.fecha_votacion,
         }
         
         # Renderizar el contenido del correo
@@ -115,15 +142,42 @@ def enviar_comprobante_email(carnet):
         # Configurar el asunto
         subject = f'Comprobante de Votación - {carnet.proceso_electoral}'
         
-        # Enviar el correo usando la misma configuración que en el módulo de padrón
-        send_mail(
-            subject,
-            text_content,
-            'riobamba@aplicacionesutc.com',  # Usando el mismo remitente que en el módulo de padrón
-            [email_destino],
-            html_message=html_content,
-            fail_silently=False
+        # Crear el mensaje de correo
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email='riobamba@aplicacionesutc.com',
+            to=[email_destino],
         )
+        
+        # Adjuntar la versión HTML
+        email.attach_alternative(html_content, "text/html")
+        
+        # Adjuntar el logo si existe
+        if logo_config and logo_config.logo_1:
+            try:
+                logo_path = logo_config.logo_1.path
+                with open(logo_path, 'rb') as f:
+                    logo = MIMEImage(f.read())
+                    logo.add_header('Content-ID', '<logo_institucional>')
+                    email.attach(logo)
+            except Exception as e:
+                print(f'Error al adjuntar el logo: {str(e)}')
+        
+        # Adjuntar el código QR
+        if hasattr(carnet, 'codigo_qr'):
+            try:
+                # Extraer los datos base64 del código QR
+                qr_data = carnet.codigo_qr.split('base64,')[1]
+                qr_bytes = base64.b64decode(qr_data)
+                qr_image = MIMEImage(qr_bytes)
+                qr_image.add_header('Content-ID', '<codigo_qr>')
+                email.attach(qr_image)
+            except Exception as e:
+                print(f'Error al adjuntar el código QR: {str(e)}')
+        
+        # Enviar el correo
+        email.send(fail_silently=False)
         
         print('Correo enviado exitosamente')
         return True

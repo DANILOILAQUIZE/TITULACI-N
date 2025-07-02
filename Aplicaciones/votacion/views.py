@@ -3,8 +3,17 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count
 from django.urls import reverse
-from django.http import JsonResponse
-from .models import ProcesoElectoral, Voto
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import get_template
+from django.views import View
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+from io import BytesIO
+import base64
+import re
+
+from .models import ProcesoElectoral, Voto, CarnetVotacion
 from Aplicaciones.periodo.models import Periodo
 from Aplicaciones.elecciones.models import Lista, Candidato, Cargo
 from Aplicaciones.padron.models import PadronElectoral
@@ -452,3 +461,164 @@ def resultados_votacion(request, proceso_id):
     except Exception as e:
         messages.error(request, f'Error al generar los resultados: {str(e)}')
         return redirect('votacion:lista_procesos')
+
+class GenerarCarnetPDF(View):
+    """
+    Vista para generar un PDF del carnet de votación con código QR de verificación
+    """
+    def get(self, request, carnet_id):
+        # Obtener el carnet
+        carnet = get_object_or_404(CarnetVotacion, id=carnet_id)
+        
+        # Crear un objeto HttpResponse con las cabeceras PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="carnet_votacion_{carnet.voto.votante.cedula}.pdf"'
+        
+        # Tamaño del documento (tamaño de carnet: 85.6mm x 54mm en puntos - 1mm = 2.83465pt)
+        width, height = 242.65, 153  # 85.6mm x 54mm en puntos
+        
+        # Crear el objeto PDF con el tamaño del carnet
+        p = canvas.Canvas(response, pagesize=(width, height))
+        
+        # Fondo del carnet
+        p.setFillColorRGB(0.95, 0.95, 0.95)  # Gris claro
+        p.rect(0, 0, width, height, fill=1, stroke=0)
+        
+        # Cabecera del carnet
+        p.setFillColorRGB(0, 0.4, 0.8)  # Azul
+        p.rect(0, height - 30, width, 30, fill=1, stroke=0)
+        
+        # Título del carnet
+        p.setFillColorRGB(1, 1, 1)  # Blanco
+        p.setFont("Helvetica-Bold", 12)
+        p.drawCentredString(width/2, height - 23, "CARNET DE VOTACIÓN")
+        
+        # Sección de información
+        p.setFillColorRGB(0, 0, 0)  # Negro
+        
+        # Logo (si está disponible)
+        try:
+            from Aplicaciones.configuracion.models import LogoConfig
+            logo_config = LogoConfig.objects.first()
+            if logo_config and logo_config.logo_1:
+                from django.core.files.storage import default_storage
+                from django.conf import settings
+                
+                logo_path = logo_config.logo_1.path
+                if default_storage.exists(logo_path):
+                    img = ImageReader(logo_path)
+                    # Ajustar la imagen al tamaño deseado (60x60)
+                    p.drawImage(img, 20, height - 100, width=60, height=60, mask='auto')
+        except Exception as e:
+            print(f"Error al cargar el logo: {str(e)}")
+        
+        # Información del votante
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(20, height - 70, "NOMBRE:")
+        p.setFont("Helvetica", 10)
+        p.drawString(70, height - 70, f"{carnet.voto.votante.nombre} {carnet.voto.votante.apellidos}")
+        
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(20, height - 85, "CÉDULA:")
+        p.setFont("Helvetica", 10)
+        p.drawString(70, height - 85, carnet.voto.votante.cedula)
+        
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(20, height - 100, "PROCESO:")
+        p.setFont("Helvetica", 10)
+        # Ajustar el texto del proceso para que quepa
+        proceso = carnet.proceso_electoral
+        if len(proceso) > 30:  # Si es muy largo, lo cortamos
+            proceso = proceso[:27] + "..."
+        p.drawString(70, height - 100, proceso)
+        
+        # Fecha de votación
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(20, height - 120, "FECHA DE VOTACIÓN:")
+        p.setFont("Helvetica", 8)
+        p.drawString(20, height - 130, carnet.fecha_votacion.strftime('%d/%m/%Y %H:%M'))
+        
+        # Código QR con la URL de verificación
+        try:
+            # Construir la URL de verificación
+            dominio = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+            from django.urls import reverse
+            url_verificacion = f"{dominio}{reverse('votacion:verificar_carnet', kwargs={'codigo_verificacion': carnet.codigo_verificacion})}"
+            
+            # Generar el código QR con la URL de verificación
+            import qrcode
+            from io import BytesIO
+            qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=3, border=2)
+            qr.add_data(url_verificacion)
+            qr.make(fit=True)
+            
+            # Crear la imagen del código QR
+            qr_img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Guardar la imagen en un buffer
+            buffer = BytesIO()
+            qr_img.save(buffer, format='PNG')
+            buffer.seek(0)
+            
+            # Dibujar el código QR en el PDF
+            qr_reader = ImageReader(buffer)
+            qr_size = 80  # Tamaño del código QR
+            qr_x = width - qr_size - 20  # 20px del borde derecho
+            qr_y = height - qr_size - 20  # 20px del borde inferior
+            p.drawImage(qr_reader, qr_x, qr_y, width=qr_size, height=qr_size)
+            
+            # Texto debajo del QR
+            p.setFont("Helvetica", 6)
+            p.drawCentredString(qr_x + qr_size/2, qr_y - 10, "Escanear para verificar")
+            
+        except Exception as e:
+            print(f"Error al generar el código QR: {str(e)}")
+        
+        # Código de verificación
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(20, 30, "CÓDIGO DE VERIFICACIÓN:")
+        p.setFont("Helvetica", 8)
+        p.drawString(20, 20, carnet.codigo_verificacion)
+        
+        # Pie de página
+        p.setFont("Helvetica", 6)
+        p.drawCentredString(width/2, 10, "Sistema de Votación Electrónica - Escuela Riobamba")
+        
+        # Cerrar el objeto PDF
+        p.showPage()
+        p.save()
+        
+        return response
+        
+        return response
+
+def verificar_carnet(request, codigo_verificacion):
+    """
+    Vista para verificar un carnet de votación mediante su código de verificación
+    """
+    try:
+        # Buscar el carnet por su código de verificación
+        carnet = get_object_or_404(CarnetVotacion, codigo_verificacion=codigo_verificacion)
+        
+        # Verificar si el carnet ha sido utilizado
+        if carnet.utilizado:
+            messages.warning(request, 'Este carnet ya ha sido verificado anteriormente.')
+        else:
+            # Marcar el carnet como utilizado
+            carnet.utilizado = True
+            carnet.fecha_verificacion = timezone.now()
+            carnet.save()
+            messages.success(request, 'Carnet verificado exitosamente.')
+        
+        # Renderizar la plantilla de verificación
+        return render(request, 'votacion/verificar_carnet.html', {
+            'carnet': carnet,
+            'verificado': True
+        })
+        
+    except Exception as e:
+        messages.error(request, f'Error al verificar el carnet: {str(e)}')
+        return render(request, 'votacion/verificar_carnet.html', {
+            'verificado': False,
+            'error': str(e)
+        })
