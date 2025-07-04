@@ -1,0 +1,104 @@
+{% extends 'plantilla.html' %}
+{% load static %}
+
+{% block titulo %}{% if categoria %}Editar{% else %}Agregar{% endif %} Categoría - Noticias{% endblock %}
+
+{% block contenido %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">{% if categoria %}Editar{% else %}Agregar{% endif %} Categoría</h4>
+                    <a href="{% url 'noticias:listar_categorias' %}" class="btn btn-secondary float-right">
+                        <i class="la la-arrow-left"></i> Volver al listado
+                    </a>
+                </div>
+                <div class="card-body">
+                    
+                    <form method="post" id="form-categoria">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           value="{{ categoria.nombre|default:'' }}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="descripcion">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" 
+                                              rows="3">{{ categoria.descripcion|default:'' }}</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="color">Color <span class="text-danger">*</span></label>
+                                    <div class="input-group" id="color-picker">
+                                        <input type="color" class="form-control" id="color" name="color" 
+                                               value="{{ categoria.color|default:'#6c757d' }}" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">{{ categoria.color|default:'#6c757d' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="activo" name="activo" 
+                                           {% if categoria.activo or not categoria %}checked{% endif %}>
+                                    <label class="form-check-label" for="activo">Activo</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group text-right mt-4">
+                            <button type="button" class="btn btn-secondary" 
+                                    data-url="{% url 'noticias:listar_categorias' %}">
+                                <i class="la la-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="la la-save"></i> {% if categoria %}Actualizar{% else %}Guardar{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    $(document).ready(function() {
+        // Actualizar el valor del color cuando cambia
+        $('#color').on('input', function() {
+            $('.input-group-text', $(this).parent()).text($(this).val());
+        });
+        
+        // Manejador para el botón de cancelar
+        $('.btn-secondary[data-url]').on('click', function() {
+            window.location.href = $(this).data('url');
+        });
+        
+        // Validación del formulario
+        $('#form-categoria').on('submit', function(e) {
+            // Validación básica del lado del cliente
+            let nombre = $('#nombre').val().trim();
+            
+            if (nombre === '') {
+                e.preventDefault();
+                alert('Por favor, complete el campo de nombre.');
+                return false;
+            }
+            
+            // Mostrar indicador de carga
+            $('button[type="submit"]').html('<i class="la la-spinner fa-spin"></i> Guardando...').prop('disabled', true);
+        });
+    });
+</script>
+{% endblock %}

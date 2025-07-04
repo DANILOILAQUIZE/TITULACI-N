@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papeleta de Votación - {{ proceso.nombre }}</title>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts (Updated to modern fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,39 +25,235 @@
     <link rel="stylesheet" href="{% static 'css/papeleta.css' %}">
     
     <style>
-        /* Estilos adicionales específicos para esta plantilla */
-        .hidden-radio {
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1f2a44;
+        }
+
+        .voting-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+        }
+
+        .header-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::before {
+            content: '';
             position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #3b82f6, #10b981);
         }
-        
-        .voter-info {
-            margin-top: 1rem;
-            padding: 0.75rem 1.25rem;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-            display: inline-flex;
+
+        .header-card h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1f2a44;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-card p {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .instructions-card {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
             align-items: center;
-            font-size: 0.95rem;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
-        .voter-info i {
+
+        .list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .list-item {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .list-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .list-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .list-card.selected {
+            border-color: #10b981;
+            background: linear-gradient(145deg, #ffffff, #e6fffa);
+        }
+
+        .selected-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #10b981;
+            color: #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .list-card.selected .selected-badge {
+            opacity: 1;
+        }
+
+        .list-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .list-name {
             font-size: 1.25rem;
-            margin-right: 0.5rem;
+            font-weight: 600;
+            color: #1f2a44;
         }
-        
-        /* Ajustes responsivos */
+
+        .list-slogan {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .candidate-item {
+            text-align: center;
+        }
+
+        .candidate-photo-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .candidate-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .candidate-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #3b82f6;
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .candidate-role {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        .voting-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .voting-option {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .voting-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .voting-option.selected {
+            border-color: #10b981;
+            background: linear-gradient(145deg, #ffffff, #e6fffa);
+        }
+
+        .voting-option-content i {
+            font-size: 2rem;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-vote {
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-vote:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
             .header-card h1 {
                 font-size: 1.75rem;
             }
-            
-            .voting-options {
+
+            .list-grid, .voting-options {
                 grid-template-columns: 1fr;
+            }
+
+            .list-logo {
+                width: 60px;
+                height: 60px;
             }
         }
     </style>
@@ -91,7 +287,7 @@
         <!-- Sección de Instrucciones -->
         <div class="instructions-card mb-4" data-aos="fade-up">
             <div class="d-flex align-items-center">
-                <i class="fas fa-info-circle me-3" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                <i class="fas fa-info-circle me-3" style="font-size: 1.5rem; color: #3b82f6;"></i>
                 <div>
                     <h3 class="h5 mb-1">Instrucciones</h3>
                     <p class="mb-0">Selecciona una lista o una opción de voto y luego haz clic en "Confirmar Voto"</p>
@@ -212,7 +408,7 @@
         </form>
     </div>
 
-        <!-- jQuery -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- Bootstrap Bundle with Popper -->
@@ -228,9 +424,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar AOS
         AOS.init({
-            duration: 600,
+            duration: 800,
             once: true,
-            easing: 'ease-out-cubic',
+            easing: 'ease-out-back',
             offset: 50
         });
 
@@ -244,6 +440,8 @@
         // Función para habilitar/deshabilitar el botón de confirmación
         function updateConfirmButton() {
             confirmBtn.disabled = !selectedOption;
+            confirmBtn.classList.toggle('btn-primary', !!selectedOption);
+            confirmBtn.classList.toggle('btn-secondary', !selectedOption);
         }
 
         // Función para remover la clase 'selected' de todas las opciones
@@ -267,18 +465,17 @@
                 listaSeleccionada.value = '';
             }
             
-            // Habilitar botón de confirmación
             updateConfirmButton();
             
             // Desplazamiento suave hacia arriba en móviles
-            if (window.innerWidth < 768) {
+            if (window.innerWidth < 768) { // porque el desplazamiento suave no funciona bien en móviles
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
             }
             
-            // Agregar clase de feedback visual
+            // Feedback visual
             const selectedElement = radio.closest('.list-card') || radio.closest('.voting-option');
             selectedElement.classList.add('selected-pulse');
             setTimeout(() => {
@@ -288,10 +485,8 @@
 
         // Manejar cambios en los radio buttons
         radioButtons.forEach(radio => {
-            // Manejar clic en la tarjeta completa
             const parent = radio.closest('.list-item') || radio.closest('label');
             parent.addEventListener('click', function(e) {
-                // Prevenir la propagación para no activar múltiples veces
                 if (e.target !== radio) {
                     e.preventDefault();
                     radio.checked = true;
@@ -299,14 +494,12 @@
                 }
             });
             
-            // Manejar cambio directo en el radio
             radio.addEventListener('change', function() {
                 if (this.checked) {
                     handleSelection(this);
                 }
             });
             
-            // Manejar teclado para accesibilidad
             parent.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -316,12 +509,12 @@
             });
         });
 
-        // Efecto hover para las tarjetas de lista
+        // Efecto hover para las tarjetas
         document.querySelectorAll('.list-card, .voting-option').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 if (!this.classList.contains('selected')) {
                     this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
+                    this.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.1)';
                 }
             });
             
@@ -332,10 +525,9 @@
                 }
             });
             
-            // Mejorar accesibilidad con focus
             card.addEventListener('focus', function() {
                 this.style.outline = 'none';
-                this.style.boxShadow = '0 0 0 3px rgba(67, 97, 238, 0.5)';
+                this.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.5)';
             });
             
             card.addEventListener('blur', function() {
@@ -355,29 +547,29 @@
                     text: 'Por favor, selecciona una opción de voto antes de continuar.',
                     icon: 'warning',
                     confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#4361ee'
+                    confirmButtonColor: '#3b82f6'
                 });
                 return false;
             }
             
-            // Mostrar diálogo de confirmación
             Swal.fire({
                 title: '¿Estás seguro?',
                 html: `Vas a emitir tu voto por <strong>${getSelectedOptionText()}</strong>.<br>¿Deseas continuar?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#4361ee',
+                confirmButtonColor: '#3b82f6',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Sí, confirmar voto',
                 cancelButtonText: 'Cancelar',
-                reverseButtons: true
+                reverseButtons: true,
+                customClass: {
+                    popup: 'animated-swal'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Deshabilitar botones para evitar múltiples envíos
                     confirmBtn.disabled = true;
                     confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
                     
-                    // Enviar el formulario después de un pequeño retraso para la animación
                     setTimeout(() => {
                         form.submit();
                     }, 500);
@@ -385,7 +577,6 @@
             });
         });
         
-        // Función para obtener el texto de la opción seleccionada
         function getSelectedOptionText() {
             const selectedRadio = document.querySelector('input[name="tipo_voto"]:checked');
             if (!selectedRadio) return '';
@@ -393,7 +584,6 @@
             if (selectedRadio.id === 'voto_blanco') return 'Voto en Blanco';
             if (selectedRadio.id === 'voto_nulo') return 'Voto Nulo';
             
-            // Para listas de candidatos
             const listCard = selectedRadio.closest('.list-item');
             if (listCard) {
                 return listCard.querySelector('.list-name').textContent;
@@ -402,9 +592,31 @@
             return '';
         }
         
-        // Inicializar el estado del botón de confirmación
         updateConfirmButton();
     });
     </script>
+
+    <style>
+        /* Animación para SweetAlert2 */
+        .animated-swal {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Animación de pulso para selección */
+        .selected-pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </body>
 </html>

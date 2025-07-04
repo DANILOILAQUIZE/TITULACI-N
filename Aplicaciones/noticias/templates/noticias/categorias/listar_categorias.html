@@ -1,0 +1,199 @@
+{% extends 'plantilla.html' %}
+{% load static %}
+
+{% block titulo %}Gestión de Categorías - Noticias{% endblock %}
+
+{% block contenido %}
+<style>
+    /* Estilos para los badges de color */
+    .color-badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+        color: white !important;
+        display: inline-block;
+        min-width: 70px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Listado de Categorías</h4>
+                    <div class="float-right">
+                        <a href="{% url 'noticias:agregar_categoria' %}" class="btn btn-primary">
+                            <i class="la la-plus"></i> Agregar Categoría
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="tabla-categorias">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Color</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for categoria in categorias %}
+                                <tr>
+                                    <td>{{ categoria.id }}</td>
+                                    <td>{{ categoria.nombre }}</td>
+                                    <td>{{ categoria.descripcion|default:"-"|truncatechars:50 }}</td>
+                                    <td>
+                                        {% if categoria.activo %}
+                                            <span class="badge badge-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% with color=categoria.color|default:'#6c757d' %}
+                                        <div class="color-badge-container" data-color="{{ color }}">
+                                            <span class="badge color-badge">
+                                                {{ color }}
+                                            </span>
+                                        </div>
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'noticias:editar_categoria' categoria.id %}" 
+                                           class="btn btn-sm btn-icon btn-primary" 
+                                           data-toggle="tooltip" 
+                                           title="Editar">
+                                            <i class="la la-edit"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-icon btn-danger" 
+                                                data-toggle="modal" 
+                                                data-target="#modalEliminarCategoria{{ categoria.id }}"
+                                                title="Eliminar">
+                                            <i class="la la-trash"></i>
+                                        </button>
+                                        
+                                        <!-- Modal de confirmación para eliminar -->
+                                        <div class="modal fade" id="modalEliminarCategoria{{ categoria.id }}" tabindex="-1" 
+                                             role="dialog" aria-labelledby="modalEliminarCategoriaLabel{{ categoria.id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title" id="modalEliminarCategoriaLabel{{ categoria.id }}">
+                                                            Confirmar Eliminación
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>¿Está seguro de que desea eliminar la categoría <strong>"{{ categoria.nombre }}"</strong>?</p>
+                                                        {% if categoria.noticias.exists %}
+                                                        <div class="alert alert-warning">
+                                                            <i class="la la-exclamation-triangle"></i>
+                                                            Esta categoría tiene {{ categoria.noticias.count }} noticia(s) asociada(s). 
+                                                            No se podrá eliminar hasta que no se desasocien las noticias.
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                            <i class="la la-times"></i> Cancelar
+                                                        </button>
+                                                        <form method="post" action="{% url 'noticias:eliminar_categoria' categoria.id %}" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger" 
+                                                                    {% if categoria.noticias.exists %}disabled{% endif %}>
+                                                                <i class="la la-trash"></i> Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No hay categorías registradas.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    (function($) {
+        'use strict';
+        
+        // Esperar a que todo el DOM esté completamente cargado
+        $(window).on('load', function() {
+            // Verificar si DataTables está disponible
+            if ($.fn.DataTable) {
+                // Destruir instancia existente si existe
+                if ($.fn.DataTable.isDataTable('#tabla-categorias')) {
+                    $('#tabla-categorias').DataTable().destroy(true);
+                }
+                
+                // Inicializar DataTable con configuración
+                var table = $('#tabla-categorias').DataTable({
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                    },
+                    "responsive": true,
+                    "retrieve": true, // Asegura que se pueda recuperar la instancia
+                    "destroy": true,  // Permite reinicialización
+                    "columnDefs": [
+                        { "orderable": false, "targets": [5] } // Deshabilitar ordenación en columna de acciones
+                    ],
+                    "initComplete": function() {
+                        // Asegurar que los tooltips se inicialicen después de que DataTables haya terminado
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                });
+                
+                // Establecer colores de fondo para los badges
+                function actualizarColoresBadges() {
+                    $('.color-badge-container').each(function() {
+                        var color = $(this).data('color');
+                        $(this).find('.color-badge').css('background-color', color);
+                    });
+                }
+                
+                // Llamar a la función para establecer los colores
+                actualizarColoresBadges();
+                
+                // Re-dibujar la tabla para asegurar que todo se muestre correctamente
+                table.draw();
+            } else {
+                console.error('DataTables no está disponible');
+            }
+        });
+        
+        // Inicializar tooltips para elementos estáticos
+        $(document).on('mouseenter', '[data-toggle="tooltip"]', function() {
+            $(this).tooltip('dispose').tooltip('show');
+        });
+        
+    })(jQuery);
+</script>
+{% endblock %}

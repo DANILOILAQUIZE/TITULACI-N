@@ -350,11 +350,12 @@ def registrar_voto(request, proceso_id):
         from .utils import generar_carnet_votacion
         carnet = generar_carnet_votacion(voto)
         
-        # Guardar el ID del carnet en la sesión para mostrarlo en la confirmación
-        request.session['carnet_id'] = carnet.id
+        # Enviar el correo con el comprobante
+        from .utils import enviar_comprobante_email
+        enviar_comprobante_email(carnet, request)
         
-        messages.success(request, '¡Su voto ha sido registrado exitosamente! Por favor, guarde su comprobante de votación.')
-        return redirect('votacion:mostrar_carnet')
+        messages.success(request, '¡Su voto ha sido registrado exitosamente! Se ha enviado un correo con su comprobante de votación.')
+        return redirect('administracion:index')
         
     except PadronElectoral.DoesNotExist:
         messages.error(request, 'No se encontró su registro en el padrón electoral')
