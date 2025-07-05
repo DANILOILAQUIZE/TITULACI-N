@@ -19,9 +19,11 @@
 }
 
 body.vertical-layout[data-color=bg-white] .navbar-container,
-body.vertical-layout[data-color=bg-white] .content-wrapper-before
+body.vertical-layout[data-color=bg-white] .content-wrapper-before,
+body.vertical-layout[data-color=bg-chartbg] .navbar-container,
+body.vertical-layout[data-color=bg-chartbg] .content-wrapper-before
 {
-    background-color: #fff !important;
+    background-color: #0097a7 !important;
 }
 
 body.horizontal-layout[data-color=bg-white] .navbar-horizontal
@@ -17907,35 +17909,36 @@ input:focus ~ .bg-shades
 
 .btn-shades.btn-transparent
 {
-    border-color: !important;
+    border-color: transparent !important;
     background-color: transparent !important;
 }
 .btn-shades.btn-transparent:hover
 {
-    border-color: !important;
-    background-color: !important;
+    border-color: rgba(0,0,0,0.1) !important;
+    background-color: rgba(0,0,0,0.05) !important;
 }
 .btn-shades.btn-transparent:focus,
 .btn-shades.btn-transparent:active
 {
-    border-color: !important;
-    background-color: !important;
+    border-color: rgba(0,0,0,0.2) !important;
+    background-color: rgba(0,0,0,0.1) !important;
 }
 
 .btn-outline-shades.btn-outline-transparent
 {
-    color: transparent !important; 
-    border-color: transparent !important;
+    color: #757575 !important; 
+    border-color: #e0e0e0 !important;
+    background-color: transparent !important;
 }
 .btn-outline-shades.btn-outline-transparent:hover
 {
-    background-color: transparent !important;
+    background-color: rgba(0,0,0,0.02) !important;
 }
 
 input:focus ~ .bg-shades
 {
-    -webkit-box-shadow: 0 0 0 .075rem #fff, 0 0 0 .21rem transparent !important;
-            box-shadow: 0 0 0 .075rem #fff, 0 0 0 .21rem transparent !important;
+    -webkit-box-shadow: 0 0 0 .075rem #fff, 0 0 0 .21rem rgba(0,0,0,0.1) !important;
+            box-shadow: 0 0 0 .075rem #fff, 0 0 0 .21rem rgba(0,0,0,0.1) !important;
 }
 
 .border-shades.border-transparent

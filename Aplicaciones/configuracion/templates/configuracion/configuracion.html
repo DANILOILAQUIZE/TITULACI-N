@@ -2,6 +2,7 @@
 
 {% block contenido %}
 <!-- Encabezado -->
+ <br>
 <div class="card mb-3">
   <div class="card-body bg-light text-center">
     <h5 class="card-title mb-3"><strong>Configuración del Sistema</strong></h5>
@@ -10,9 +11,8 @@
 
 
 <!-- Sección del formulario de configuración -->
-<section id="configurar-logos" class="row">
-  <div class="col-sm-12 col-md-10 offset-md-1">
-    <div class="card shadow-sm">
+<section id="configurar-logos">
+  <div class="card shadow-sm">
       <div class="card-header py-2">
         <h5 class="card-title mb-0">Datos de la Institución</h5>
       </div>
@@ -21,10 +21,13 @@
           {% csrf_token %}
           <div class="row g-2">
             <!-- Iniciales -->
-            <div class="col-md-12 mb-2">
+            <div class="col-md-12 mb-3">
               <label for="iniciales" class="form-label">Nombre de la institución:</label>
-              <input type="text" class="form-control form-control-sm" name="iniciales" id="iniciales"
-                     value="{{ config.iniciales|default:' ' }}" placeholder="Ingrese el nombre">
+              <input type="text" class="form-control" name="iniciales" id="iniciales"
+                     value="{{ config.iniciales|default:'' }}" 
+                     placeholder="Ingrese el nombre de la institución"
+                     style="width: 100%; max-width: 100%;">
+              <div class="form-text">Este nombre aparecerá en la cabecera del sistema</div>
             </div>
 
             <!-- Logo 1 -->
