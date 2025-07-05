@@ -328,11 +328,19 @@
     $('.main-menu, .scroll-to-section').on('click', 'a', function (e) {
       // No hacer nada si el enlace es externo o no es un enlace de sección
       if ($(this).hasClass('external') || !$(this).attr('href').startsWith('#')) {
+        // Si es un enlace externo, no hacer nada especial
         return true;
       }
       
+      // Si es un enlace de sección, hacer scroll suave
       e.preventDefault();
-      $('#menu').removeClass('active');
+      
+      // No remover la clase 'active' del menú móvil
+      // para permitir que el menú se cierre correctamente
+      // cuando se hace clic en un enlace
+      // $('#menu').removeClass('active');
+      
+      // Mostrar la sección correspondiente
       showSection($(this).attr('href'), true);
     });
 
