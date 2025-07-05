@@ -4,30 +4,18 @@
 {% block titulo %}Gestión de Categorías - Noticias{% endblock %}
 
 {% block contenido %}
-<style>
-    /* Estilos para los badges de color */
-    .color-badge {
-        padding: 0.35em 0.65em;
-        font-size: 0.75em;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: 0.25rem;
-        color: white !important;
-        display: inline-block;
-        min-width: 70px;
-    }
-</style>
+<!-- Incluir barra de navegación -->
+{% include 'noticias/partials/_navegacion_noticias.html' %}
+
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Listado de Categorías</h4>
-                    <div class="float-right">
-                        <a href="{% url 'noticias:agregar_categoria' %}" class="btn btn-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Listado de Categorías</h4>
+                        <a href="{% url 'noticias:agregar_categoria' %}" class="btn btn-primary btn-sm">
                             <i class="la la-plus"></i> Agregar Categoría
                         </a>
                     </div>
@@ -43,7 +31,6 @@
                                     <th>Nombre</th>
                                     <th>Descripción</th>
                                     <th>Estado</th>
-                                    <th>Color</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -60,15 +47,7 @@
                                             <span class="badge badge-secondary">Inactivo</span>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        {% with color=categoria.color|default:'#6c757d' %}
-                                        <div class="color-badge-container" data-color="{{ color }}">
-                                            <span class="badge color-badge">
-                                                {{ color }}
-                                            </span>
-                                        </div>
-                                        {% endwith %}
-                                    </td>
+
                                     <td>
                                         <a href="{% url 'noticias:editar_categoria' categoria.id %}" 
                                            class="btn btn-sm btn-icon btn-primary" 
@@ -126,7 +105,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6" class="text-center">No hay categorías registradas.</td>
+                                    <td colspan="5" class="text-center">No hay categorías registradas.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -145,53 +124,20 @@
     (function($) {
         'use strict';
         
-        // Esperar a que todo el DOM esté completamente cargado
-        $(window).on('load', function() {
-            // Verificar si DataTables está disponible
-            if ($.fn.DataTable) {
-                // Destruir instancia existente si existe
-                if ($.fn.DataTable.isDataTable('#tabla-categorias')) {
-                    $('#tabla-categorias').DataTable().destroy(true);
-                }
-                
-                // Inicializar DataTable con configuración
-                var table = $('#tabla-categorias').DataTable({
-                    "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-                    },
-                    "responsive": true,
-                    "retrieve": true, // Asegura que se pueda recuperar la instancia
-                    "destroy": true,  // Permite reinicialización
-                    "columnDefs": [
-                        { "orderable": false, "targets": [5] } // Deshabilitar ordenación en columna de acciones
-                    ],
-                    "initComplete": function() {
-                        // Asegurar que los tooltips se inicialicen después de que DataTables haya terminado
-                        $('[data-toggle="tooltip"]').tooltip();
-                    }
-                });
-                
-                // Establecer colores de fondo para los badges
-                function actualizarColoresBadges() {
-                    $('.color-badge-container').each(function() {
-                        var color = $(this).data('color');
-                        $(this).find('.color-badge').css('background-color', color);
-                    });
-                }
-                
-                // Llamar a la función para establecer los colores
-                actualizarColoresBadges();
-                
-                // Re-dibujar la tabla para asegurar que todo se muestre correctamente
-                table.draw();
-            } else {
-                console.error('DataTables no está disponible');
-            }
-        });
-        
-        // Inicializar tooltips para elementos estáticos
-        $(document).on('mouseenter', '[data-toggle="tooltip"]', function() {
-            $(this).tooltip('dispose').tooltip('show');
+        $(document).ready(function() {
+            // Inicializar DataTable
+            var table = $('#tabla-categorias').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Deshabilitar ordenación en la columna de acciones
+                ]
+            });
+            
+            // Inicializar tooltips
+            $('[data-toggle="tooltip"]').tooltip();
         });
         
     })(jQuery);

@@ -3,14 +3,14 @@
 
 {% block contenido %}
 <div class="container-fluid">
+    <!-- Incluir barra de navegación -->
+    {% include 'noticias/partials/_navegacion_noticias.html' %}
+    
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Editar Noticia: {{ noticia.titulo|truncatechars:50 }}</h4>
-                    <a href="{% url 'noticias:listar_noticias' %}" class="btn btn-secondary float-right">
-                        <i class="la la-arrow-left"></i> Volver al listado
-                    </a>
+                    <h4 class="card-title mb-0">Editar Noticia: {{ noticia.titulo|truncatechars:50 }}</h4>
                 </div>
                 <div class="card-body">
                     {% if messages %}

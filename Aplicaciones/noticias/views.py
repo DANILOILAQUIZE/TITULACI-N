@@ -299,7 +299,6 @@ def agregar_editar_categoria(request, categoria_id=None):
             # Obtener datos del formulario
             nombre = request.POST.get('nombre')
             descripcion = request.POST.get('descripcion', '')
-            color = request.POST.get('color', '#000000')
             activo = 'activo' in request.POST
             
             if not categoria:
@@ -307,7 +306,6 @@ def agregar_editar_categoria(request, categoria_id=None):
                 categoria = Categoria.objects.create(
                     nombre=nombre,
                     descripcion=descripcion,
-                    color=color,
                     activo=activo
                 )
                 messages.success(request, 'Categoría creada exitosamente.')
@@ -315,7 +313,6 @@ def agregar_editar_categoria(request, categoria_id=None):
                 # Actualizar categoría existente
                 categoria.nombre = nombre
                 categoria.descripcion = descripcion
-                categoria.color = color
                 categoria.activo = activo
                 categoria.save()
                 messages.success(request, 'Categoría actualizada exitosamente.')

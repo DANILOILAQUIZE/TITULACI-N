@@ -8,7 +8,6 @@ class Categoria(models.Model):
     """
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(blank=True, null=True)
-    color = models.CharField(max_length=7, default='#000000')  # Default black color
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
 

@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block contenido %}
-<div class="container">
+<div class="container-fluid">
+    <!-- Incluir barra de navegación -->
+    {% include 'noticias/partials/_navegacion_noticias.html' %}
+    
+    <div class="container">
     <div class="row justify-content-center">
         <!-- Contenido principal de la noticia -->
         <div class="col-lg-8">
@@ -156,6 +160,7 @@
                     </button>
                 </form>
             </div>
+        </div>
         </div>
     </div>
 </div>
