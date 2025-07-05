@@ -331,10 +331,18 @@
             });
         });
         
-        // Forzar la visualización de la pestaña de docentes al cargar
-        var docentesTab = document.getElementById('docentes-tab');
-        if (docentesTab) {
-            var tab = new bootstrap.Tab(docentesTab);
+        // Mostrar la pestaña activa al cargar la página (Nuestra Historia por defecto)
+        var historiaTab = document.getElementById('historia-tab');
+        if (historiaTab) {
+            // Remover la clase 'fade' y agregar 'show active' al contenido de la pestaña
+            var historiaContent = document.getElementById('historia');
+            if (historiaContent) {
+                historiaContent.classList.remove('fade');
+                historiaContent.classList.add('show', 'active');
+            }
+            
+            // Activar el tab correspondiente
+            var tab = new bootstrap.Tab(historiaTab);
             tab.show();
         }
     });
