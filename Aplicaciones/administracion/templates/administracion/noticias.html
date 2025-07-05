@@ -4,6 +4,44 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/noticias.css' %}">
 <style>
+    .noticia-contenido {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .noticia-contenido img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.25rem;
+        margin: 1rem 0;
+    }
+    .noticia-contenido p {
+        margin-bottom: 1rem;
+    }
+    .noticia-contenido h2, 
+    .noticia-contenido h3, 
+    .noticia-contenido h4 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .noticia-contenido ul, 
+    .noticia-contenido ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .noticia-contenido table {
+        width: 100%;
+        margin-bottom: 1rem;
+        border-collapse: collapse;
+    }
+    .noticia-contenido table, 
+    .noticia-contenido th, 
+    .noticia-contenido td {
+        border: 1px solid #dee2e6;
+    }
+    .noticia-contenido th, 
+    .noticia-contenido td {
+        padding: 0.5rem;
+    }
     .noticia-destacada {
         border-left: 4px solid #4e73df;
         background-color: rgba(78, 115, 223, 0.05);
@@ -15,14 +53,118 @@
     .card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         margin-bottom: 20px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 0.5rem;
+        overflow: hidden;
     }
     .card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
     .card-img-top {
-        height: 200px;
+        height: 180px;
         object-fit: cover;
+        width: 100%;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 1.25rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+        color: #4a5568;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+    
+    .noticia-contenido {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #4a5568;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+    
+    .noticia-contenido p:last-child {
+        margin-bottom: 0;
+    }
+    .card-text {
+        flex-grow: 1;
+    }
+    .badge-destacada {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+    }
+    /* Estilos para las categorías */
+    .badge.categoria-badge {
+        font-weight: 600;
+        padding: 0.35em 0.65em;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Colores de categorías con mejor contraste */
+    .categoria-1 { 
+        background-color: #2c5fd1;
+        color: white !important;
+    }
+    .categoria-2 { 
+        background-color: #17a673;
+        color: white !important;
+    }
+    .categoria-3 { 
+        background-color: #2c9faf;
+        color: white !important;
+    }
+    .categoria-4 { 
+        background-color: #f4b30d;
+        color: #000 !important;
+        text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+    }
+    .categoria-5 { 
+        background-color: #e02d1b;
+        color: white !important;
+    }
+    .categoria-6 { 
+        background-color: #4e4e5a;
+        color: white !important;
+    }
+    .categoria-7 { 
+        background-color: #6c757d;
+        color: white !important;
+    }
+    .categoria-8 { 
+        background-color: #5a5c69;
+        color: white !important;
+    }
+    
+    /* Asegurar que el texto sea blanco en todos los badges */
+    .categoria-badge {
+        color: white !important;
     }
 </style>
 {% endblock %}
@@ -31,74 +173,95 @@
 <br><br><br>
 <div class="container">
     <!-- Encabezado -->
+     <br>
     <div class="text-center mb-5">
         <h1 class="display-4 mb-3"><i class="fas fa-newspaper text-primary me-2"></i>Noticias</h1>
         <p class="lead text-muted">Mantente informado sobre las últimas noticias y anuncios importantes de nuestra institución.</p>
     </div>
 
+    <!-- Filtros y búsqueda
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" id="buscarNoticia" class="form-control" placeholder="Buscar noticias...">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select id="filtroCategoria" class="form-select">
+                <option value="">Todas las categorías</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 text-end">
+            <a href="{% url 'noticias:agregar_noticia' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nueva Noticia
+            </a>
+        </div>
+    </div>
+     -->
     <!-- Sección de noticias destacadas -->
+    {% if noticias_destacadas %}
     <div class="row mb-5">
         <div class="col-12">
             <h3 class="mb-4"><i class="fas fa-star text-warning me-2"></i>Noticias Destacadas</h3>
         </div>
         
-        <!-- Noticia destacada 1 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
+        {% for noticia in noticias_destacadas %}
+        <div class="col-md-6 col-lg-4 mb-4 d-flex">
+            <div class="card w-100">
                 <div class="position-relative">
-                    <img src="https://via.placeholder.com/800x500/4e73df/ffffff?text=Noticia+1" class="card-img-top" alt="Noticia destacada">
-                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
+                    {% if noticia.imagen %}
+                    <img src="{{ noticia.imagen.url }}" class="card-img-top" alt="{{ noticia.titulo }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/800x500/4e73df/ffffff?text=Sin+imagen" class="card-img-top" alt="Sin imagen">
+                    {% endif %}
+                    <span class="badge bg-warning badge-destacada">Destacada</span>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-primary">Académico</span>
-                        <small class="text-muted">Hace 2 días</small>
+                    <div class="mb-2">
+                        {% if noticia.categoria %}
+                        <div class="mb-1">
+                            <span class="badge categoria-badge categoria-{{ noticia.categoria.id|default:1 }}">
+                                {{ noticia.categoria.nombre }}
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="mb-1">
+                            <span class="badge bg-secondary">Sin categoría</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <small class="text-muted">
+                                <i class="far fa-calendar-alt me-1"></i>{{ noticia.fecha_publicacion|date:"d M Y" }}
+                            </small>
+                        </div>
                     </div>
-                    <h5 class="card-title">Inauguración del nuevo laboratorio de ciencias</h5>
-                    <p class="card-text">El nuevo laboratorio cuenta con equipos de última generación para potenciar el aprendizaje de nuestros estudiantes.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                    <h5 class="card-title">{{ noticia.titulo }}</h5>
+                    <div class="card-text mb-3">
+                        
+                        <div class="noticia-contenido">
+                            {{ noticia.contenido|safe }}
+                        </div>
+                        {% if noticia.resumen %}
+                            <p class="fw-bold">{{ noticia.resumen }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{% url 'noticias:ver_noticia' noticia.id %}" class="btn btn-outline-primary btn-sm">
+                            Leer más <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Noticia destacada 2 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="position-relative">
-                    <img src="https://via.placeholder.com/800x500/1cc88a/ffffff?text=Noticia+2" class="card-img-top" alt="Noticia destacada">
-                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-success">Deportes</span>
-                        <small class="text-muted">Hace 4 días</small>
-                    </div>
-                    <h5 class="card-title">Equipo de fútbol gana el campeonato intercolegial</h5>
-                    <p class="card-text">Nuestro equipo de fútbol se coronó campeón en el torneo intercolegial regional.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Noticia destacada 3 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="position-relative">
-                    <img src="https://via.placeholder.com/800x500/36b9cc/ffffff?text=Noticia+3" class="card-img-top" alt="Noticia destacada">
-                    <span class="position-absolute top-0 end-0 m-3 badge bg-warning">Destacada</span>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-info">Cultura</span>
-                        <small class="text-muted">Hace 1 semana</small>
-                    </div>
-                    <h5 class="card-title">Festival de arte y cultura 2023</h5>
-                    <p class="card-text">Exitosa participación de nuestros estudiantes en el festival anual de arte y cultura.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
+    {% endif %}
     
     <!-- Últimas noticias -->
     <div class="row">
@@ -106,62 +269,94 @@
             <h3 class="mb-4"><i class="fas fa-clock text-primary me-2"></i>Últimas Noticias</h3>
         </div>
         
-        <!-- Noticia 1 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <img src="https://via.placeholder.com/800x500/f6c23e/ffffff?text=Noticia+4" class="card-img-top" alt="Noticia">
+        {% for noticia in ultimas_noticias %}
+        <div class="col-md-6 col-lg-4 mb-4 d-flex">
+            <div class="card w-100">
+                {% if noticia.imagen %}
+                <img src="{{ noticia.imagen.url }}" class="card-img-top" alt="{{ noticia.titulo }}">
+                {% else %}
+                <img src="https://via.placeholder.com/800x500/6c757d/ffffff?text=Sin+imagen" class="card-img-top" alt="Sin imagen">
+                {% endif %}
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-secondary">General</span>
-                        <small class="text-muted">Hace 2 semanas</small>
+                    <div class="mb-2">
+                        {% if noticia.categoria %}
+                        <div class="mb-1">
+                            <span class="badge categoria-badge categoria-{{ noticia.categoria.id|default:1 }}">
+                                {{ noticia.categoria.nombre }}
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="mb-1">
+                            <span class="badge bg-secondary">Sin categoría</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <small class="text-muted">
+                                <i class="far fa-calendar-alt me-1"></i>{{ noticia.fecha_publicacion|date:"d M Y" }}
+                            </small>
+                        </div>
                     </div>
-                    <h5 class="card-title">Convocatoria para becas académicas 2023</h5>
-                    <p class="card-text">Abierta la convocatoria para postular a las becas de excelencia académica del presente año.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
+                    <h5 class="card-title">{{ noticia.titulo }}</h5>
+                    <div class="card-text">
+                        {% if noticia.resumen %}
+                            <p class="fw-bold mb-2">{{ noticia.resumen|truncatewords:25 }}</p>
+                        {% endif %}
+                        <div class="noticia-contenido">
+                            {{ noticia.contenido|striptags|truncatewords:30|safe }}
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        
+                        {% if user.is_authenticated and user.is_staff %}
+                        <a href="{% url 'noticias:editar_noticia' noticia.id %}" class="btn btn-outline-secondary btn-sm ms-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Noticia 2 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <img src="https://via.placeholder.com/800x500/e74a3b/ffffff?text=Noticia+5" class="card-img-top" alt="Noticia">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-danger">Importante</span>
-                        <small class="text-muted">Hace 3 semanas</small>
-                    </div>
-                    <h5 class="card-title">Nuevo protocolo de bioseguridad</h5>
-                    <p class="card-text">Conoce las nuevas medidas de bioseguridad implementadas en nuestra institución.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No hay noticias para mostrar.
             </div>
         </div>
-        
-        <!-- Noticia 3 -->
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <img src="https://via.placeholder.com/800x500/5a5c69/ffffff?text=Noticia+6" class="card-img-top" alt="Noticia">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-primary">Académico</span>
-                        <small class="text-muted">Hace 1 mes</small>
-                    </div>
-                    <h5 class="card-title">Talleres de refuerzo académico</h5>
-                    <p class="card-text">Inscríbete en nuestros talleres de refuerzo para mejorar tu rendimiento académico.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Leer más <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     
-    <!-- Botón de ver más noticias -->
-    <div class="text-center mt-4">
-        <a href="#" class="btn btn-primary">
-            <i class="fas fa-plus-circle me-2"></i>Ver más noticias
-        </a>
-    </div>
 </div>
+
+<!-- Script para filtros -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para filtrar noticias
+    function filtrarNoticias() {
+        const busqueda = document.getElementById('buscarNoticia').value.toLowerCase();
+        const categoriaId = document.getElementById('filtroCategoria').value;
+        const tarjetas = document.querySelectorAll('.card');
+        
+        tarjetas.forEach(tarjeta => {
+            const titulo = tarjeta.querySelector('.card-title').textContent.toLowerCase();
+            const contenido = tarjeta.querySelector('.card-text').textContent.toLowerCase();
+            const tarjetaCategoria = tarjeta.querySelector('.badge').getAttribute('data-categoria') || '';
+            
+            const coincideBusqueda = titulo.includes(busqueda) || contenido.includes(busqueda);
+            const coincideCategoria = !categoriaId || tarjetaCategoria === categoriaId;
+            
+            if (coincideBusqueda && coincideCategoria) {
+                tarjeta.closest('.col-md-6').style.display = '';
+            } else {
+                tarjeta.closest('.col-md-6').style.display = 'none';
+            }
+        });
+    }
+    
+    // Event listeners para los filtros
+    document.getElementById('buscarNoticia').addEventListener('keyup', filtrarNoticias);
+    document.getElementById('filtroCategoria').addEventListener('change', filtrarNoticias);
+});
+</script>
 {% endblock %}
                         <div class="col-md-3">
                             <h4 class="mb-0">2</h4>

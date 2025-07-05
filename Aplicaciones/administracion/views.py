@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from Aplicaciones.padron.models import CredencialUsuario
+from Aplicaciones.noticias.models import Noticia, Categoria
 from django.contrib.auth.hashers import check_password
 
 # Create your views here.
@@ -197,6 +198,28 @@ def docentes_nuevo(request):
     return render(request, 'administracion/docentes-nuevo.html')
 
 def noticias(request):
-    return render(request, 'administracion/noticias.html')
+    # Obtener noticias destacadas
+    noticias_destacadas = Noticia.objects.filter(
+        destacada=True, 
+        estado='publicado'
+    ).order_by('-fecha_publicacion')[:3]
+    
+    # Obtener últimas noticias (no destacadas)
+    ultimas_noticias = Noticia.objects.filter(
+        estado='publicado'
+    ).exclude(
+        id__in=noticias_destacadas.values_list('id', flat=True)
+    ).order_by('-fecha_publicacion')[:6]
+    
+    # Obtener todas las categorías para el filtro
+    categorias = Categoria.objects.filter(activo=True)
+    
+    context = {
+        'noticias_destacadas': noticias_destacadas,
+        'ultimas_noticias': ultimas_noticias,
+        'categorias': categorias,
+    }
+    
+    return render(request, 'administracion/noticias.html', context)
 
 

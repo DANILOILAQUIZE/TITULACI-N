@@ -23,48 +23,93 @@ def agregar_noticia(request):
             # Verificar que el usuario esté autenticado
             if not request.user.is_authenticated:
                 messages.error(request, 'Debe iniciar sesión para crear noticias.')
-                return redirect('login')  # Ajusta la URL de login según tu configuración
+                return redirect('login')
                 
             # Obtener datos del formulario
             titulo = request.POST.get('titulo')
             categoria_id = request.POST.get('categoria')
             contenido = request.POST.get('contenido')
-            resumen = request.POST.get('resumen', '').strip()  # Obtener el resumen y limpiar espacios en blanco
+            resumen = request.POST.get('resumen', '').strip()
             estado = request.POST.get('estado', 'borrador')
             
             # Validar campos requeridos
-            if not all([titulo, contenido, estado]):
-                messages.error(request, 'Los campos título, contenido y estado son obligatorios.')
+            if not all([titulo, contenido, estado, 'imagen' in request.FILES]):
+                mensaje_error = 'Por favor complete todos los campos obligatorios.'
+                if 'imagen' not in request.FILES:
+                    mensaje_error += ' La imagen es obligatoria.'
+                messages.error(request, mensaje_error)
+                
                 return render(request, 'noticias/noticias/agregar_noticia.html', {
                     'categorias': Categoria.objects.filter(activo=True).values('id', 'nombre'),
                     'estados': [('borrador', 'Borrador'), ('publicado', 'Publicado'), ('archivado', 'Archivado')],
                     'form_data': request.POST
                 })
             
+            # Validar la imagen
+            imagen = request.FILES.get('imagen')
+            if imagen:
+                # Validar tipo de archivo
+                extensiones_permitidas = ['.jpg', '.jpeg', '.png']
+                extension = os.path.splitext(imagen.name)[1].lower()
+                
+                # Validar tipo MIME y extensión
+                if not (imagen.content_type in ['image/jpeg', 'image/jpg', 'image/png'] and 
+                       extension in extensiones_permitidas):
+                    messages.error(request, 'El archivo debe ser una imagen válida (solo se permiten JPG, JPEG o PNG).')
+                    return render(request, 'noticias/noticias/agregar_noticia.html', {
+                        'categorias': Categoria.objects.filter(activo=True).values('id', 'nombre'),
+                        'estados': [('borrador', 'Borrador'), ('publicado', 'Publicado'), ('archivado', 'Archivado')],
+                        'form_data': request.POST
+                    })
+                
+                # Validar tamaño del archivo (máximo 5MB)
+                if imagen.size > 5 * 1024 * 1024:  # 5MB
+                    messages.error(request, 'La imagen es demasiado grande. El tamaño máximo permitido es 5MB.')
+                    return render(request, 'noticias/noticias/agregar_noticia.html', {
+                        'categorias': Categoria.objects.filter(activo=True).values('id', 'nombre'),
+                        'estados': [('borrador', 'Borrador'), ('publicado', 'Publicado'), ('archivado', 'Archivado')],
+                        'form_data': request.POST
+                    })
+            
             # Obtener la categoría
             categoria = None
             if categoria_id:
-                categoria = Categoria.objects.get(id=categoria_id)
+                try:
+                    categoria = Categoria.objects.get(id=categoria_id, activo=True)
+                except Categoria.DoesNotExist:
+                    messages.error(request, 'La categoría seleccionada no es válida.')
+                    return render(request, 'noticias/noticias/agregar_noticia.html', {
+                        'categorias': Categoria.objects.filter(activo=True).values('id', 'nombre'),
+                        'estados': [('borrador', 'Borrador'), ('publicado', 'Publicado'), ('archivado', 'Archivado')],
+                        'form_data': request.POST
+                    })
             
-            # Crear la noticia
-            noticia = Noticia.objects.create(
-                titulo=titulo,
-                categoria=categoria,
-                contenido=contenido,
-                resumen=resumen,
-                estado=estado,
-                fecha_publicacion=timezone.now()  # Siempre establecer la fecha actual
-            )
-            
-            # Manejar la imagen si se subió
-            if 'imagen' in request.FILES:
-                noticia.imagen = request.FILES['imagen']
+            # Crear la noticia con la imagen
+            try:
+                noticia = Noticia(
+                    titulo=titulo,
+                    categoria=categoria,
+                    contenido=contenido,
+                    resumen=resumen,
+                    estado=estado,
+                    fecha_publicacion=timezone.now(),
+                    imagen=imagen
+                )
                 noticia.save()
-            
-            messages.success(request, 'Noticia guardada exitosamente.')
-            return redirect('noticias:listar_noticias')
+                
+                messages.success(request, 'Noticia guardada exitosamente.')
+                return redirect('noticias:listar_noticias')
+                
+            except Exception as e:
+                # Si hay un error al guardar, eliminar la imagen subida si existe
+                if 'imagen' in locals() and hasattr(imagen, 'name') and os.path.exists(imagen.name):
+                    os.remove(imagen.name)
+                raise e
             
         except Exception as e:
+            # Registrar el error para depuración
+            import traceback
+            print(f"Error al guardar la noticia: {str(e)}\n{traceback.format_exc()}")
             messages.error(request, f'Error al guardar la noticia: {str(e)}')
     
     # Si es GET o hay error, mostrar el formulario
