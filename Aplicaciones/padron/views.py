@@ -91,11 +91,12 @@ def generar_credenciales(request):
             'correo': cred.padron.correo,
             'estado': cred.estado
         })
-            
-        return render(request, 'padron/credenciales.html', {
-            'credenciales': credenciales,
-            'mostrar_envio': True
-        })
+    
+    # Mover el return fuera del bucle for
+    return render(request, 'padron/credenciales.html', {
+        'credenciales': credenciales,
+        'mostrar_envio': True
+    })
 
     # Si es GET, mostrar la lista de credenciales existentes
     credenciales = []
