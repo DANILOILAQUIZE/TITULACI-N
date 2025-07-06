@@ -12,9 +12,16 @@ import io
 import random
 import string
 from django.core.mail import send_mail
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from io import BytesIO
+from django.http import HttpResponse
 
 #CRUD GRADOS
-def generar_credenciales(request):
+def     generar_credenciales(request):
     # Inicializar el diccionario de credenciales generadas
     if not hasattr(request, 'session'):
         request.session = {}
@@ -116,6 +123,84 @@ def generar_credenciales(request):
         'credenciales': credenciales,
         'mostrar_envio': False
     })
+
+def exportar_credenciales_pdf(request):
+    """
+    Genera un PDF con las credenciales de los usuarios
+    """
+    # Obtener todas las credenciales
+    credenciales = CredencialUsuario.objects.select_related('padron').all()
+    
+    # Crear un objeto BytesIO para el PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="credenciales.pdf"'
+    
+    # Crear el documento PDF
+    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=72, bottomMargin=18)
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    style_heading = styles['Heading1']
+    style_body = styles['BodyText']
+    style_body.alignment = 1  # Centrado
+    
+    # Contenido del documento
+    elements = []
+    
+    # Título del documento
+    elements.append(Paragraph("Credenciales de Acceso", style_heading))
+    elements.append(Spacer(1, 20))
+    
+    # Crear datos para la tabla
+    data = [['N°', 'Cédula', 'Nombre Completo', 'Grado', 'Paralelo', 'Usuario', 'Contraseña']]
+    
+    for i, cred in enumerate(credenciales, 1):
+        contrasena_plana = request.session.get('credenciales_generadas', {}).get(str(cred.id), "")
+        grado = cred.padron.grado.nombre if cred.padron.grado else ""
+        paralelo = cred.padron.paralelo.nombre if cred.padron.paralelo else ""
+        
+        data.append([
+            str(i),
+            cred.padron.cedula,
+            f"{cred.padron.nombre} {cred.padron.apellidos}",
+            grado,
+            paralelo,
+            cred.usuario,
+            contrasena_plana or "*******"
+        ])
+    
+    # Crear la tabla
+    table = Table(data)
+    
+    # Estilo de la tabla
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ])
+    
+    # Aplicar estilos alternados a las filas
+    for i in range(1, len(data)):
+        if i % 2 == 0:
+            style.add('BACKGROUND', (0, i), (-1, i), colors.lightgrey)
+    
+    table.setStyle(style)
+    elements.append(table)
+    
+    # Construir el PDF
+    doc.build(elements)
+    
+    return response
 
 def enviar_credenciales(request):
     if request.method == 'POST':

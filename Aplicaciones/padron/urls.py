@@ -29,6 +29,7 @@ urlpatterns = [
     path('padron/estadisticas/', views.estadisticas_padron, name='estadisticas_padron'),
     path('padron/eliminar-todo/', views.eliminar_todo_el_padron, name='eliminar_todo_el_padron'),
     path('padron/generar-credenciales/', views.generar_credenciales, name='generar_credenciales'),
+    path('padron/exportar-credenciales-pdf/', views.exportar_credenciales_pdf, name='exportar_credenciales_pdf'),
     path('padron/enviar-credenciales/', views.enviar_credenciales, name='enviar_credenciales'),
     
     
