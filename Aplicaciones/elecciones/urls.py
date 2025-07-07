@@ -22,4 +22,7 @@ urlpatterns = [
     path('candidatos/agregar/', views.agregar_candidato, name='agregar_candidato'),
     path('candidatos/editar/<int:candidato_id>/', views.editar_candidato, name='editar_candidato'),
     path('candidatos/eliminar/<int:candidato_id>/', views.eliminar_candidato, name='eliminar_candidato'),
+    
+    # Limpieza de listas huérfanas
+    path('listas/limpiar/', views.limpiar_listas_sin_candidatos, name='limpiar_listas_sin_candidatos'),
 ]

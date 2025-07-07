@@ -74,13 +74,7 @@
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
                     <td>
-                      <div class="d-flex align-items-center">
-                        <span id="pwd-{{ forloop.counter }}" data-password="{{ usuario.plain_password }}">••••••••</span>
-                        <button type="button" class="btn btn-sm btn-link p-0 ml-2 toggle-password" 
-                                data-target="pwd-{{ forloop.counter }}">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                      </div>
+                      {{ usuario.plain_password|default:"N/A" }}
                     </td>
                     <td>{{ usuario.id_rol.nombre_rol }}</td>
                     <td>

@@ -78,12 +78,21 @@
                     <td>{{ candidato.lista.nombre_lista }}</td>
                     <td>{{ candidato.cargo.nombre_cargo }}</td>
                     <td>{{ candidato.get_tipo_candidato_display }}</td>
-                    <td>
-                        <a href="{% url 'editar_candidato' candidato.id %}" class="btn btn-sm btn-warning" title="Editar">
-                            <i class="fas fa-edit"></i>
+                    <td class="text-center" style="white-space: nowrap;">
+                        <a href="{% url 'editar_candidato' candidato.id %}" 
+                           class="btn btn-sm btn-outline-primary mx-1" 
+                           title="Editar"
+                           data-toggle-tooltip="tooltip"
+                           data-placement="top">
+                            <i class="la la-edit"></i>
                         </a>
-                        <a href="{% url 'eliminar_candidato' candidato.id %}" class="btn btn-sm btn-danger" title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
+                        <a href="{% url 'eliminar_candidato' candidato.id %}" 
+                           class="btn btn-sm btn-outline-danger mx-1"
+                           title="Eliminar"
+                           data-toggle-tooltip="tooltip"
+                           data-placement="top"
+                           onclick="return confirm('¿Estás seguro de eliminar este candidato?');">
+                            <i class="la la-trash"></i>
                         </a>
                     </td>
                 </tr>

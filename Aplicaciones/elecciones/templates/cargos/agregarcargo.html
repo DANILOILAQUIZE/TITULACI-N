@@ -215,29 +215,26 @@
                                         <td>
                                             
                                              
-                                            <div class="btn-group" role="group">
-                                                <div class="action-buttons d-flex">
-                                                    <!-- Editar -->
-                                                    
-                                                    <!-- Botón para editar (redirige directamente a la página de edición) -->
-                                                    <a href="{% url 'editar_cargo' cargo.id %}" class="btn-action btn-edit" 
-                                                       title="Editar"
-                                                       data-toggle-tooltip="tooltip"
-                                                       data-placement="top">
-                                                        <i class="la la-edit"></i>
-                                                    </a>
+                                            <div class="d-flex justify-content-center">
+                                                <!-- Botón para editar -->
+                                                <a href="{% url 'editar_cargo' cargo.id %}" 
+                                                   class="btn btn-sm btn-outline-primary mx-1"
+                                                   title="Editar"
+                                                   data-toggle-tooltip="tooltip"
+                                                   data-placement="top">
+                                                    <i class="la la-edit"></i>
+                                                </a>
 
-                                                    <!-- Botón para eliminar -->
-                                                    <button type="button" class="btn-action btn-delete" 
-                                                            data-cargo-id="{{ cargo.id }}" 
-                                                            data-cargo-nombre="{{ cargo.nombre_cargo|escapejs }}"
-                                                            title="Eliminar"
-                                                            data-toggle-tooltip="tooltip"
-                                                            data-placement="top">
-                                                        <i class="la la-trash"></i>
-                                                    </button>
-                                                    <!-- Enlace directo a edición -->
-                                                    <a href="{% url 'editar_cargo' cargo.id %}" class="d-none"></a>
+                                                <!-- Botón para eliminar -->
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger mx-1"
+                                                        data-cargo-id="{{ cargo.id }}" 
+                                                        data-cargo-nombre="{{ cargo.nombre_cargo|escapejs }}"
+                                                        title="Eliminar"
+                                                        data-toggle-tooltip="tooltip"
+                                                        data-placement="top">
+                                                    <i class="la la-trash"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

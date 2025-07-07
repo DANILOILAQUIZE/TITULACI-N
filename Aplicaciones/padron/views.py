@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import ListView
 from django.contrib.auth.hashers import make_password
+from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.contenttypes.models import ContentType
 from .models import Grado, Periodo, Paralelo, PadronElectoral, CredencialUsuario
+from Aplicaciones.elecciones.models import Lista, Candidato
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
@@ -744,24 +747,29 @@ def eliminar_todo_el_padron(request):
                 # 2. Eliminar todos los registros del padrón electoral
                 registros_eliminados = PadronElectoral.objects.all().delete()
                 
-                # 3. Encontrar y eliminar paralelos que ya no están siendo usados
-                paralelos_eliminados = 0
-                for paralelo in Paralelo.objects.all():
-                    if not paralelo.padronelectoral_set.exists():
-                        paralelo.delete()
-                        paralelos_eliminados += 1
+                # 3. Eliminar todos los paralelos
+                paralelos_eliminados = Paralelo.objects.all().delete()
+                if isinstance(paralelos_eliminados, tuple) and len(paralelos_eliminados) > 0:
+                    paralelos_eliminados = paralelos_eliminados[0]  # Tomamos solo el número total de objetos eliminados
+                else:
+                    paralelos_eliminados = 0
                 
-                # 4. Encontrar y eliminar grados que ya no están siendo usados
-                grados_eliminados = 0
-                for grado in Grado.objects.all():
-                    if not grado.paralelos.exists() and not grado.padronelectoral_set.exists():
-                        grado.delete()
-                        grados_eliminados += 1
+                # 4. Eliminar todos los grados
+                grados_eliminados = Grado.objects.all().delete()
+                if isinstance(grados_eliminados, tuple) and len(grados_eliminados) > 0:
+                    grados_eliminados = grados_eliminados[0]  # Tomamos solo el número total de objetos eliminados
+                else:
+                    grados_eliminados = 0
                 
-                # 5. Registrar la acción en el log
-                from django.contrib.admin.models import LogEntry, CHANGE
-                from django.contrib.contenttypes.models import ContentType
+                # 5. Eliminar todos los candidatos (pero mantener las listas)
+                candidatos_eliminados = Candidato.objects.all().delete()
+                # El método delete() devuelve una tupla: (número_objetos_eliminados, {modelo: número_eliminados})
+                if isinstance(candidatos_eliminados, tuple) and len(candidatos_eliminados) > 0:
+                    candidatos_eliminados = candidatos_eliminados[0]  # Tomamos solo el número total de objetos eliminados
+                else:
+                    candidatos_eliminados = 0
                 
+                # 6. Registrar la acción en el log
                 LogEntry.objects.log_action(
                     user_id=request.user.id,
                     content_type_id=ContentType.objects.get_for_model(PadronElectoral).pk,
@@ -769,13 +777,16 @@ def eliminar_todo_el_padron(request):
                     object_repr='Todos los registros del padrón electoral',
                     action_flag=CHANGE,
                     change_message=f'Se eliminaron {total_estudiantes} estudiantes del padrón electoral.\n' 
-                                 f'Se eliminaron {paralelos_eliminados} paralelos y {grados_eliminados} grados que ya no estaban en uso.'
+                                 f'Se eliminaron {paralelos_eliminados} paralelos y {grados_eliminados} grados.\n'
+                                 'Se eliminaron todos los candidatos pero se conservaron las listas.'
                 )
                 
                 # Mensaje de éxito
                 mensaje = [
                     'Se ha vaciado el padrón electoral exitosamente.',
                     f'• Estudiantes eliminados: {total_estudiantes}',
+                    f'• Candidatos eliminados: {candidatos_eliminados if isinstance(candidatos_eliminados, int) else "Todos"}',
+                    f'• Se han conservado todas las listas',
                     f'• Paralelos eliminados: {paralelos_eliminados}',
                     f'• Grados eliminados: {grados_eliminados}'
                 ]

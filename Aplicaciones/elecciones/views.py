@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.http import JsonResponse
-from django.db.models import Q
+from django.http import JsonResponse, HttpResponseRedirect
+from django.db.models import Q, Count
 from django.utils import timezone
 from django.urls import reverse
 import json
@@ -51,43 +51,56 @@ def buscar_cedula_por_nombre(request):
 
 
 def listar_listas(request):
-    periodo_actual = Periodo.objects.get(
-        fecha_inicio__lte=timezone.now(),
-        fecha_fin__gte=timezone.now()
-    )
-    listas = Lista.objects.filter(periodo=periodo_actual)
-    periodos = Periodo.objects.all()
-    
-    # Obtener todos los candidatos de cada lista con sus cargos
-    listas_con_candidatos = []
-    for lista in listas:
-        # Buscar el presidente
-        presidente = Candidato.objects.filter(
-            lista=lista,
-            cargo__nombre_cargo__icontains='presidente'
-        ).first()
+    try:
+        # Primero verificamos si hay algún período activo
+        periodo_actual = Periodo.objects.get(
+            fecha_inicio__lte=timezone.now(),
+            fecha_fin__gte=timezone.now()
+        )
         
-        # Obtener todos los candidatos de la lista ordenados por cargo
-        candidatos = Candidato.objects.filter(
-            lista=lista
-        ).select_related('cargo').order_by('cargo__nombre_cargo')
+        listas = Lista.objects.filter(periodo=periodo_actual)
+        periodos = Periodo.objects.all()
         
-        # Agregar la lista, presidente y candidatos
-        listas_con_candidatos.append({
-            'lista': lista,
-            'presidente': presidente,
-            'candidatos': candidatos
+        # Obtener todos los candidatos de cada lista con sus cargos
+        listas_con_candidatos = []
+        for lista in listas:
+            # Buscar el presidente
+            presidente = Candidato.objects.filter(
+                lista=lista,
+                cargo__nombre_cargo__icontains='presidente'
+            ).first()
+            
+            # Obtener todos los candidatos de la lista ordenados por cargo
+            candidatos = Candidato.objects.filter(
+                lista=lista
+            ).select_related('cargo').order_by('cargo__nombre_cargo')
+            
+            # Agregar la lista, presidente y candidatos
+            listas_con_candidatos.append({
+                'lista': lista,
+                'presidente': presidente,
+                'candidatos': candidatos
+            })
+        
+        # Convertir mensajes a JSON
+        messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
+        
+        return render(request, 'lista/agregarlista.html', {
+            'listas': listas_con_candidatos,
+            'periodo_actual': periodo_actual,
+            'periodos': periodos,
+            'messages_json': json.dumps(messages_list)
         })
-    
-    # Convertir mensajes a JSON
-    messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
-    
-    return render(request, 'lista/agregarlista.html', {
-        'listas': listas_con_candidatos,
-        'periodo_actual': periodo_actual,
-        'periodos': periodos,
-        'messages_json': json.dumps(messages_list)
-    })
+        
+    except Periodo.DoesNotExist:
+        # Si no hay período activo, mostramos un mensaje de error
+        messages.error(request, 'No hay un período académico activo. Por favor, contacte al administrador.')
+        return render(request, 'lista/agregarlista.html', {
+            'listas': [],
+            'periodo_actual': None,
+            'periodos': Periodo.objects.all(),
+            'messages_json': json.dumps([{'message': 'No hay un período académico activo. Por favor, contacte al administrador.', 'tags': 'error'}])
+        })
 
 def agregar_lista(request):
     periodos = Periodo.objects.all()
@@ -278,22 +291,34 @@ def eliminar_lista(request, lista_id):
 
 #APARTADO DE CARGOS
 def listar_cargos(request):
-    periodo_actual = Periodo.objects.get(
-        fecha_inicio__lte=timezone.now(),
-        fecha_fin__gte=timezone.now()
-    )
-    periodos = Periodo.objects.all()
-    cargos = Cargo.objects.filter(periodo=periodo_actual)
-
-    # Convertir mensajes a JSON
-    messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
-
-    return render(request, 'cargos/agregarcargo.html', {
-        'cargos': cargos,
-        'periodo_actual': periodo_actual,
-        'periodos': periodos,
-        'messages_json': json.dumps(messages_list)
-    })
+    try:
+        # Verificar si hay un período activo
+        periodo_actual = Periodo.objects.get(
+            fecha_inicio__lte=timezone.now(),
+            fecha_fin__gte=timezone.now()
+        )
+        periodos = Periodo.objects.all()
+        cargos = Cargo.objects.filter(periodo=periodo_actual)
+        
+        # Convertir mensajes a JSON
+        messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
+        
+        return render(request, 'cargos/agregarcargo.html', {
+            'cargos': cargos,
+            'periodo_actual': periodo_actual,
+            'periodos': periodos,
+            'messages_json': json.dumps(messages_list)
+        })
+        
+    except Periodo.DoesNotExist:
+        # Si no hay período activo, mostramos un mensaje de error
+        messages.error(request, 'No hay un período académico activo. Por favor, contacte al administrador.')
+        return render(request, 'cargos/agregarcargo.html', {
+            'cargos': [],
+            'periodo_actual': None,
+            'periodos': Periodo.objects.all(),
+            'messages_json': json.dumps([{'message': 'No hay un período académico activo. Por favor, contacte al administrador.', 'tags': 'error'}])
+        })
 
 def agregar_cargo(request, cargo_id=None):
     periodo_actual = Periodo.objects.get(
@@ -416,15 +441,33 @@ def eliminar_cargo(request, cargo_id):
 
 #APARTADO DE CANDIDATOS
 def listar_candidatos(request):
-    periodo_actual = Periodo.objects.get(
-        fecha_inicio__lte=timezone.now(),
-        fecha_fin__gte=timezone.now()
-    )
-    candidatos = Candidato.objects.filter(periodo=periodo_actual).select_related('lista', 'cargo', 'periodo')
-    return render(request, 'candidatos/listar.html', {
-        'candidatos': candidatos, 
-        'periodo_actual': periodo_actual
-    })
+    try:
+        # Verificar si hay un período activo
+        periodo_actual = Periodo.objects.get(
+            fecha_inicio__lte=timezone.now(),
+            fecha_fin__gte=timezone.now()
+        )
+        
+        # Obtener candidatos del período actual
+        candidatos = Candidato.objects.filter(periodo=periodo_actual).select_related('lista', 'cargo', 'periodo')
+        
+        # Convertir mensajes a JSON
+        messages_list = [{'message': m.message, 'tags': m.tags} for m in messages.get_messages(request)]
+        
+        return render(request, 'candidatos/listar.html', {
+            'candidatos': candidatos, 
+            'periodo_actual': periodo_actual,
+            'messages_json': json.dumps(messages_list)
+        })
+        
+    except Periodo.DoesNotExist:
+        # Si no hay período activo, mostramos un mensaje de error
+        messages.error(request, 'No hay un período académico activo. Por favor, contacte al administrador.')
+        return render(request, 'candidatos/listar.html', {
+            'candidatos': [],
+            'periodo_actual': None,
+            'messages_json': json.dumps([{'message': 'No hay un período académico activo. Por favor, contacte al administrador.', 'tags': 'error'}])
+        })
 
 def agregar_candidato(request):
     if request.method == 'POST':
@@ -664,6 +707,36 @@ def buscar_nombre_por_cedula(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     return JsonResponse({'success': False, 'error': 'No se proporcionó cédula'}, status=400)
+
+def limpiar_listas_huérfanas():
+    """
+    Función para eliminar listas que no tienen candidatos asociados
+    Devuelve el número de listas eliminadas
+    """
+    # Encontrar listas que no tienen candidatos
+    listas_huérfanas = Lista.objects.annotate(
+        num_candidatos=Count('candidato')
+    ).filter(num_candidatos=0)
+    
+    # Contar cuántas se van a eliminar
+    total_eliminadas = listas_huérfanas.count()
+    
+    # Eliminar las listas huérfanas
+    listas_huérfanas.delete()
+    
+    return total_eliminadas
+
+def limpiar_listas_sin_candidatos(request):
+    """
+    Vista para limpiar listas sin candidatos
+    """
+    if request.method == 'POST':
+        total_eliminadas = limpiar_listas_huérfanas()
+        messages.success(request, f'Se eliminaron {total_eliminadas} listas sin candidatos')
+        return HttpResponseRedirect(reverse('listar_listas'))
+    
+    # Si no es POST, redirigir a la lista de listas
+    return HttpResponseRedirect(reverse('listar_listas'))
 
 def verificar_estudiante_lista(request):
     """
