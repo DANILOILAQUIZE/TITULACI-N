@@ -307,7 +307,7 @@
               <select class="form-control select-paralelo" name="paralelo" required >
                 <option value="">-- Seleccione grado primero --</option>
                 {% for paralelo in paralelos %}
-                  <option value="{{ paralelo.id }}">{{ paralelo.nombre }}</option>
+                  <option value="{{ paralelo.id }}" data-grado="{{ paralelo.grado_id }}">{{ paralelo.nombre }} ({{ paralelo.grado.nombre|default:'' }})</option>
                 {% endfor %}
               </select>
             </div>
@@ -849,30 +849,134 @@ $(document).ready(function() {
 // Función para actualizar los paralelos cuando se selecciona un grado
 function actualizarParalelos(gradoId, paraleloId = '') {
     if (gradoId) {
-        fetch(`/paralelos/por-grado/${gradoId}/`)
-            .then(response => response.json())
+        // Mostrar indicador de carga
+        const select = $('.select-paralelo');
+        select.prop('disabled', true);
+        select.html('<option value="">Cargando paralelos...</option>');
+        
+        // Hacer la petición AJAX a la vista cargar_paralelos
+        fetch(`/cargar-paralelos/?grado_id=${gradoId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al cargar los paralelos');
+                }
+                return response.json();
+            })
             .then(data => {
-                const select = $('.select-paralelo');
                 select.empty();
-                select.append('<option value="">-- Seleccione --</option>');
-                data.paralelos.forEach(paralelo => {
-                    select.append(`<option value="${paralelo.id}" ${paralelo.id == paraleloId ? 'selected' : ''}>${paralelo.nombre}</option>`);
-                });
+                select.append('<option value="">-- Seleccione un paralelo --</option>');
+                
+                if (data.paralelos && data.paralelos.length > 0) {
+                    data.paralelos.forEach(paralelo => {
+                        select.append(`<option value="${paralelo.id}" ${paralelo.id == paraleloId ? 'selected' : ''}>${paralelo.nombre}</option>`);
+                    });
+                } else {
+                    select.append('<option value="" disabled>No hay paralelos para este grado</option>');
+                }
+                
+                // Si hay un paraleloId específico, seleccionarlo
+                if (paraleloId) {
+                    select.val(paraleloId).trigger('change');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                select.empty();
+                select.append(`<option value="" disabled>Error al cargar los paralelos</option>`);
+            })
+            .finally(() => {
+                select.prop('disabled', false);
+                select.trigger('change');
             });
+    } else {
+        // Si no hay grado seleccionado, limpiar y deshabilitar el select de paralelos
+        const select = $('.select-paralelo');
+        select.empty();
+        select.append('<option value="">-- Seleccione un grado primero --</option>');
     }
 }
 
 // Inicializar el select2 para los select de grado y paralelo
 $(document).ready(function() {
+    // Inicializar select2
     $('.select-grado, .select-paralelo').select2({
         theme: 'bootstrap4',
         width: '100%'
     });
 
-    // Actualizar paralelos cuando cambia el grado
-    $('.select-grado').on('change', function() {
-        const gradoId = $(this).val();
-        actualizarParalelos(gradoId);
+    // Función para manejar el cambio de grado
+    function manejarCambioGrado() {
+        const gradoSelect = $('.select-grado');
+        const gradoId = gradoSelect.val();
+        const gradoNombre = gradoSelect.find('option:selected').text().trim().toUpperCase();
+        const paraleloSelect = $('.select-paralelo');
+        
+        // Limpiar opciones actuales
+        paraleloSelect.empty();
+        
+        // Si no hay grado seleccionado, mostrar mensaje
+        if (!gradoId) {
+            paraleloSelect.append('<option value="">-- Seleccione un grado --</option>');
+            paraleloSelect.trigger('change');
+            return;
+        }
+        
+        // Mostrar mensaje de carga
+        paraleloSelect.append('<option value="" disabled>Cargando paralelos...</option>');
+        paraleloSelect.prop('disabled', true);
+        
+        // Obtener los paralelos para el grado seleccionado
+        fetch(`/cargar-paralelos/?grado_id=${gradoId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                return response.json();
+            })
+            .then(data => {
+                const paralelos = data.paralelos || [];
+                
+                // Limpiar el select
+                paraleloSelect.empty();
+                
+                if (paralelos.length === 0) {
+                    paraleloSelect.append('<option value="">No hay paralelos para este grado</option>');
+                    return;
+                }
+                
+                // Agregar opción por defecto
+                paraleloSelect.append('<option value="">-- Seleccione un paralelo --</option>');
+                
+                // Agregar cada paralelo con el formato: GRADO (LETRA)
+                paralelos.forEach(paralelo => {
+                    const letraParalelo = paralelo.nombre.trim().toUpperCase();
+                    const textoMostrar = `${gradoNombre} (${letraParalelo})`;
+                    paraleloSelect.append(`<option value="${paralelo.id}">${textoMostrar}</option>`);
+                });
+                
+                // Seleccionar el primer paralelo por defecto
+                if (paralelos.length === 1) {
+                    paraleloSelect.val(paralelos[0].id);
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar paralelos:', error);
+                paraleloSelect.empty();
+                paraleloSelect.append('<option value="">Error al cargar los paralelos</option>');
+            })
+            .finally(() => {
+                paraleloSelect.prop('disabled', false);
+                paraleloSelect.trigger('change');
+            });
+    }
+
+    // Manejar cambio de grado
+    $('.select-grado').on('change', manejarCambioGrado);
+    
+    // Cargar paralelos automáticamente al abrir el modal si ya hay un grado seleccionado
+    $('#modalAgregarEstudiante').on('shown.bs.modal', function() {
+        const gradoId = $('.select-grado').val();
+        if (gradoId) {
+            manejarCambioGrado();
+        }
     });
 
     // Configurar DataTables

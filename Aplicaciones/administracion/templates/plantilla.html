@@ -510,9 +510,18 @@
       </div>
     </footer>
 
-    <!-- jQuery -->
+    <!-- jQuery y dependencias -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script>
+      // Evitar conflictos con otras versiones de jQuery
+      if (window.jQuery && !window.jQuery.fn.select2) {
+        // Cargar Select2 solo si no está ya cargado
+        document.write('<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />');
+        document.write('<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"><\/script>');
+        document.write('<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"><\/script>');
+      }
+    </script>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 

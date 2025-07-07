@@ -74,9 +74,10 @@
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
                     <td>
-                      <div class="password-container">
-                        <span class="password-text" data-password="{{ usuario.plain_password }}">{{ usuario.plain_password }}</span>
-                        <button type="button" class="toggle-password">
+                      <div class="d-flex align-items-center">
+                        <span id="pwd-{{ forloop.counter }}" data-password="{{ usuario.plain_password }}">••••••••</span>
+                        <button type="button" class="btn btn-sm btn-link p-0 ml-2 toggle-password" 
+                                data-target="pwd-{{ forloop.counter }}">
                           <i class="fas fa-eye"></i>
                         </button>
                       </div>
@@ -350,12 +351,44 @@
 
 {% endblock contenido %}
 
+<script>
+// Función para alternar la visibilidad de la contraseña
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordSpan = document.getElementById(targetId);
+            const password = passwordSpan.getAttribute('data-password');
+            const icon = this.querySelector('i');
+            
+            if (passwordSpan.textContent === '••••••••') {
+                // Mostrar la contraseña
+                passwordSpan.textContent = password;
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                // Ocultar la contraseña
+                passwordSpan.textContent = '••••••••';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+});
+</script>
+
 {% block javascript %}
 {{ block.super }}
 <script>
 // Usar una función autoejecutable para evitar conflictos
 (function($) {
     $(document).ready(function() {
+        // Inicializar tooltips
+        $('[data-toggle-tooltip="tooltip"]').tooltip({
+            trigger: 'hover',
+            animation: true,
+            delay: {"show": 300, "hide": 100}
+        });
         // Inicializar tooltips primerorol
         $('[data-toggle-tooltip="tooltip"]').tooltip({
             trigger: 'hover',

@@ -574,8 +574,10 @@ def agregar_estudiante(request):
                 paralelo = Paralelo.objects.get(id=paralelo_id)
                 
                 # Verificar que el paralelo pertenezca al grado
-                if paralelo.grado_id != grado_id:
+                if int(paralelo.grado_id) != int(grado_id):
                     messages.error(request, f'El paralelo {paralelo.nombre} no pertenece al grado {grado.nombre}')
+                    # Agregar información de depuración
+                    print(f"[DEBUG] Error de validación - Grado ID: {grado_id} (tipo: {type(grado_id)}), Paralelo Grado ID: {paralelo.grado_id} (tipo: {type(paralelo.grado_id)})")
                     return redirect('gestion_padron')
                 
                 # Crear el estudiante
