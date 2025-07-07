@@ -1,5 +1,4 @@
 {% load static %}
-{% load avatar_utils %}
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
   <head>
@@ -110,11 +109,7 @@
               <li class="dropdown dropdown-user nav-item">
                 <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
                   <span class="avatar avatar-online">
-                    {% if user.imagen %}
-                      <img src="{{ user.imagen.url }}" alt="{{ user.get_full_name }}">
-                    {% else %}
-                      <img src="{% user_avatar user %}" alt="{{ user.get_full_name }}" style="border-radius: 4px;">
-                    {% endif %}
+                    <img src="{% if user.imagen %}{{ user.imagen.url }}{% else %}{% static 'plantillas/theme-assets/images/portrait/small/avatar-s-19.png' %}{% endif %}" alt="avatar">
                     <i></i>
                   </span>
                 </a>
