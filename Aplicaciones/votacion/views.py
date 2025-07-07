@@ -352,7 +352,7 @@ def registrar_voto(request, proceso_id):
         
         # Enviar el correo con el comprobante
         from .utils import enviar_comprobante_email
-        enviar_comprobante_email(carnet, request)
+        enviar_comprobante_email(carnet)
         
         messages.success(request, '¡Su voto ha sido registrado exitosamente! Se ha enviado un correo con su comprobante de votación.')
         return redirect('administracion:index')

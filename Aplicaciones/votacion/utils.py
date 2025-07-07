@@ -97,7 +97,7 @@ def generar_carnet_votacion(voto):
     return carnet
 
 
-def enviar_comprobante_email(carnet):
+def enviar_comprobante_email(carnet, request=None):
     """
     Envía el comprobante de votación por correo electrónico al votante
     """
@@ -107,7 +107,6 @@ def enviar_comprobante_email(carnet):
         from django.template.loader import render_to_string
         from django.utils.html import strip_tags
         from email.mime.image import MIMEImage
-        import os
         
         # Obtener el correo del votante
         email_destino = carnet.voto.votante.correo
@@ -163,18 +162,6 @@ def enviar_comprobante_email(carnet):
                     email.attach(logo)
             except Exception as e:
                 print(f'Error al adjuntar el logo: {str(e)}')
-        
-        # Adjuntar el código QR
-        if hasattr(carnet, 'codigo_qr'):
-            try:
-                # Extraer los datos base64 del código QR
-                qr_data = carnet.codigo_qr.split('base64,')[1]
-                qr_bytes = base64.b64decode(qr_data)
-                qr_image = MIMEImage(qr_bytes)
-                qr_image.add_header('Content-ID', '<codigo_qr>')
-                email.attach(qr_image)
-            except Exception as e:
-                print(f'Error al adjuntar el código QR: {str(e)}')
         
         # Enviar el correo
         email.send(fail_silently=False)
