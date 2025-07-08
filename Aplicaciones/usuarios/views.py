@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from .models import Roles, Usuarios
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,12 +16,74 @@ from django.contrib.auth.hashers import make_password
 
 
 
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth
+from django.utils import timezone
+
+#CREAMOS LAS CONSULTAS PARA GRAFICAR EL TOTAL DE ESTUDIANTES
+#TAMBIEN PODER HACER OTROS CAMBIOS
 def dashboard(request):
+    # Obtener totales
+    total_usuarios = Usuarios.objects.count()
+    total_estudiantes = PadronElectoral.objects.count()
+    
+    # Obtener el rango de fechas de los últimos 6 meses
+    from datetime import datetime, timedelta
+    from django.db.models.functions import TruncMonth
+    
+    # Obtener la fecha actual y calcular los últimos 6 meses
+    ahora = timezone.now()
+    seis_meses_atras = ahora - timedelta(days=180)
+    
+    # Obtener los conteos por mes usando annotate
+    datos_mensuales = PadronElectoral.objects.filter(
+        fecha_registro__gte=seis_meses_atras
+    ).annotate(
+        mes=TruncMonth('fecha_registro')
+    ).values('mes').annotate(
+        total=Count('id')
+    ).order_by('mes')
+    
+    # Crear un diccionario con los datos mensuales
+    datos_por_mes = {}
+    for dato in datos_mensuales:
+        mes = dato['mes'].strftime('%b')
+        datos_por_mes[mes] = dato['total']
+    
+    # Generar la lista de los últimos 6 meses
+    meses = []
+    estudiantes_por_mes = []
+    
+    for i in range(5, -1, -1):
+        fecha = ahora - timedelta(days=30*i)
+        mes_nombre = fecha.strftime('%b')
+        meses.append(mes_nombre)
+        estudiantes_por_mes.append(datos_por_mes.get(mes_nombre, 0))
+    
+    # Crear lista de diccionarios para la plantilla
+    estadisticas = []
+    for mes, total in zip(meses, estudiantes_por_mes):
+        estadisticas.append({
+            'mes': mes,
+            'total': total
+        })
+    
+    # Agregar datos de depuración
+    print("Datos de estadísticas:", estadisticas)
+    print("Total usuarios:", total_usuarios)
+    print("Total estudiantes:", total_estudiantes)
+    
     context = {
-        'total_usuarios': Usuarios.objects.count(),
-        'total_estudiantes': PadronElectoral.objects.count(),
+        'total_usuarios': total_usuarios,
+        'total_estudiantes': total_estudiantes,
+        'total_votantes': 0,  # Actualizar si es necesario
+        'estadisticas_estudiantes': estadisticas,
+        'chart_labels': json.dumps(meses),
+        'chart_data': json.dumps(estudiantes_por_mes),
+        'debug': True  # Habilitar modo depuración
     }
     return render(request, 'rol/dashboard.html', context)
+
 
 #CREAMOS LAS VIEWS PARA LOS ROLES
 

@@ -1,57 +1,301 @@
 {% extends 'plantilla.html' %}
 
 {% block contenido %}
-<!-- Chart -->
-<div class="row match-height">
-  <div class="col-12">
-    <div class="">
-      <div id="gradient-line-chart1" class="height-250 GradientlineShadow1"></div>
-    </div>
-  </div>
-</div>
-<!-- Chart -->
-<!-- User statistics -->
-<div class="row">
-  <div class="col-xl-4 col-lg-6 col-md-12">
-    <div class="card pull-up ecom-card-1 bg-white">
-      <div class="card-content ecom-card2 height-180">
-        <h5 class="text-muted danger position-absolute p-1">Usuarios Registrados</h5>
-        <div>
-          <i class="ft-user danger font-large-1 float-right p-1"></i>
-        </div>
-        <div class="height-75 position-relative pt-3 text-center">
-          <h1 class="danger">{{ total_usuarios }}</h1>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-lg-6 col-md-12">
-    <div class="card pull-up ecom-card-1 bg-white">
-        <div class="card-content ecom-card2 height-180">
-            <h5 class="text-muted info position-absolute p-1">Estudiantes</h5>
-            <div>
-                <i class="ft-book info font-large-1 float-right p-1"></i>
-            </div>
-            <div class="height-75 position-relative pt-3 text-center">
-                <h1 class="info">{{ total_estudiantes }}</h1>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-lg-12">
-    <div class="card pull-up ecom-card-1 bg-white">
-        <div class="card-content ecom-card2 height-180">
-            <h5 class="text-muted warning position-absolute p-1">Votantes</h5>
-            <div>
-                <i class="ft-check-square warning font-large-1 float-right p-1"></i>
-            </div>
-            <div class="height-75 position-relative pt-3 text-center">
-                <h1 class="warning">{{ total_votantes }}</h1>
-            </div>
-        </div>
-    </div>
-  </div>
-</div>
-<!--/ Statistics -->
 
+<!-- Sección de Tarjetas Principales -->
+<div class="row">
+    <!-- Tarjeta de Total de Estudiantes -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Estudiantes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_estudiantes }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Usuarios -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Usuarios</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_usuarios }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Progreso de Registro -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Progreso de Registro</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">75%</div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" 
+                                 style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Meta: 200 estudiantes</small>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget del Clima -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Clima en Riobamba</div>
+                        <div class="weather-widget">
+                            <div class="weather-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="weather-info">
+                                <div class="temperature">22°C</div>
+                                <div class="condition">Soleado</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-cloud-sun fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Actividad Reciente -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Actividad Reciente</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No hay datos de actividad reciente disponibles en este momento.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Accesos Rápidos -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Accesos Rápidos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-primary btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span class="text">Nuevo Estudiante</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-success btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-file-export"></i>
+                            </span>
+                            <span class="text">Generar Reporte</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-info btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <span class="text">Buscar Estudiante</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-warning btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-cog"></i>
+                            </span>
+                            <span class="text">Configuración</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<style>
+/* Estilos para el widget del clima */
+.weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.weather-icon {
+    font-size: 2.5rem;
+    color: #f6c23e;
+}
+
+.weather-info {
+    line-height: 1.2;
+}
+
+.temperature {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5a5c69;
+}
+
+.condition {
+    font-size: 0.8rem;
+    color: #858796;
+}
+
+/* Estilos para la barra de progreso animada */
+@keyframes progress-bar-stripes {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+/* Estilos para las tarjetas */
+.btn-icon-split {
+    padding: 0.5rem 1rem;
+    border-radius: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-icon-split .icon {
+    width: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+</style>
+{% endblock %}
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table td, .table th {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+/* Estilos para la tarjeta */
+.card {
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1.25rem 1.5rem;
+}
+
+.card-title {
+    margin-bottom: 0;
+    color: #4e73df;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Estilos para mensajes de error */
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+</style>

@@ -167,7 +167,7 @@
       <div class="navbar-header">
         <ul class="nav navbar-nav flex-row">
           <li class="nav-item mr-auto">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="">
               <img class="brand-logo" alt="LOGO FONDO"
                    src="{% if logo_config and logo_config.logo_1 %}{{ logo_config.logo_1.url }}{% else %}{% static 'images/logo1.png' %}{% endif %}"/>
               <h3 class="brand-text">
@@ -234,9 +234,7 @@
                 <i class="ft-activity"></i><span class="menu-title">Noticias</span>
               </a>
               <ul class="menu-content">
-                <li><a class="menu-item" href="{% url 'noticias:listar_categorias' %}">Listar Categorias</a></li>
-                <li><a class="menu-item" href="{% url 'noticias:listar_noticias' %}">Listar Noticias</a></li>
-                <li><a class="menu-item" href="{% url 'noticias:agregar_noticia' %}">Agregar Noticia</a></li>
+                <li><a class="menu-item" href="{% url 'noticias:listar_noticias' %}">Ver Noticias</a></li>
               </ul>
             </li>
 
@@ -546,7 +544,7 @@
 
     <footer class="footer footer-static footer-light navbar-border navbar-shadow">
       <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
-        <span class="float-md-left d-block d-md-inline-block">2018  &copy; Copyright <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank">ThemeSelection</a></span>
+        <span class="float-md-left d-block d-md-inline-block">2025  &copy; Copyright <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank">Desarrollo de Software</a></span>
         <ul class="list-inline float-md-right d-block d-md-inline-blockd-none d-lg-block mb-0">
           <li class="list-inline-item"><a class="my-1" href="https://themeselection.com/" target="_blank"> More themes</a></li>
           <li class="list-inline-item"><a class="my-1" href="https://themeselection.com/support" target="_blank"> Support</a></li>
