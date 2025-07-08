@@ -137,6 +137,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'sistema_voto_ue_riobamba', 'static'),
     os.path.join(BASE_DIR, 'Aplicaciones', 'administracion', 'static'),
+    os.path.join(BASE_DIR, 'Aplicaciones', 'padron', 'static'),
 ]
 
 # Ignorar archivos .map en desarrollo

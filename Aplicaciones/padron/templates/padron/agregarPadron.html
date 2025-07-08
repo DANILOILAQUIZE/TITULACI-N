@@ -1,4 +1,11 @@
 {% extends 'plantilla.html' %}
+{% load static %}
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Spinner Loader CSS -->
+
 
 {% block contenido %}
 <br>
@@ -58,9 +65,9 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarEstudiante">
               <i class="la la-plus"></i> Nuevo 
             </button>
-            <form action="{% url 'generar_credenciales' %}" method="post" class="d-inline">
+            <form action="{% url 'generar_credenciales' %}" method="post" class="d-inline" id="formEnviarCredenciales">
               {% csrf_token %}
-              <button type="submit" class="btn btn-info">
+              <button type="submit" class="btn btn-info" id="btnEnviarCredenciales">
                 <i class="la la-key"></i> Enviar credenciales
               </button>
             </form>
@@ -732,6 +739,8 @@
   </div>
 </div>
 
+<!-- Spinner en pantalla completa -->
+
 {% endblock %}
 
 {% block scripts %}
@@ -995,5 +1004,52 @@ $(document).ready(function() {
         table.search(this.value).draw();
     });
 });
+</script>
+
+<style>
+#spinnerOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+}
+.loading-gif {
+  width: 200px;
+  height: 200px;
+  border-radius: 25px;
+}
+</style>
+<div id="spinnerOverlay">
+  <img src="{% static 'padron/img/loading.gif' %}" alt="Cargando..." class="loading-gif">
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEnviarCredenciales');
+    const spinnerOverlay = document.getElementById('spinnerOverlay');
+    if (form && spinnerOverlay) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Mostrar notificación discreta tipo toast
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: 'Generando credenciales...',
+          text: 'Este proceso puede tardar unos momentos',
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true
+        });
+        
+        // Mostrar spinner inmediatamente
+        spinnerOverlay.style.display = 'flex';
+        setTimeout(() => { form.submit(); }, 100);
+      });
+    }
+  });
 </script>
 {% endblock %}
