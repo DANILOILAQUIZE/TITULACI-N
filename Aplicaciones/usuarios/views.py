@@ -133,8 +133,8 @@ def guardarUsuario(request):
                     username=cedula,
                     email=email,
                     password=password_aleatoria,
-                    first_name=nombre,
-                    last_name=apellido,
+                    nombre=nombre,  # Usando el campo personalizado
+                    apellido=apellido,  # Usando el campo personalizado
                     id_rol_id=id_rol,
                     activo=activo,
                     plain_password=password_aleatoria
@@ -202,17 +202,30 @@ def editarUsuario(request, usuario_id):
     
     if request.method == 'POST':
         try:
+            # Actualizar campos personalizados
             usuario.nombre = request.POST.get('nombre')
             usuario.apellido = request.POST.get('apellido', '')
+            
+            # Actualizar campos estándar de Django
+            usuario.first_name = request.POST.get('nombre', '')
+            usuario.last_name = request.POST.get('apellido', '')
+            
+            # Actualizar el resto de campos
             usuario.email = request.POST.get('email')
             usuario.username = request.POST.get('username')
+            
+            # Actualizar contraseña si se proporciona
             password = request.POST.get('password')
-            if password:  # Solo actualizar contraseña si se proporciona
+            if password:
                 usuario.set_password(password)
+                
             usuario.id_rol_id = request.POST.get('id_rol')
             usuario.activo = request.POST.get('activo', 'off') == 'on'
+            
+            # Actualizar imagen si se proporciona
             if 'imagen' in request.FILES:
                 usuario.imagen = request.FILES['imagen']
+                
             usuario.save()
             messages.success(request, 'Usuario actualizado con éxito.')
         except Exception as e:

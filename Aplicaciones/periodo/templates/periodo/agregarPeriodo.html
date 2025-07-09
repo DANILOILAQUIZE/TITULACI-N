@@ -53,9 +53,9 @@
                                                 data-placement="top">
                                             <i class="la la-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger" 
-                                                data-toggle="modal"
-                                                data-target="#eliminarPeriodoModal{{ periodo.id }}"
+                                        <button class="btn btn-sm btn-outline-danger btn-eliminar-periodo" 
+                                                data-periodo-id="{{ periodo.id }}"
+                                                data-periodo-nombre="{{ periodo.nombre|escapejs }}"
                                                 title="Eliminar"
                                                 data-toggle-tooltip="tooltip"
                                                 data-placement="top">
@@ -252,5 +252,50 @@
         }
     });
 })(jQuery);
+
+// SweetAlert2 elegante para eliminar períodos
+$(document).ready(function() {
+    $('.btn-eliminar-periodo').on('click', function(e) {
+        e.preventDefault();
+        const periodoId = $(this).data('periodo-id');
+        const periodoNombre = $(this).data('periodo-nombre');
+        
+        // Mostrar SweetAlert2 elegante
+        Swal.fire({
+            title: '¿Eliminar Período?',
+            text: `¿Desea eliminar el período "${periodoNombre}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                confirmButton: 'btn btn-danger me-2',
+                cancelButton: 'btn btn-secondary'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Crear formulario dinámico
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{% url 'eliminar_periodo' 0 %}`.replace('0', periodoId);
+                
+                // Agregar token CSRF
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Agregar al DOM y enviar
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

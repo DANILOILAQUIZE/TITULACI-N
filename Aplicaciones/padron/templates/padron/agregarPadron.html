@@ -122,9 +122,10 @@
                         <i class="la la-edit"></i>
                       </button>
                       <!-- Botón Eliminar -->
-                      <button class="btn btn-sm btn-outline-danger" 
-                              data-toggle="modal"
-                              data-target="#eliminarEstudianteModal{{ estudiante.id }}"
+                      <button class="btn btn-sm btn-outline-danger btn-eliminar-estudiante" 
+                              data-estudiante-id="{{ estudiante.id }}"
+                              data-estudiante-nombre="{{ estudiante.nombre|escapejs }} {{ estudiante.apellidos|escapejs }}"
+                              data-estudiante-cedula="{{ estudiante.cedula|escapejs }}"
                               title="Eliminar"
                               data-toggle-tooltip="tooltip"
                               data-placement="top">
@@ -1050,6 +1051,52 @@ $(document).ready(function() {
         setTimeout(() => { form.submit(); }, 100);
       });
     }
+  });
+
+  // SweetAlert2 elegante para eliminar estudiantes del padrón
+  $(document).ready(function() {
+    $('.btn-eliminar-estudiante').on('click', function(e) {
+      e.preventDefault();
+      const estudianteId = $(this).data('estudiante-id');
+      const estudianteNombre = $(this).data('estudiante-nombre');
+      const estudianteCedula = $(this).data('estudiante-cedula');
+      
+      // Mostrar SweetAlert2 elegante
+      Swal.fire({
+        title: '¿Eliminar Estudiante?',
+        text: `¿Desea eliminar al estudiante "${estudianteNombre}" (Cédula: ${estudianteCedula})?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          confirmButton: 'btn btn-danger me-2',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Crear formulario dinámico
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `{% url 'eliminar_estudiante' 0 %}`.replace('0', estudianteId);
+          
+          // Agregar token CSRF
+          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = csrfToken;
+          form.appendChild(csrfInput);
+          
+          // Agregar al DOM y enviar
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    });
   });
 </script>
 {% endblock %}

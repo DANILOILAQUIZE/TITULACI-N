@@ -14,26 +14,27 @@
     </div>
     <nav class="navbar navbar-light bg-light border rounded shadow-sm">
         <div class="container-fluid justify-content-around">
-          <a href="{% url 'agregarrol' %}" class="text-decoration-none text-center position-relative">
-            <div class="position-relative">
-              <i class="la la-user-shield text-primary fs-2 d-block"></i>
-              <span class="position-absolute" style="top: -15px; left: 70%; z-index: 1000;">
-                <i class="fas fa-hand-point-left" style="font-size: 2rem; transform: scaleX(-1) rotate(-30deg); color: #1cbed3e6;"></i>
-              </span>
-            </div>
-            <div>
-              <strong class="d-block">Roles</strong>
-              <small class="text-muted">Crear, editar, eliminar</small>
-            </div>
-          </a>
-      
-          <a href="{% url 'agregarUsuario' %}" class="text-decoration-none text-center">
-            <i class="la la-users-cog text-muted fs-2 d-block"></i>
-            <div>
-              <strong class="d-block">Usuarios</strong>
-              <small class="text-muted">Asignar roles y accesos</small>
-            </div>
-          </a>
+            <a href="{% url 'agregarrol' %}" class="text-decoration-none text-center position-relative">
+                <div class="position-relative">
+                    <i class="la la-user-shield text-primary fs-2 d-block"></i>
+                    <span class="position-absolute" style="top: -15px; left: 70%; z-index: 1000;">
+                        <i class="fas fa-hand-point-left"
+                            style="font-size: 2rem; transform: scaleX(-1) rotate(-30deg); color: #1cbed3e6;"></i>
+                    </span>
+                </div>
+                <div>
+                    <strong class="d-block">Roles</strong>
+                    <small class="text-muted">Crear, editar, eliminar</small>
+                </div>
+            </a>
+
+            <a href="{% url 'agregarUsuario' %}" class="text-decoration-none text-center">
+                <i class="la la-users-cog text-muted fs-2 d-block"></i>
+                <div>
+                    <strong class="d-block">Usuarios</strong>
+                    <small class="text-muted">Asignar roles y accesos</small>
+                </div>
+            </a>
         </div>
     </nav>
 </div>
@@ -79,8 +80,8 @@
 
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                data-toggle="modal" data-target="#editarRolModal{{ rol.id }}" 
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                data-toggle="modal" data-target="#editarRolModal{{ rol.id }}"
                                                 title="Editar" data-toggle-tooltip="tooltip" data-placement="top">
                                                 <i class="la la-edit"></i>
                                             </button>
@@ -107,7 +108,8 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <p>¿Estás seguro de que deseas eliminar el rol <strong>{{ rol.nombre_rol|default:'' }}</strong>?</p>
+                                                        <p>¿Estás seguro de que deseas eliminar el rol <strong>{{
+                                                                rol.nombre_rol|default:'' }}</strong>?</p>
                                                         <p class="text-danger">Esta acción no se puede deshacer.</p>
                                                     </div>
                                                     <div class="form-group text-center mt-4 mb-3">
@@ -166,7 +168,9 @@
                                                             <i class="la la-save"></i> GUARDAR
                                                         </button>
                                                         &nbsp;&nbsp;
-                                                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                                                        <button type="button"
+                                                            class="btn btn-secondary rounded-pill px-4"
+                                                            data-dismiss="modal">
                                                             <i class="la la-times"></i> CANCELAR
                                                         </button>
                                                     </div>
