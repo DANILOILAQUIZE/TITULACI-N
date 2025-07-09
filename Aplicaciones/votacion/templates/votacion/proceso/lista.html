@@ -46,15 +46,50 @@
                                        data-placement="top">
                                         <i class="la la-edit"></i>
                                     </a>
-                                    <!-- Botón Eliminar -->
-                                    <a href="{% url 'votacion:eliminar_proceso' proceso.id %}" 
-                                       class="btn btn-sm btn-outline-danger mx-1"
-                                       title="Eliminar"
-                                       data-toggle-tooltip="tooltip"
-                                       data-placement="top"
-                                       onclick="return confirm('¿Estás seguro de eliminar este proceso electoral?');">
+                                    <!-- Botón Eliminar con Modal -->
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger mx-1"
+                                            data-toggle="modal" 
+                                            data-target="#eliminarProcesoModal{{ proceso.id }}"
+                                            title="Eliminar"
+                                            data-toggle-tooltip="tooltip"
+                                            data-placement="top">
                                         <i class="la la-trash"></i>
-                                    </a>
+                                    </button>
+
+                                    <!-- Modal de Confirmación de Eliminación -->
+                                    <div class="modal fade" id="eliminarProcesoModal{{ proceso.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        <i class="la la-exclamation-triangle text-danger"></i>
+                                                        Confirmar Eliminación
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <i class="la la-exclamation-triangle text-warning" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                                    <h5 class="mb-3">¿Eliminar proceso <span class="text-primary">{{ proceso.nombre }}</span>?</h5>
+                                                    <p class="text-muted">Este proceso electoral será eliminado permanentemente del sistema.</p>
+                                                    <p class="text-danger font-weight-bold"><i class="la la-exclamation-triangle"></i> Esta acción no se puede deshacer.</p>
+                                                </div>
+                                                <div class="form-group text-center mt-2 mb-4">
+                                                    <form method="POST" action="{% url 'votacion:eliminar_proceso' proceso.id %}" style="display: inline-block;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger rounded-pill px-4 mr-2">
+                                                            <i class="la la-trash"></i> ELIMINAR
+                                                        </button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal">
+                                                        <i class="la la-times"></i> CANCELAR
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

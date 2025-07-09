@@ -1,34 +1,60 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.db.models import Count
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, F
 from Aplicaciones.votacion.models import ProcesoElectoral, Voto
 from Aplicaciones.elecciones.models import Lista
 from Aplicaciones.padron.models import PadronElectoral
 
+@login_required
 def resultados_votacion(request, proceso_id):
     proceso = get_object_or_404(ProcesoElectoral, id=proceso_id)
     
-    # Obtener votos por lista
+    # Verificar si el proceso ha finalizado (estado 'finalizado')
+    if proceso.estado != 'finalizado':
+        messages.warning(request, 'Los resultados solo están disponibles para procesos electorales finalizados.')
+        return redirect('votacion:lista_procesos')  # Redirigir a la lista de procesos en la app de votación
+    
+    # Obtener votos por lista ordenados de mayor a menor
     votos_por_lista = Voto.objects.filter(
         proceso_electoral=proceso,
         lista__isnull=False
-    ).values('lista').annotate(total=Count('id'))
+    ).values('lista').annotate(
+        total=Count('id'),
+        nombre_lista=F('lista__nombre_lista')
+    ).order_by('-total')
     
     # Obtener total de votos
     total_votos = Voto.objects.filter(proceso_electoral=proceso).count()
     votos_blancos = Voto.objects.filter(proceso_electoral=proceso, es_blanco=True).count()
     votos_nulos = Voto.objects.filter(proceso_electoral=proceso, es_nulo=True).count()
     
-    # Calcular porcentajes
+    # Calcular porcentajes y determinar ganador
     resultados_por_lista = []
+    ganador = None
+    max_votos = 0
+    
     for voto in votos_por_lista:
         lista = Lista.objects.get(id=voto['lista'])
         porcentaje = (voto['total'] / total_votos * 100) if total_votos > 0 else 0
-        resultados_por_lista.append({
+        resultado = {
             'lista': lista,
             'votos': voto['total'],
-            'porcentaje': porcentaje
-        })
+            'porcentaje': porcentaje,
+            'es_ganador': False
+        }
+        
+        # Verificar si es el ganador actual
+        if voto['total'] > max_votos:
+            max_votos = voto['total']
+            if ganador is not None:
+                # Quitar condición de ganador del anterior
+                for r in resultados_por_lista:
+                    r['es_ganador'] = False
+            resultado['es_ganador'] = True
+            ganador = lista
+        
+        resultados_por_lista.append(resultado)
     
     # Calcular porcentajes de blancos y nulos
     porcentaje_blancos = (votos_blancos / total_votos * 100) if total_votos > 0 else 0
@@ -42,6 +68,8 @@ def resultados_votacion(request, proceso_id):
     context = {
         'proceso': proceso,
         'resultados_por_lista': resultados_por_lista,
+        'ganador': ganador,
+        'votos_ganador': max_votos,
         'votos_blancos': votos_blancos,
         'votos_nulos': votos_nulos,
         'porcentaje_blancos': porcentaje_blancos,

@@ -108,15 +108,21 @@
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
                             <div class="modal-header">
-                              <h5 class="modal-title" id="eliminarUsuarioModalLabel{{ usuario.id }}">Confirmar Eliminación</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <h5 class="modal-title">
+                                <i class="la la-exclamation-triangle text-danger"></i>
+                                Confirmar Eliminación
+                              </h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
-                            <div class="modal-body">
-                              ¿Estás seguro de que deseas eliminar al usuario <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>? Esta acción no se puede deshacer.
+                            <div class="modal-body text-center">
+                              <i class="la la-exclamation-triangle text-warning" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                              <h5 class="mb-3">¿Eliminar a <span class="text-primary">{{ usuario.nombre }} {{ usuario.apellido }}</span>?</h5>
+                              <p class="text-muted">El usuario será eliminado permanentemente del sistema.</p>
+                              <p class="text-danger font-weight-bold"><i class="la la-exclamation-triangle"></i> Esta acción no se puede deshacer.</p>
                             </div>
-                            <div class="form-group text-center mt-4 mb-3">
+                            <div class="form-group text-center mt-2 mb-4">
                               <form method="POST" action="{% url 'eliminarUsuario' usuario.id %}" style="display: inline-block;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger rounded-pill px-4 mr-2">

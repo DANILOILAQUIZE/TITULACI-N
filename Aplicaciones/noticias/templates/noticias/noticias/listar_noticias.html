@@ -2,6 +2,27 @@
 {% load static %}
 
 {% block contenido %}
+<style>
+    /* Estilos mínimos para el modal de confirmación */
+    .modal-confirmacion .modal-dialog {
+        max-width: 400px;
+        margin: 1.75rem auto;
+    }
+    .modal-confirmacion .modal-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .modal-confirmacion .titulo-noticia {
+        font-weight: 500;
+        margin: 10px 0;
+        word-break: break-word;
+        color: #333;
+    }
+    .modal-confirmacion .alert {
+        border-radius: 4px;
+        text-align: left;
+    }
+</style>
 <div class="container-fluid">
     <!-- Barra de navegación tipo pestañas -->
     <div class="card mb-3">
@@ -134,30 +155,27 @@
                                         </div>
                                         
                                         <!-- Modal de confirmación para eliminar -->
-                                        <div class="modal fade" id="modalEliminarNoticia{{ noticia.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal fade modal-confirmacion" id="modalEliminarNoticia{{ noticia.id }}" tabindex="-1" role="dialog" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Confirmar eliminación</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
                                                     <div class="modal-body">
-                                                        ¿Estás seguro de que deseas eliminar la noticia "{{ noticia.titulo }}"?
-                                                        <p class="text-danger mt-2">
-                                                            <i class="la la-warning"></i> Esta acción no se puede deshacer.
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                                        <form action="{% url 'noticias:eliminar_noticia' noticia.id %}" method="POST" class="d-inline">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger">
-                                                                <i class="la la-trash"></i> Eliminar
+                                                        <h5 class="text-center mb-3">¿Eliminar noticia?</h5>
+                                                        <p class="titulo-noticia text-center">{{ noticia.titulo|truncatechars:60 }}</p>
+                                                        <div class="alert alert-warning py-2 px-3 mt-3 mb-2" style="font-size: 0.9rem;">
+                                                            <i class="la la-exclamation-triangle mr-1"></i>
+                                                            Esta acción no se puede deshacer.
+                                                        </div>
+                                                        <div class="text-center mt-4">
+                                                            <form action="{% url 'noticias:eliminar_noticia' noticia.id %}" method="POST" class="d-inline">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                                    <i class="la la-trash"></i> Eliminar
+                                                                </button>
+                                                            </form>
+                                                            <button type="button" class="btn btn-sm btn-secondary ml-2" data-dismiss="modal">
+                                                                Cancelar
                                                             </button>
-                                                        </form>
-                                                    </div>
+                                                        </div>
                                                 </div>
                                             </div>
                                         </div>

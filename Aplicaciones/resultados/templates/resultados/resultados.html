@@ -1,65 +1,455 @@
 {% extends "plantilla.html" %}
 {% load static %}
+{% block extra_js %}
+<!-- Bibliotecas para generación de PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    // Inicializar jsPDF
+    const { jsPDF } = window.jspdf;
+    
+    // Función para generar PDF
+    function generarPDF() {
+        // Mostrar mensaje de carga
+        const boton = event.target;
+        const textoOriginal = boton.innerHTML;
+        boton.disabled = true;
+        boton.innerHTML = '<i class="la la-spinner la-spin"></i> Generando PDF...';
+        
+        // Capturar la sección de resultados
+        const element = document.querySelector('.print-section');
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: `Resultados_${new Date().toISOString().split('T')[0]}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                logging: true,
+                letterRendering: true,
+                allowTaint: true
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Usar html2canvas para capturar el contenido
+        html2canvas(element, opt.html2canvas).then(canvas => {
+            // Crear PDF
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // Margen de 10mm cada lado
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            // Agregar imagen al PDF
+            pdf.addImage(imgData, 'JPEG', 10, 10, pdfWidth, pdfHeight);
+            
+            // Guardar el PDF
+            pdf.save(opt.filename);
+            
+            // Restaurar el botón
+            boton.disabled = false;
+            boton.innerHTML = textoOriginal;
+        }).catch(error => {
+            console.error('Error al generar PDF:', error);
+            alert('Error al generar el PDF. Por favor, intente nuevamente.');
+            boton.disabled = false;
+            boton.innerHTML = textoOriginal;
+        });
+    }
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .progress-bar-custom {
+        height: 25px;
+    }
+    .progress-bar-custom .progress-bar {
+        transition: width 0.6s ease;
+    }
+    .winner-trophy {
+        font-size: 3.5rem;
+    }
+    .stats-border-right {
+        border-right: 1px solid #dee2e6;
+    }
+    
+    /* Estilos para barras de progreso */
+    .progress-bar-primary {
+        width: var(--progress-width, 0%);
+    }
+    
+    .progress-bar-success {
+        width: var(--progress-width, 0%);
+    }
+    
+    .progress-thin {
+        height: 10px;
+    }
+    
+    .progress-thick {
+        height: 25px;
+    }
+    
+    /* Estilos para impresión */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .print-section, .print-section * {
+            visibility: visible;
+        }
+        .print-section {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+        .card-header {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+        }
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+        .progress {
+            height: 20px;
+            margin-bottom: 1rem;
+            background-color: #e9ecef;
+        }
+    }
+</style>
+{% endblock %}
 {% block contenido %}
 <div class="container mt-3">
+    <br>
     <div class="card">
-        <div class="card-header bg-white text-white">
-            <h4 class="mb-0">Resultados - {{ proceso.nombre }}</h4>
+        <!-- Botones de acción -->
+    <div class="mb-3 text-right no-print">
+        <button onclick="window.print()" class="btn btn-outline-primary mr-2">
+            <i class="la la-print"></i> Imprimir
+        </button>
+        <button onclick="generarPDF()" class="btn btn-primary">
+            <i class="la la-file-pdf"></i> Descargar PDF
+        </button>
+    </div>
+        <div class="card-header bg-white text-black">
+            <h4 class="mb-0"><i class="la la-chart-bar"></i> Resultados Electorales - {{ proceso.nombre }}</h4>
         </div>
         <div class="card-body">
+            <!-- Sección del Ganador Mejorada -->
+            {% if ganador %}
+            <div class="card border-white mb-4">
+                <div class="card-header bg-white text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="la la-trophy"></i> LISTA GANADORA {{ ganador.nombre_lista }}</h4>
+                        <span class="badge badge-light">¡Felicidades {{ ganador.nombre_lista }}!</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h3 class="text-primary">{{ ganador.nombre_lista }}</h3>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="progress flex-grow-1 mr-3 progress-bar-custom">
+                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                         data-width="{{ ganador.porcentaje|floatformat:0 }}"
+                                         aria-valuenow="{{ ganador.porcentaje|floatformat:0 }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ ganador.porcentaje|floatformat:1 }}%
+                                    </div>
+                                </div>
+                                <div class="text-nowrap">
+                                    <span class="h4 mb-0">{{ ganador.votos }}</span>
+                                    <small class="text-muted">votos</small>
+                                </div>
+                            </div>
+                            <p class="mb-0 text-muted">
+                                <i class="la la-info-circle"></i> Esta lista obtuvo la mayoría de los votos válidos emitidos.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="display-4 text-primary winner-trophy">
+                                <i class="la la-trophy"></i>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge badge-primary">
+                                    {{ ganador.porcentaje|floatformat:1 }}% de los votos
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="row text-center">
+                        <div class="col-4 stats-border-right">
+                            <div class="text-muted small">Votos Totales</div>
+                            <div class="h5 mb-0">{{ total_votos }}</div>
+                        </div>
+                        <div class="col-4 stats-border-right">
+                            <div class="text-muted small">Votos Válidos</div>
+                            <div class="h5 mb-0">{{ ganador.votos }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted small">Porcentaje</div>
+                            <div class="h5 mb-0">{{ ganador.porcentaje|floatformat:1 }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Sección para impresión -->
+            <div class="print-section">
+                <h2 class="text-center mb-4">Resultados Electorales - {{ proceso.nombre }}</h2>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Fecha de impresión:</strong> {% now "d/m/Y H:i" %}</p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p><strong>Estado:</strong> {{ proceso.get_estado_display }}</p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="row">
                 <div class="col-md-8">
-                    <h5>Votos por Lista</h5>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Lista</th>
-                                    <th>Votos</th>
-                                    <th>Porcentaje</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for resultado in resultados_por_lista %}
-                                <tr>
-                                    <td>{{ resultado.lista.nombre_lista }}</td>
-                                    <td>{{ resultado.votos }}</td>
-                                    <td>{{ resultado.porcentaje|floatformat:2 }}%</td>
-                                </tr>
-                                {% endfor %}
-                                <tr>
-                                    <td>Votos en Blanco</td>
-                                    <td>{{ votos_blancos }}</td>
-                                    <td>{{ porcentaje_blancos|floatformat:2 }}%</td>
-                                </tr>
-                                <tr>
-                                    <td>Votos Nulos</td>
-                                    <td>{{ votos_nulos }}</td>
-                                    <td>{{ porcentaje_nulos|floatformat:2 }}%</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-primary">
-                                    <th>Total</th>
-                                    <th>{{ total_votos }}</th>
-                                    <th>100%</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <!-- Estadísticas de Participación -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Participación Electoral</h5>
+                            {% with porcentaje=porcentaje_participacion|floatformat:0|default:0 %}
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div class="progress-bar bg-success" 
+                                     role="progressbar" 
+                                     style="width: 0%"
+                                     data-width="{{ porcentaje }}"
+                                     aria-valuenow="{{ porcentaje }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ porcentaje }}%
+                                </div>
+                            </div>
+                            <script>
+                                // Actualizar el ancho de la barra de progreso después de cargar la página
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const progressBar = document.querySelector('.progress-bar[data-width]');
+                                    if (progressBar) {
+                                        const width = progressBar.getAttribute('data-width') + '%';
+                                        progressBar.style.width = width;
+                                    }
+                                });
+                            </script>
+                            {% endwith %}
+                            <p class="mb-0">
+                                <strong>{{ total_votos }}</strong> de <strong>{{ total_votantes }}</strong> votos emitidos
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Resultados -->
+                    <div class="print-section">
+                        <h4 class="mb-3">Resumen de Resultados</h4>
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Lista Ganadora</h5>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="text-primary">{{ ganador.nombre_lista }}</h3>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 mr-3 progress-thick">
+                                        <div class="progress-bar bg-primary progress-bar-primary" 
+                                             role="progressbar" 
+                                             style="--progress-width: {{ ganador.porcentaje|floatformat:0 }}%;"
+                                             aria-valuenow="{{ ganador.porcentaje|floatformat:0 }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {{ ganador.porcentaje|floatformat:1 }}%
+                                        </div>
+                                    </div>
+                                    <div class="text-nowrap">
+                                        <span class="h4 mb-0">{{ ganador.votos }}</span>
+                                        <small class="text-muted">votos</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-section">
+                        <h4 class="mb-3">Resultados por Lista</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th width="50%">Lista</th>
+                                        <th class="text-center" width="25%">Votos</th>
+                                        <th class="text-center" width="25%">Porcentaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for resultado in resultados_por_lista %}
+                                    <tr class="{% if resultado.es_ganador %}table-success{% endif %}">
+                                        <td>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>{{ resultado.lista.nombre_lista }}</span>
+                                                {% if resultado.es_ganador %}
+                                                <span class="badge badge-success">Ganador</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if resultado.es_ganador %}
+                                            <div class="progress mt-2 progress-thin">
+                                                <div class="progress-bar bg-success progress-bar-success" 
+                                                     role="progressbar" 
+                                                     style="--progress-width: {{ resultado.porcentaje|floatformat:0 }}%;"
+                                                     aria-valuenow="{{ resultado.porcentaje|floatformat:0 }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center align-middle">{{ resultado.votos }}</td>
+                                        <td class="text-center align-middle">
+                                            <span class="font-weight-bold">{{ resultado.porcentaje|floatformat:2 }}%</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                    <!-- Votos en blanco -->
+                                    <tr class="table-light">
+                                        <td>Votos en Blanco</td>
+                                        <td class="text-center">{{ votos_blancos }}</td>
+                                        <td class="text-center">{{ porcentaje_blancos|floatformat:2 }}%</td>
+                                    </tr>
+                                    
+                                    <!-- Votos nulos -->
+                                    <tr class="table-light">
+                                        <td>Votos Nulos</td>
+                                        <td class="text-center">{{ votos_nulos }}</td>
+                                        <td class="text-center">{{ porcentaje_nulos|floatformat:2 }}%</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-primary">
+                                    <tr class="font-weight-bold">
+                                        <th>Total de Votos Válidos</th>
+                                        <th class="text-center">{{ total_votos }}</th>
+                                        <th class="text-center">100%</th>
+                                    </tr>
+                                    <tr class="font-weight-bold">
+                                        <th>Total de Electores</th>
+                                        <th class="text-center" colspan="2">{{ total_votantes }}</th>
+                                    </tr>
+                                    <tr class="font-weight-bold">
+                                        <th>Participación Electoral</th>
+                                        <th class="text-center" colspan="2">{{ porcentaje_participacion|floatformat:2 }}%</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4 small text-muted">
+                            <p class="mb-1"><strong>Fecha de generación:</strong> {% now "d/m/Y H:i" %}</p>
+                            <p class="mb-0"><strong>Proceso Electoral:</strong> {{ proceso.nombre }}</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card">
+                    <!-- Detalles del Proceso -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="la la-calendar"></i> Detalles del Proceso</h5>
+                        </div>
                         <div class="card-body">
-                            <h5>Resumen</h5>
-                            <ul class="list-unstyled">
-                                <li><strong>Total Votantes:</strong> {{ total_votantes }}</li>
-                                <li><strong>Han Votado:</strong> {{ total_votos }}</li>
-                                <li><strong>Faltan por Votar:</strong> {{ faltan_votar }}</li>
-                                <li><strong>Participación:</strong> {{ porcentaje_participacion|floatformat:2 }}%</li>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <strong>Inicio:</strong><br>
+                                    <i class="la la-calendar"></i> {{ proceso.fecha|date:"d/m/Y" }}
+                                    <i class="la la-clock ml-2"></i> {{ proceso.hora_inicio|time:"H:i" }}
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Fin:</strong><br>
+                                    <i class="la la-calendar"></i> {{ proceso.fecha|date:"d/m/Y" }}
+                                    <i class="la la-clock ml-2"></i> {{ proceso.hora_fin|time:"H:i" }}
+                                </li>
+                                <li>
+                                    <strong>Estado:</strong>
+                                    <span class="badge {% if proceso.estado == 'finalizado' %}bg-success{% elif proceso.estado == 'activo' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                        {{ proceso.get_estado_display }}
+                                    </span>
+                                </li>
                             </ul>
                         </div>
                     </div>
+
+                    <!-- Resumen de Votación -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="la la-info-circle"></i> Resumen de la Votación</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Total de Votantes Habilitados</span>
+                                    <span class="badge badge-primary badge-pill">{{ total_votantes }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Votos Válidos</span>
+                                    <span class="badge badge-success badge-pill">{{ total_votos }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Votos en Blanco</span>
+                                    <span class="badge badge-secondary badge-pill">{{ votos_blancos }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Votos Nulos</span>
+                                    <span class="badge badge-danger badge-pill">{{ votos_nulos }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Participación</span>
+                                    <span class="badge badge-info badge-pill">{{ porcentaje_participacion|floatformat:1 }}%</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="la la-calendar"></i> Detalles del Proceso</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Inicio:</strong> {{ proceso.fecha_inicio|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Fin:</strong> {{ proceso.fecha_fin|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="badge badge-success">Finalizado</span>
+                            </p>
+                        </div>
+                    </div>
+                    -->
                 </div>
             </div>
         </div>
