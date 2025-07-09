@@ -27,31 +27,87 @@
   </div>
   <div class="col-xl-4 col-lg-6 col-md-12">
     <div class="card pull-up ecom-card-1 bg-white">
-        <div class="card-content ecom-card2 height-180">
-            <h5 class="text-muted info position-absolute p-1">Estudiantes</h5>
-            <div>
-                <i class="ft-book info font-large-1 float-right p-1"></i>
-            </div>
-            <div class="height-75 position-relative pt-3 text-center">
-                <h1 class="info">{{ total_estudiantes }}</h1>
-            </div>
+      <div class="card-content ecom-card2 height-180">
+        <h5 class="text-muted info position-absolute p-1">Estudiantes</h5>
+        <div>
+          <i class="ft-book info font-large-1 float-right p-1"></i>
         </div>
+        <div class="height-75 position-relative pt-3 text-center">
+          <h1 class="info">{{ total_estudiantes }}</h1>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-xl-4 col-lg-12">
     <div class="card pull-up ecom-card-1 bg-white">
-        <div class="card-content ecom-card2 height-180">
-            <h5 class="text-muted warning position-absolute p-1">Votantes</h5>
-            <div>
-                <i class="ft-check-square warning font-large-1 float-right p-1"></i>
-            </div>
-            <div class="height-75 position-relative pt-3 text-center">
-                <h1 class="warning">{{ total_votantes }}</h1>
-            </div>
+      <div class="card-content ecom-card2 height-180">
+        <h5 class="text-muted warning position-absolute p-1">Votantes</h5>
+        <div>
+          <i class="ft-check-square warning font-large-1 float-right p-1"></i>
         </div>
+        <div class="height-75 position-relative pt-3 text-center">
+          <h1 class="warning">{{ total_votantes }}</h1>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 <!--/ Statistics -->
+
+<!-- Student data section -->
+{% if estudiante %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Datos del Estudiante</h4>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <tr>
+              <th>Cédula:</th>
+              <td>{{ estudiante.cedula }}</td>
+            </tr>
+            <tr>
+              <th>Nombre:</th>
+              <td>{{ estudiante.nombre }} {{ estudiante.apellidos }}</td>
+            </tr>
+            <tr>
+              <th>Facultad:</th>
+              <td>{{ estudiante.facultad.nombre }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Election results section -->
+{% if resultados %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Resultados Electorales</h4>
+      </div>
+      <div class="card-content">
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="pieChart"></canvas>
+          </div>
+          <div class="col-md-6">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
 
 {% endblock %}

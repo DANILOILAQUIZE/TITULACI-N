@@ -3,22 +3,66 @@ from .models import Roles, Usuarios
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 
 from Aplicaciones.padron.models import PadronElectoral
+from Aplicaciones.votacion.models import ProcesoElectoral, Voto, Candidato
 
 import random
 import string
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
+import json
 # Create your views here.
 
 
 
 
 def dashboard(request):
+    # Datos existentes
+    total_usuarios = Usuarios.objects.count()
+    total_estudiantes = PadronElectoral.objects.count()
+    total_votantes = Voto.objects.values('votante').distinct().count()
+    
+    # Obtener el proceso electoral activo (asumiendo que el estado 'activo' o 'en curso')
+    proceso_activo = ProcesoElectoral.objects.filter(estado='activo').first()
+    resultados = []
+    if proceso_activo:
+        # Obtener todos los candidatos para el proceso electoral activo
+        candidatos = Candidato.objects.filter(periodo=proceso_activo)
+        # Contar votos por candidato
+        resultados = []
+        for candidato in candidatos:
+            votos = Voto.objects.filter(candidato=candidato).count()
+            resultados.append({
+                'candidato': candidato,
+                'votos': votos
+            })
+    
+    # Datos del estudiante (si está logueado y es un estudiante)
+    estudiante = None
+    if request.user.is_authenticated and hasattr(request.user, 'padronelectoral'):
+        estudiante = request.user.padronelectoral
+    
+    if resultados:
+        # Convertir resultados a formato JSON
+        resultados_data = []
+        for r in resultados:
+            resultados_data.append({
+                'candidato': r.candidato.nombre,
+                'votos': r.votos
+            })
+        resultados_json = json.dumps(resultados_data)
+    else:
+        resultados_json = '[]'
+
     context = {
-        'total_usuarios': Usuarios.objects.count(),
-        'total_estudiantes': PadronElectoral.objects.count(),
+        'total_usuarios': total_usuarios,
+        'total_estudiantes': total_estudiantes,
+        'total_votantes': total_votantes,
+        'resultados': resultados,
+        'estudiante': estudiante,
+        'resultados_json': resultados_json
     }
     return render(request, 'rol/dashboard.html', context)
 
@@ -253,4 +297,3 @@ def eliminarUsuario(request, id):
     return redirect('agregarUsuario')
 
 #LOGIN
-
