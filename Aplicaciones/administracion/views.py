@@ -10,6 +10,8 @@ from django.views.decorators.http import require_http_methods
 from Aplicaciones.padron.models import CredencialUsuario
 from Aplicaciones.noticias.models import Noticia, Categoria
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 def index(request):
@@ -117,23 +119,7 @@ def login_padron(request):
                 }, status=400)
             
             # Iniciar sesión para el padrón
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
-            
-            try:
-                user = User.objects.get(username=credencial.usuario)
-            except User.DoesNotExist:
-                # Crear un usuario temporal para el padrón
-                email = f"{credencial.usuario}@sistema-voto.com"
-                user = User.objects.create_user(
-                    username=credencial.usuario,
-                    email=email,
-                    password=None,
-                    is_active=True,
-                    is_staff=False
-                )
-            
-            auth_login(request, user)
+            request.session['padron_autenticado'] = True
             request.session['padron_id'] = credencial.padron.id
             
             # Obtener el proceso electoral activo
@@ -221,5 +207,3 @@ def noticias(request):
     }
     
     return render(request, 'administracion/noticias.html', context)
-
-

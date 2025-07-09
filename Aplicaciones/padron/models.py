@@ -112,11 +112,6 @@ class PadronElectoral(models.Model):
         if self.periodo and self.grado.periodo != self.periodo:
             raise ValidationError("El grado seleccionado no corresponde al período especificado")
 
-    def verificar_contrasena(self, contrasena):
-        """Verifica si la contraseña proporcionada coincide con la almacenada"""
-        from django.contrib.auth.hashers import check_password
-        return check_password(contrasena, self.get_contrasena_encriptada())
-
 
 class CredencialUsuario(models.Model):
     """Modelo para almacenar las credenciales de los usuarios del sistema"""

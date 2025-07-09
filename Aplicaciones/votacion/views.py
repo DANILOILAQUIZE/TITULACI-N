@@ -146,14 +146,8 @@ def obtener_proceso_activo(request):
         return redirect('votacion:lista_procesos')
 
 def papeleta_votacion(request, proceso_id):
-    # Verificar si el usuario está autenticado
-    if not request.user.is_authenticated:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': False,
-                'message': 'Debe iniciar sesión para acceder a la papeleta de votación',
-                'redirect': reverse('administracion:index')
-            }, status=403)
+    # Verificar autenticación mediante sesión personalizada
+    if not request.session.get('padron_autenticado'):
         messages.error(request, 'Debe iniciar sesión para acceder a la papeleta de votación')
         return redirect('administracion:index')
     
@@ -252,7 +246,7 @@ def papeleta_votacion(request, proceso_id):
     return render(request, 'votacion/papeleta.html', context)
 
 def registrar_voto(request, proceso_id):
-    if not request.user.is_authenticated:
+    if not request.session.get('padron_autenticado'):
         messages.error(request, 'Debe iniciar sesión para votar')
         return redirect('administracion:index')
     
@@ -369,7 +363,7 @@ def mostrar_carnet(request):
     """
     Muestra el carnet de votación después de un voto exitoso
     """
-    if not request.user.is_authenticated:
+    if not request.session.get('padron_autenticado'):
         messages.error(request, 'Debe iniciar sesión para ver el carnet de votación')
         return redirect('administracion:index')
     
@@ -623,3 +617,116 @@ def verificar_carnet(request, codigo_verificacion):
             'verificado': False,
             'error': str(e)
         })
+
+def registrar_voto(request, proceso_id):
+    if not request.session.get('padron_autenticado'):
+        messages.error(request, 'Debe iniciar sesión para votar')
+        return redirect('administracion:index')
+    
+    if request.method != 'POST':
+        messages.error(request, 'Método no permitido')
+        return redirect('administracion:index')
+    
+    padron_id = request.session.get('padron_id')
+    if not padron_id:
+        messages.error(request, 'No se encontró la información del padrón')
+        return redirect('administracion:index')
+    
+    from Aplicaciones.padron.models import PadronElectoral
+    try:
+        padron = PadronElectoral.objects.get(id=padron_id)
+        proceso = get_object_or_404(ProcesoElectoral, id=proceso_id)
+        
+        # Verificar si ya existe un voto para este proceso y votante
+        if Voto.objects.filter(proceso_electoral=proceso, votante=padron).exists():
+            messages.error(request, 'Usted ya ha emitido su voto para este proceso electoral')
+            return redirect('administracion:index')
+        
+        # Verificar si el usuario ya votó (compatibilidad con el campo voto en PadronElectoral)
+        if hasattr(padron, 'voto') and padron.voto:
+            messages.error(request, 'Usted ya ha emitido su voto para este proceso electoral')
+            return redirect('administracion:index')
+        
+        # Obtener el tipo de voto
+        tipo_voto = request.POST.get('tipo_voto')
+        
+        # Inicializar variables
+        lista = None
+        candidatos_seleccionados = {}
+        
+        # Si no es voto en blanco ni nulo, obtener la lista y candidatos
+        if tipo_voto not in ['blanco', 'nulo']:
+            lista_id = request.POST.get('lista')
+            if not lista_id:
+                messages.error(request, 'Debe seleccionar una lista para votar')
+                return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
+            
+            try:
+                lista = Lista.objects.get(id=lista_id)
+            except Lista.DoesNotExist:
+                messages.error(request, 'La lista seleccionada no es válida')
+                return redirect('votacion:papeleta_votacion', proceso_id=proceso_id)
+            
+            # Obtener los candidatos seleccionados solo si es un voto por lista
+            for key, value in request.POST.items():
+                if key.startswith('candidato_'):
+                    cargo_id = key.split('_')[1]
+                    candidatos_seleccionados[cargo_id] = value
+        
+        # Crear el voto
+        timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+        hash_voto = generar_hash_voto(proceso_id, padron_id, timestamp)
+        
+        # Determinar si es voto en blanco o nulo
+        es_blanco = tipo_voto == 'blanco'
+        es_nulo = tipo_voto == 'nulo'
+        
+        voto = Voto(
+            proceso_electoral=proceso,
+            votante=padron,
+            lista=lista if not (es_blanco or es_nulo) else None,
+            es_blanco=es_blanco,
+            es_nulo=es_nulo,
+            hash_voto=hash_voto
+        )
+        voto.save()
+        
+        # Actualizar el campo voto en el padrón (para compatibilidad)
+        if hasattr(padron, 'voto'):
+            padron.voto = True
+            padron.save()
+        
+        # Registrar los votos por candidato
+        for candidato_id in candidatos_seleccionados.values():
+            try:
+                candidato = Candidato.objects.get(id=candidato_id, lista=lista)
+                voto.candidatos.add(candidato)
+            except Candidato.DoesNotExist:
+                continue
+        
+        # Registrar el voto en el log
+        print(f"\nVOTO REGISTRADO - Proceso: {proceso.nombre}")
+        print(f"Estudiante: {padron.nombre} {padron.apellidos}, Cédula: {padron.cedula}")
+        if lista:
+            print(f"Lista seleccionada: {lista.nombre_lista}")
+        else:
+            print("Voto en blanco o nulo")
+        print(f"Hash del voto: {hash_voto}")
+        
+        # Generar el carnet de votación
+        from .utils import generar_carnet_votacion
+        carnet = generar_carnet_votacion(voto)
+        
+        # Enviar el correo con el comprobante
+        from .utils import enviar_comprobante_email
+        enviar_comprobante_email(carnet)
+        
+        messages.success(request, '¡Su voto ha sido registrado exitosamente! Se ha enviado un correo con su comprobante de votación.')
+        return redirect('administracion:index')
+        
+    except PadronElectoral.DoesNotExist:
+        messages.error(request, 'No se encontró su registro en el padrón electoral')
+        return redirect('administracion:index')
+    except Exception as e:
+        messages.error(request, f'Error al registrar el voto: {str(e)}')
+        return redirect('administracion:index')
