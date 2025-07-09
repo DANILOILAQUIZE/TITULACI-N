@@ -1,4 +1,5 @@
 {% extends 'plantilla.html' %}
+{% load static %}
 
 {% block scripts %}
 <script>
@@ -244,7 +245,7 @@
                 <div class="card-content">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <form method="post" action="{% url 'enviar_credenciales' %}" class="needs-validation" novalidate>
+                            <form id="formEnviarCorreos" method="post" action="{% url 'enviar_credenciales' %}" class="needs-validation" novalidate>
                                 {% csrf_token %}
                                 <div class="d-flex justify-content-between mb-3">
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExportacionPDF()">
@@ -339,6 +340,11 @@ document.addEventListener('DOMContentLoaded', function() {
             form.classList.add('was-validated');
         }, false);
     });
+
 });
+
+
 </script>
 {% endblock extra_js %}
+
+
