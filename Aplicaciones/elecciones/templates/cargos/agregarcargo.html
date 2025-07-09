@@ -46,14 +46,6 @@
     background-color: #5a0bb8; /* Morado oscuro */
   }
   
-  .btn-delete {
-    background-color: #d31b2d; /* Rojo */
-  }
-  
-  .btn-delete:hover {
-    background-color: #b31625; /* Rojo oscuro */
-  }
-  
   /* Efecto de ondas al hacer clic */
   .btn-action:after {
     content: '';
@@ -227,7 +219,7 @@
 
                                                 <!-- Botón para eliminar -->
                                                 <button type="button" 
-                                                        class="btn btn-sm btn-outline-danger mx-1"
+                                                        class="btn btn-sm btn-outline-danger mx-1 btn-delete"
                                                         data-cargo-id="{{ cargo.id }}" 
                                                         data-cargo-nombre="{{ cargo.nombre_cargo|escapejs }}"
                                                         title="Eliminar"

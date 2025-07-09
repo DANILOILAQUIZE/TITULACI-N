@@ -20,27 +20,49 @@
     color: #3498db;
 }
 
-.mi-input {
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    padding: 0.75rem 1.5rem;
-    margin-bottom: 0.5rem;
-    transition: all 0.3s ease;
-    background: #fff;
+/* Selectores ultra específicos para modal login - mi-input */
+#loginModal .mi-input,
+#loginModal input.mi-input,
+#loginModal input[class*="mi-input"] {
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    padding: 0.75rem 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+    transition: all 0.3s ease !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #222 !important;
+    font-weight: 500 !important;
 }
 
-.mi-input:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-    outline: none;
+#loginModal .mi-input:focus,
+#loginModal input.mi-input:focus,
+#loginModal input[class*="mi-input"]:focus {
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+    outline: none !important;
+    background: rgba(255, 255, 255, 1) !important;
+    color: #111 !important;
 }
 
-.mi-input::placeholder {
-    color: #999;
+#loginModal .mi-input:not(:focus),
+#loginModal input.mi-input:not(:focus),
+#loginModal input[class*="mi-input"]:not(:focus) {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #222 !important;
 }
 
-.mi-input:focus::placeholder {
-    color: #666;
+#loginModal .mi-input::placeholder,
+#loginModal input.mi-input::placeholder,
+#loginModal input[class*="mi-input"]::placeholder {
+    color: #777 !important;
+    opacity: 0.9 !important;
+}
+
+#loginModal .mi-input:focus::placeholder,
+#loginModal input.mi-input:focus::placeholder,
+#loginModal input[class*="mi-input"]:focus::placeholder {
+    color: #999 !important;
+    opacity: 0.7 !important;
 }
 
 .btn {

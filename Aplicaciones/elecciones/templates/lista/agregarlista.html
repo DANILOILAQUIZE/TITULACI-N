@@ -47,20 +47,20 @@
     background-color: #5a0bb8; /* Morado oscuro */
   }
   
-  .btn-delete {
-    background-color: #d31b2d; /* Rojo */
-  }
-  
-  .btn-delete:hover {
-    background-color: #b31625; /* Rojo oscuro */
-  }
-  
   .btn-add {
     background-color: #28a745; /* Verde */
   }
   
   .btn-add:hover {
     background-color: #218838; /* Verde oscuro */
+  }
+  
+  .btn-delete {
+    background-color: #dc3545; /* Rojo */
+  }
+  
+  .btn-delete:hover {
+    background-color: #c82333; /* Rojo oscuro */
   }
   
   .btn-delete:disabled,
@@ -78,7 +78,7 @@
     left: 50%;
     width: 5px;
     height: 5px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(161, 20, 20, 0.5);
     opacity: 0;
     border-radius: 100%;
     transform: scale(1, 1) translate(-50%, -50%);
@@ -207,11 +207,6 @@
                         <p class="card-text">
                           <strong>Color:</strong> {{ lista.lista.color|default:"Sin color" }}
                         </p>
-                        <!--
-                        <p class="card-text mb-2">
-                          <strong>Candidatos por Cargo:</strong>
-                        </p>
-                        -->
                         <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
                           {% for candidato in lista.candidatos %}
                             <div class="text-center" style="width: 60px;">
@@ -255,30 +250,6 @@
 
   {% if listas %}
     {% for lista in listas %}
-      <!-- Modal Eliminar -->
-      <div class="modal fade" id="eliminarListaModal{{ lista.lista.id }}" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Confirmar Eliminación</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              ¿Estás seguro de eliminar la lista <strong>{{ lista.lista.nombre_lista }}</strong>?
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-              <form action="{% url 'eliminar_lista' lista.lista.id %}" method="POST" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Eliminar</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Modal Editar -->
       <div class="modal fade" id="editarListaModal{{ lista.lista.id }}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -347,31 +318,48 @@
   {% block scripts %}
   <script>
   $(document).ready(function() {
-    // Manejar el clic en el botón eliminar
+    // Manejar el clic en el botón eliminar - SWEETALERT2 ELEGANTE
     $('.btn-eliminar-lista').on('click', function(e) {
       e.preventDefault();
       const listaId = $(this).data('lista-id');
       const $card = $(this).closest('.card');
       const nombreLista = $card.find('.card-title').text().trim();
-
-      // Mostrar confirmación
-      if (confirm(`¿Estás seguro de eliminar la lista "${nombreLista}"?`)) {
-        // Crear un formulario temporal
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `{% url 'eliminar_lista' 0 %}`.replace('0', listaId);
-
-        // Agregar CSRF token
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrfmiddlewaretoken';
-        csrfToken.value = '{{ csrf_token }}';
-        form.appendChild(csrfToken);
-
-        // Agregar el formulario al documento y enviarlo
-        document.body.appendChild(form);
-        form.submit();
-      }
+      
+      // Mostrar SweetAlert2 elegante
+      Swal.fire({
+        title: '¿Eliminar Lista?',
+        text: `¿Desea eliminar la lista "${nombreLista}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          confirmButton: 'btn btn-danger me-2',
+          cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Crear formulario dinámico
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `{% url 'eliminar_lista' 0 %}`.replace('0', listaId);
+          
+          // Agregar token CSRF
+          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = csrfToken;
+          form.appendChild(csrfInput);
+          
+          // Agregar al DOM y enviar
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
     });
   });
   </script>

@@ -1,6 +1,7 @@
 {% extends 'plantilla.html' %}
 
 {% block contenido %}
+{% csrf_token %}
 <div class="container mt-3">
     <div class="card mb-3">
         <div class="card-body bg-light text-center">
@@ -86,14 +87,15 @@
                            data-placement="top">
                             <i class="la la-edit"></i>
                         </a>
-                        <a href="{% url 'eliminar_candidato' candidato.id %}" 
-                           class="btn btn-sm btn-outline-danger mx-1"
-                           title="Eliminar"
-                           data-toggle-tooltip="tooltip"
-                           data-placement="top"
-                           onclick="return confirm('¿Estás seguro de eliminar este candidato?');">
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-danger mx-1 btn-delete-candidato"
+                                data-candidato-id="{{ candidato.id }}"
+                                data-candidato-nombre="{{ candidato.nombres }} {{ candidato.apellidos }}"
+                                title="Eliminar"
+                                data-toggle-tooltip="tooltip"
+                                data-placement="top">
                             <i class="la la-trash"></i>
-                        </a>
+                        </button>
                     </td>
                 </tr>
                 {% empty %}
@@ -106,3 +108,52 @@
     </div>
 </div>
 {% endblock contenido %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Manejar el clic en el botón eliminar candidato - SWEETALERT2 ELEGANTE
+    $('.btn-delete-candidato').on('click', function(e) {
+        e.preventDefault();
+        const candidatoId = $(this).data('candidato-id');
+        const candidatoNombre = $(this).data('candidato-nombre');
+        
+        // Mostrar SweetAlert2 elegante
+        Swal.fire({
+            title: '¿Eliminar Candidato?',
+            text: `¿Desea eliminar al candidato "${candidatoNombre}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                confirmButton: 'btn btn-danger me-2',
+                cancelButton: 'btn btn-secondary'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Crear formulario dinámico
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{% url 'eliminar_candidato' 0 %}`.replace('0', candidatoId);
+                
+                // Agregar token CSRF
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Agregar al DOM y enviar
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

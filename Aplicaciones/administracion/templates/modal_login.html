@@ -21,10 +21,11 @@
                         <div style="padding-left:50px; padding-right:50px;">
                             <div class="row align-items-center">
                                 <div class="col-md-12">
-                                    <label for="username" class="fw-bold">Cédula:</label>
+                                    <label for="username" class="fw-bold">Usuario:</label>
                                     <br>
                                     <input type="text" name="username" id="username"
-                                        placeholder="Ingrese su número de cédula" class="form-control mi-input"
+                                        placeholder="Ingrese su usuario" class="form-control mi-input"
+                                        style="background: #ffffff !important; color: #333333 !important; font-weight: 600 !important;"
                                         required>
                                 </div>
                             </div>
@@ -33,9 +34,17 @@
                                 <div class="col-md-12">
                                     <label for="password" class="fw-bold">Contraseña:</label>
                                     <br>
-                                    <input type="text" name="password" id="password"
-                                        placeholder="Ingrese su contraseña" class="form-control mi-input"
-                                        required>
+                                    <div class="position-relative">
+                                        <input type="password" name="password" id="password"
+                                            placeholder="Ingrese su contraseña" class="form-control mi-input"
+                                            style="background: #ffffff !important; color: #333333 !important; font-weight: 600 !important; padding-right: 45px !important;"
+                                            required>
+                                        <button type="button" class="btn p-0 position-absolute" 
+                                                id="togglePassword"
+                                                style="right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #666; font-size: 18px; z-index: 10;">
+                                            <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <br>
@@ -62,6 +71,55 @@
 
 <!-- Script para manejar el envío del formulario de login -->
 <script>
+// SOLUCIÓN AGRESIVA PARA INPUTS INVISIBLES
+function forceInputVisibility() {
+    const inputs = document.querySelectorAll('#loginModal input[type="text"], #loginModal input[type="password"]');
+    
+    inputs.forEach(function(input) {
+        // Aplicar estilos por fuerza bruta - TEXTO MÁS VISIBLE
+        input.style.setProperty('background', '#ffffff', 'important');
+        input.style.setProperty('color', '#333333', 'important');
+        input.style.setProperty('font-weight', '600', 'important');
+        input.style.setProperty('-webkit-text-fill-color', '#333333', 'important');
+        input.style.setProperty('opacity', '1', 'important');
+        input.style.setProperty('font-size', '16px', 'important');
+        
+        // Eventos para mantener la visibilidad
+        input.addEventListener('focus', function() {
+            this.style.setProperty('background', '#ffffff', 'important');
+            this.style.setProperty('color', '#000000', 'important');
+            this.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+            this.style.setProperty('border-color', '#3498db', 'important');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.setProperty('background', '#ffffff', 'important');
+            this.style.setProperty('color', '#333333', 'important');
+            this.style.setProperty('-webkit-text-fill-color', '#333333', 'important');
+        });
+        
+        input.addEventListener('input', function() {
+            this.style.setProperty('color', '#333333', 'important');
+            this.style.setProperty('-webkit-text-fill-color', '#333333', 'important');
+        });
+    });
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', forceInputVisibility);
+
+// Ejecutar cuando se abra el modal
+$('#loginModal').on('shown.bs.modal', function() {
+    setTimeout(forceInputVisibility, 100);
+});
+
+// Ejecutar periódicamente para combatir estilos dinámicos
+setInterval(function() {
+    if ($('#loginModal').hasClass('show')) {
+        forceInputVisibility();
+    }
+}, 500);
+
 $(document).ready(function() {
     // Función para restaurar el botón
     function restoreButton(btn, html) {
@@ -277,5 +335,43 @@ $(document).ready(function() {
             }
         });
     }
+    
+    // FUNCIONALIDAD TOGGLE CONTRASEÑA - VERSIÓN ROBUSTA
+    function initPasswordToggle() {
+        const toggleBtn = $('#togglePassword');
+        const passwordField = $('#password');
+        const toggleIcon = $('#togglePasswordIcon');
+        
+        if (toggleBtn.length && passwordField.length && toggleIcon.length) {
+            toggleBtn.off('click.passwordToggle');
+            
+            toggleBtn.on('click.passwordToggle', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const currentType = passwordField.attr('type');
+                
+                if (currentType === 'password') {
+                    passwordField.attr('type', 'text');
+                    toggleIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    toggleBtn.attr('title', 'Ocultar contraseña');
+                } else {
+                    passwordField.attr('type', 'password');
+                    toggleIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    toggleBtn.attr('title', 'Mostrar contraseña');
+                }
+            });
+            
+            toggleBtn.attr('title', 'Mostrar contraseña');
+        }
+    }
+    
+    $(document).ready(function() {
+        initPasswordToggle();
+    });
+    
+    $('#loginModal').on('shown.bs.modal', function() {
+        setTimeout(initPasswordToggle, 100);
+    });
 });
 </script>
