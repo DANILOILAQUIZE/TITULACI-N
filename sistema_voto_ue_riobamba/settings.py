@@ -161,22 +161,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'usuarios.Usuarios'  # Esto debe estar definido
 
-#CORREO ELECTRONICO
+#ENVIO DE CORREOS ELECTRONICOS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.aplicacionesutc.com'  
+EMAIL_HOST = 'smtp.privateemail.com'
 EMAIL_PORT = 465
-EMAIL_USE_SSL = True  # Usa SSL en lugar de TLS si usas el puerto 465
-EMAIL_USE_TLS = False  # TLS es para el puerto 587
-EMAIL_HOST_USER = 'riobamba@aplicacionesutc.com'
-EMAIL_HOST_PASSWORD = '&Ms&AFbeZf9L'  
-DEFAULT_FROM_EMAIL = 'riobamba@aplicacionesutc.com'
-
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Muestra correos en consola en desarrollo
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'info@escuelariobamba.com'
+EMAIL_HOST_PASSWORD = 'Darwin23_@'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
-#NUEVO CORREO ELECTRONICO
 
 
 

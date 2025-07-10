@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
 from django.contrib import messages
 from django.views.generic import ListView
 from django.contrib.auth.hashers import make_password
@@ -268,7 +269,7 @@ Consejo Electoral - Unidad Educativa Riobamba"""
                         send_mail(
                             subject,
                             message,
-                            'riobamba@aplicacionesutc.com',  # Remitente consistente
+                            settings.DEFAULT_FROM_EMAIL,  # Usar el remitente configurado en settings.py
                             [credencial.padron.correo],
                             fail_silently=False,  # Cambiado a False para ver errores
                         )

@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from Aplicaciones.padron.models import PadronElectoral
 from Aplicaciones.votacion.models import ProcesoElectoral, Voto, Candidato
@@ -215,7 +216,7 @@ def guardarUsuario(request):
             send_mail(
                 'Credenciales de acceso al Sistema de Votación de la Unidad Educativa Riobamba',
                 f'Hola {nombre} {apellido},\n\nTus credenciales de acceso al sistema son las siguientes:\n\nUsuario (Cédula): {cedula}\nContraseña: {password_aleatoria}\n\nPor seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión por primera vez.\n\nAtentamente,\nConsejo Electoral - Unidad Educativa Riobamba',
-                'riobamba@aplicacionesutc.com',  # Remitente
+                settings.DEFAULT_FROM_EMAIL,  # Usar el remitente configurado en settings.py
                 [email],
                 fail_silently=True,  # Cambiado a True para que no falle si hay error en el envío
             )

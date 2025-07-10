@@ -145,7 +145,7 @@ def enviar_comprobante_email(carnet, request=None):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email='riobamba@aplicacionesutc.com',
+            from_email=settings.DEFAULT_FROM_EMAIL,  # Usar el remitente configurado en settings.py
             to=[email_destino],
         )
         
