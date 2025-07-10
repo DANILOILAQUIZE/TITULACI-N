@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0drj0i+d)l6_40jeqi(k-$*o)4&q0=2z34v9@9@3u%e^y(u@^y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['escuelariobamba.com', 'www.escuelariobamba.com']
+ALLOWED_HOSTS = ['escuelariobamba.com', 'www.escuelariobamba.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -156,7 +156,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Configuración de correo electrónico
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Servidor SMTP de Gmail
+EMAIL_PORT = 587  # Puerto para TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tucorreo@gmail.com'  # Reemplaza con tu correo
+EMAIL_HOST_PASSWORD = 'tu_contraseña'  # Reemplaza con tu contraseña de aplicación
+DEFAULT_FROM_EMAIL = 'tucorreo@gmail.com'  # Mismo que EMAIL_HOST_USER
 
+# Configuración para el envío de correos en desarrollo
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Muestra correos en consola en desarrollo
 
 
 AUTH_USER_MODEL = 'usuarios.Usuarios'  # Esto debe estar definido
@@ -170,9 +181,6 @@ EMAIL_USE_TLS = False  # TLS es para el puerto 587
 EMAIL_HOST_USER = 'riobamba@aplicacionesutc.com'
 EMAIL_HOST_PASSWORD = '&Ms&AFbeZf9L'  
 DEFAULT_FROM_EMAIL = 'riobamba@aplicacionesutc.com'
-# Configuración para el envío de correos en desarrollo
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Muestra correos en consola en desarrollo
 
 
 #NUEVO CORREO ELECTRONICO
