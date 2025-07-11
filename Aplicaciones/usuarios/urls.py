@@ -3,6 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from Aplicaciones.usuarios.views import editar_rol, eliminarrol, agregarUsuario, guardarUsuario, listarUsuarios, eliminarUsuario,editarUsuario
+from .views import CambioContrasena
 
 urlpatterns = [
     
@@ -22,9 +23,7 @@ urlpatterns = [
     path('usuarios/listarUsuarios/', views.listarUsuarios, name='listarUsuarios'),
     path('editarUsuario/<int:usuario_id>/', editarUsuario, name='editarUsuario'),
     path('eliminarUsuario/<int:id>/', views.eliminarUsuario, name='eliminarUsuario'),
-    
-    
+    path('cambiar-contrasena/', CambioContrasena.as_view(), name='cambiar_contrasena'),
     
    
-    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

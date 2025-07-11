@@ -62,7 +62,7 @@
                 <tr>
                   <th>Cédula</th>
                   <th>Nombre</th>
-                  <th>Contraseña</th>
+                  <th>Estado de Contraseña</th>
                   <th>Rol</th>
                   <th>Estado</th>
                   <th class="text-center" style="width: 80px;">Acciones</th>
@@ -74,7 +74,11 @@
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
                     <td>
-                      {{ usuario.plain_password|default:"N/A" }}
+                      {% if usuario.primer_inicio %}
+                        <span class="badge badge-warning">Por actualizar</span>
+                      {% else %}
+                        <span class="badge badge-success">Actualizada</span>
+                      {% endif %}
                     </td>
                     <td>{{ usuario.id_rol.nombre_rol }}</td>
                     <td>
@@ -125,7 +129,7 @@
                             <div class="form-group text-center mt-2 mb-4">
                               <form method="POST" action="{% url 'eliminarUsuario' usuario.id %}" style="display: inline-block;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger rounded-pill px-4 mr-2">
+                                <button type="submit" class="btn btn-danger rounded-pill px-4">
                                   <i class="la la-trash"></i> ELIMINAR
                                 </button>
                               </form>

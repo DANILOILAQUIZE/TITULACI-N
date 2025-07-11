@@ -108,6 +108,26 @@
 </div>
 {% endif %}
 
-
+{% if mostrar_modal %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: 'Cambio de contraseña requerido',
+        text: 'Es tu primer inicio de sesión. Por seguridad, debes cambiar tu contraseña.',
+        icon: 'warning',
+        confirmButtonText: 'Cambiar contraseña',
+        showCancelButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{% url 'cambiar_contrasena' %}";
+        }
+    });
+});
+</script>
+{% endif %}
 
 {% endblock %}

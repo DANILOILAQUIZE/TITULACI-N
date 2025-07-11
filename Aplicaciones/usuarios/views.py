@@ -63,7 +63,8 @@ def dashboard(request):
         'total_votantes': total_votantes,
         'resultados': resultados,
         'estudiante': estudiante,
-        'resultados_json': resultados_json
+        'resultados_json': resultados_json,
+        'mostrar_modal': request.user.primer_inicio
     }
     return render(request, 'rol/dashboard.html', context)
 
@@ -298,3 +299,26 @@ def eliminarUsuario(request, id):
     return redirect('agregarUsuario')
 
 #LOGIN
+
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.contrib import messages
+
+class CambioContrasena(PasswordChangeView):
+    template_name = 'usuarios/password_change_form.html'
+    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        try:
+            response = super().form_valid(form)
+            self.request.user.primer_inicio = False
+            self.request.user.save()
+            messages.success(self.request, 'Contraseña cambiada exitosamente. Ya no estás en primer inicio.')
+            return response
+        except Exception as e:
+            messages.error(self.request, f'Error al cambiar la contraseña: {str(e)}')
+            return super().form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Por favor, corrige los errores en el formulario.')
+        return super().form_invalid(form)

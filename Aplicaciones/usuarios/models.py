@@ -23,6 +23,7 @@ class Usuarios(AbstractUser):
     imagen = models.ImageField(upload_to='perfil/', blank=True, null=True)
     periodo = models.ForeignKey(Periodo, on_delete=models.SET_NULL, null=True, blank=True)
     plain_password = models.CharField(max_length=128, blank=True, null=True)  # Nuevo campo para contraseña en texto plano
+    primer_inicio = models.BooleanField(default=True)
     
     USERNAME_FIELD = 'username'  # la cédula será usada para login
     REQUIRED_FIELDS = ['email', 'nombre', 'apellido']
