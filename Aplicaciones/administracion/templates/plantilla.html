@@ -167,7 +167,7 @@
       <div class="navbar-header">
         <ul class="nav navbar-nav flex-row">
           <li class="nav-item mr-auto">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">
               <img class="brand-logo" alt="LOGO FONDO"
                    src="{% if logo_config and logo_config.logo_1 %}{{ logo_config.logo_1.url }}{% else %}{% static 'images/logo1.png' %}{% endif %}"/>
               <h3 class="brand-text">

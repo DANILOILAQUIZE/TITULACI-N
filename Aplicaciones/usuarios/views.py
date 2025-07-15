@@ -24,22 +24,28 @@ def dashboard(request):
     total_usuarios = Usuarios.objects.count()
     total_estudiantes = PadronElectoral.objects.count()
     total_votantes = Voto.objects.values('votante').distinct().count()
-    
+    messages.success(request, 'Dashboard cargado exitosamente.')
     # Obtener el proceso electoral activo (asumiendo que el estado 'activo' o 'en curso')
     proceso_activo = ProcesoElectoral.objects.filter(estado='activo').first()
+    messages.success(request, 'Proceso electoral activo')
     resultados = []
+    messages.success(request, 'Resultados obtenidos')
     if proceso_activo:
-        # Obtener todos los candidatos para el proceso electoral activo
-        candidatos = Candidato.objects.filter(periodo=proceso_activo)
+        # Get the periodo from the active electoral process
+        periodo_activo = proceso_activo.periodo
+        # Get candidates for the active periodo
+        candidatos = Candidato.objects.filter(periodo=proceso_activo.periodo)
+        messages.success(request, 'Candidatos obtenidos')
         # Contar votos por candidato
         resultados = []
+        messages.success(request, 'Resultados obtenidos')
         for candidato in candidatos:
-            votos = Voto.objects.filter(candidato=candidato).count()
+            votos = Voto.objects.filter(lista=candidato.lista).count()
             resultados.append({
                 'candidato': candidato,
                 'votos': votos
             })
-    
+    messages.success(request, 'Resultados obtenidos')    
     # Datos del estudiante (si está logueado y es un estudiante)
     estudiante = None
     if request.user.is_authenticated and hasattr(request.user, 'padronelectoral'):
@@ -50,8 +56,8 @@ def dashboard(request):
         resultados_data = []
         for r in resultados:
             resultados_data.append({
-                'candidato': r.candidato.nombre,
-                'votos': r.votos
+                'candidato': r['candidato'].nombre_candidato,
+                'votos': r['votos']
             })
         resultados_json = json.dumps(resultados_data)
     else:
