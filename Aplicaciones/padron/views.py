@@ -23,6 +23,8 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from io import BytesIO
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+
 
 #CRUD GRADOS
 def     generar_credenciales(request):
@@ -318,6 +320,7 @@ Consejo Electoral - Unidad Educativa Riobamba"""
     return redirect('generar_credenciales')
 
 #CRUD GRADOS
+
 class GradoListView(ListView):
     model = Grado
     template_name = 'grados/agregarGrado.html'
@@ -506,7 +509,6 @@ ESTADOS = [
     ('activo', 'Activo'),
     ('inactivo', 'Inactivo'),
 ]
-
 def gestion_padron(request):
     padron = PadronElectoral.objects.select_related('grado', 'paralelo', 'periodo').all().order_by('apellidos', 'nombre')
     grados = Grado.objects.all().prefetch_related('paralelos')

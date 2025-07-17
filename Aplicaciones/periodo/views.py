@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Periodo
 from datetime import datetime, date
+from django.contrib.auth.decorators import login_required
 
 # Función para actualizar el estado de un período según las fechas
 def actualizar_estado_periodo(periodo):
@@ -17,6 +18,7 @@ def actualizar_estado_periodo(periodo):
     return periodo
 
 # Vista para mostrar la página de periodos con el formulario y la tabla
+@login_required
 def agregarPeriodo(request):
     # Obtener todos los períodos ordenados por fecha de inicio (más recientes primero)
     periodos = Periodo.objects.all().order_by('-fecha_inicio')
@@ -29,6 +31,7 @@ def agregarPeriodo(request):
 
 
 # Vista para guardar un nuevo periodo
+@login_required
 def guardarPeriodo(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')

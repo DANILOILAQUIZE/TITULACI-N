@@ -170,10 +170,3 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'info@escuelariobamba.com'
 EMAIL_HOST_PASSWORD = 'Darwin23_@'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-
-
-
-
-
