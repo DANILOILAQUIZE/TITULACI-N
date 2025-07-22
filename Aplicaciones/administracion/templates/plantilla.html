@@ -197,13 +197,13 @@
             <li class="nav-item">
               <a href="#"><i class="ft-users"></i><span class="menu-title" data-i18n="">Usuarios</span></a>
               <ul class="menu-content">
-                  <li><a class="menu-item" href="{% url 'agregarrol' %}">Agregar Usuarios</a></li>
+                  <li><a class="menu-item" href="{% url 'agregarrol' %}">Gestionar Usuarios</a></li>
               </ul>
             </li>
             <li class="nav-item">
                 <a href="#"><i class="ft-list"></i><span class="menu-title" data-i18n="">Padrón</span></a>
                 <ul class="menu-content">
-                    <li><a class="menu-item" href="{% url 'listar_grados' %}">AgregarPadron</a></li>
+                    <li><a class="menu-item" href="{% url 'listar_grados' %}">Gestionar Padrón</a></li>
                 </ul>
             </li>
             <li class="nav-item">
@@ -216,15 +216,13 @@
             <li class="nav-item">
                 <a href="#"><i class="ft-check-circle"></i><span class="menu-title" data-i18n="">Votación</span></a>
                 <ul class="menu-content">
-                    <li><a class="menu-item" href="{% url 'votacion:iniciar_proceso' %}">Iniciar Proceso</a></li>
-                    <li><a class="menu-item" href="{% url 'votacion:lista_procesos' %}">Ver Procesos</a></li>
-                    <li><a class="menu-item" href="{% url 'votacion:obtener_proceso_activo' %}"><i class="la la-vote-yea"></i> Votar</a></li>
+                    <li><a class="menu-item" href="{% url 'votacion:lista_procesos' %}">Gestionar Procesos</a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a href="#"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Resultados</span></a>
                 <ul class="menu-content">
-                  <li><a class="menu-item" href="{% url 'lista_resultados' %}">Ver Resultados</a></li>
+                  <li><a class="menu-item" href="{% url 'lista_resultados' %}">Gestionar Resultados</a></li>
                 </ul>
             </li>
 
@@ -235,6 +233,7 @@
               </a>
               <ul class="menu-content">
                 <li><a class="menu-item" href="{% url 'noticias:listar_noticias' %}">Ver Noticias</a></li>
+                
               </ul>
             </li>
 

@@ -165,8 +165,9 @@ def logout_padron(request):
     return redirect('administracion:index')
 
 @login_required
+@login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'rol/dashboard.html')
+    return render(request, 'administracion/dashboard.html')
 
 def plantilla(request):
     return render(request, 'administracion/plantilla.html')

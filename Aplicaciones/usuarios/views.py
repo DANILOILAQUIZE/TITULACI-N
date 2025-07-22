@@ -19,33 +19,38 @@ import json
 
 
 
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='login')
 def dashboard(request):
+    # Verificar si el usuario necesita cambiar su contraseña
+    if request.user.primer_inicio:
+        # Forzar la actualización de la sesión
+        from django.contrib.auth import update_session_auth_hash
+        update_session_auth_hash(request, request.user)
+        
     # Datos existentes
     total_usuarios = Usuarios.objects.count()
     total_estudiantes = PadronElectoral.objects.count()
     total_votantes = Voto.objects.values('votante').distinct().count()
-    messages.success(request, 'Dashboard cargado exitosamente.')
+    
     # Obtener el proceso electoral activo (asumiendo que el estado 'activo' o 'en curso')
     proceso_activo = ProcesoElectoral.objects.filter(estado='activo').first()
-    messages.success(request, 'Proceso electoral activo')
     resultados = []
-    messages.success(request, 'Resultados obtenidos')
+    
     if proceso_activo:
         # Get the periodo from the active electoral process
         periodo_activo = proceso_activo.periodo
         # Get candidates for the active periodo
         candidatos = Candidato.objects.filter(periodo=proceso_activo.periodo)
-        messages.success(request, 'Candidatos obtenidos')
         # Contar votos por candidato
-        resultados = []
-        messages.success(request, 'Resultados obtenidos')
         for candidato in candidatos:
             votos = Voto.objects.filter(lista=candidato.lista).count()
             resultados.append({
                 'candidato': candidato,
                 'votos': votos
             })
-    messages.success(request, 'Resultados obtenidos')    
+    
     # Datos del estudiante (si está logueado y es un estudiante)
     estudiante = None
     if request.user.is_authenticated and hasattr(request.user, 'padronelectoral'):
@@ -77,21 +82,25 @@ def dashboard(request):
 #CREAMOS LAS VIEWS PARA LOS ROLES
 
 
+@login_required(login_url='login')
 def agregarrol(request):
     roles = Roles.objects.all()
     cantidad_roles = roles.count()
     return render(request, 'rol/agregarrol.html', {'roles': roles, 'cantidad_roles': cantidad_roles})
 
+@login_required(login_url='login')
 def guardarrol(request):
     nombre_rol=request.POST['nombre_rol']
     descripcion=request.POST['descripcion']
     Roles.objects.create(nombre_rol=nombre_rol, descripcion=descripcion)
     return redirect('agregarrol')
 
+@login_required(login_url='login')
 def listarroles(request):
     roles = Roles.objects.all()
     return render(request, 'rol/agregarrol.html', {'roles': roles})
 
+@login_required(login_url='login')
 def editar_rol(request, id):
     rol = get_object_or_404(Roles, id=id)
     
@@ -110,6 +119,7 @@ def editar_rol(request, id):
 
     return render(request, 'editar_rol.html', {'rol': rol})
 
+@login_required(login_url='login')
 def actualizarrol(request, id):
     rol = Roles.objects.get(id=id)
     rol.nombre_rol = request.POST['nombre_rol']
@@ -117,6 +127,7 @@ def actualizarrol(request, id):
     rol.save()
     return redirect('listarroles')
 
+@login_required(login_url='login')
 def eliminarrol(request, id):
     rol = Roles.objects.get(id=id)
     rol.delete()
@@ -124,6 +135,7 @@ def eliminarrol(request, id):
 
 #CREAMOS LAS VIEWS PARA LOS USUARIOS
 # Vista para mostrar la página con la tabla y el modal
+@login_required(login_url='login')
 def agregarUsuario(request):
     roles = Roles.objects.all()
     usuarios = Usuarios.objects.all()  # Obtener todos los usuarios para la tabla
@@ -133,6 +145,7 @@ def generar_contraseña_aleatoria(longitud=8):
     caracteres = string.ascii_letters + string.digits
     return ''.join(random.choice(caracteres) for _ in range(longitud))
 
+@login_required(login_url='login')
 def guardarUsuario(request):
     if request.method == 'POST':
         print('Método POST recibido')
@@ -189,7 +202,8 @@ def guardarUsuario(request):
                     apellido=apellido,  # Usando el campo personalizado
                     id_rol_id=id_rol,
                     activo=activo,
-                    plain_password=password_aleatoria
+                    plain_password=password_aleatoria,
+                    primer_inicio=True  # Establecer primer_inicio como True para forzar cambio de contraseña
                 )
                 
                 # Si hay una imagen, guardarla después de crear el usuario
@@ -242,6 +256,7 @@ def guardarUsuario(request):
     return render(request, 'usuarios/agregarUsuario.html', {'roles': roles})
 
 
+@login_required(login_url='login')
 def listarUsuarios(request):
     roles = Roles.objects.all()
     usuarios = Usuarios.objects.all()  # Obtiene todos los usuarios
@@ -249,6 +264,7 @@ def listarUsuarios(request):
     return render(request, 'usuarios/agregarUsuario.html', {'usuarios': usuarios, 'roles': roles})
 
 
+@login_required(login_url='login')
 def editarUsuario(request, usuario_id):
     usuario = get_object_or_404(Usuarios, id=usuario_id)
     
@@ -293,6 +309,7 @@ def editarUsuario(request, usuario_id):
     })
 
 
+@login_required(login_url='login')
 def eliminarUsuario(request, id):
     # Obtener al usuario con el id proporcionado
     usuario = get_object_or_404(Usuarios, id=id)

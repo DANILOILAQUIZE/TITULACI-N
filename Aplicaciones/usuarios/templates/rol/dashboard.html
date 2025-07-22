@@ -109,25 +109,113 @@
 {% endif %}
 
 {% if mostrar_modal %}
+<!-- Cargar SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Verificar si el DOM ya está cargado
+if (document.readyState === 'loading') {
+    // Si el DOM aún no está cargado, esperar a que lo esté
+    document.addEventListener('DOMContentLoaded', showPasswordChangeAlert);
+} else {
+    // Si el DOM ya está cargado, ejecutar inmediatamente
+    showPasswordChangeAlert();
+}
+
+function showPasswordChangeAlert() {
+    // Verificar si SweetAlert2 está disponible
+    if (typeof Swal === 'undefined') {
+        console.error('SweetAlert2 no está cargado correctamente');
+        return;
+    }
+    
+    // Mostrar el diálogo de cambio de contraseña
     Swal.fire({
         title: 'Cambio de contraseña requerido',
-        text: 'Es tu primer inicio de sesión. Por seguridad, debes cambiar tu contraseña.',
+        html: '<div class="text-center"><i class="la la-lock la-4x mb-3 text-warning"></i><p>Es tu primer inicio de sesión. Por seguridad, debes cambiar tu contraseña antes de continuar.</p></div>',
         icon: 'warning',
         confirmButtonText: 'Cambiar contraseña',
+        confirmButtonColor: '#3085d6',
         showCancelButton: false,
         allowOutsideClick: false,
         allowEscapeKey: false,
-        allowEnterKey: false
+        allowEnterKey: false,
+        backdrop: 'rgba(0,0,0,0.8)',
+        customClass: {
+            popup: 'animated bounceIn'
+        },
+        didOpen: () => {
+            // Agregar clase al body cuando se abre el modal
+            document.body.classList.add('swal2-shown');
+        },
+        willClose: () => {
+            // Remover clase del body cuando se cierra el modal
+            document.body.classList.remove('swal2-shown');
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = "{% url 'cambiar_contrasena' %}";
         }
     });
-});
+}
 </script>
+<style>
+/* Estilos para el modal de SweetAlert2 */
+.swal2-popup {
+    border-radius: 10px !important;
+}
+
+.swal2-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.swal2-html-container {
+    font-size: 1.1rem !important;
+    line-height: 1.5 !important;
+}
+
+.swal2-confirm {
+    padding: 0.7rem 2rem !important;
+    font-size: 1.1rem !important;
+}
+
+/* Animación de fondo */
+@keyframes bounceIn {
+    from, 20%, 40%, 60%, 80%, to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    0% {
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40% {
+        transform: scale3d(0.9, 0.9, 0.9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80% {
+        transform: scale3d(0.97, 0.97, 0.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+.animated {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+.bounceIn {
+    animation-name: bounceIn;
+}
+</style>
 {% endif %}
 
 {% endblock %}

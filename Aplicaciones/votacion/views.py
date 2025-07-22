@@ -12,6 +12,7 @@ from reportlab.lib.utils import ImageReader
 from io import BytesIO
 import base64
 import re
+import os
 
 from .models import ProcesoElectoral, Voto, CarnetVotacion
 from Aplicaciones.periodo.models import Periodo
@@ -590,26 +591,26 @@ class GenerarCarnetPDF(View):
 def verificar_carnet(request, codigo_verificacion):
     """
     Vista para verificar un carnet de votación mediante su código de verificación
+    Esta vista ahora ofrece la opción de ver los detalles o descargar un PDF completo
     """
     try:
         # Buscar el carnet por su código de verificación
         carnet = get_object_or_404(CarnetVotacion, codigo_verificacion=codigo_verificacion)
         
-        # Verificar si el carnet ha sido utilizado
-        if carnet.utilizado:
-            messages.warning(request, 'Este carnet ya ha sido verificado anteriormente.')
-        else:
-            # Marcar el carnet como utilizado
-            carnet.utilizado = True
-            carnet.fecha_verificacion = timezone.now()
-            carnet.save()
-            messages.success(request, 'Carnet verificado exitosamente.')
+        # Verificar si se solicitó la descarga del PDF (por defecto siempre descargar PDF)
+        formato = request.GET.get('formato', 'pdf')
         
-        # Renderizar la plantilla de verificación
-        return render(request, 'votacion/verificar_carnet.html', {
-            'carnet': carnet,
-            'verificado': True
-        })
+        if formato == 'pdf' or True:  # Siempre descargar PDF
+            # Redireccionar a la vista que genera el PDF del votante completo
+            return redirect('votacion:descargar_datos_votante', carnet_id=carnet.id)
+        else:
+            # Renderizar la plantilla de verificación con un botón para descargar PDF
+            # Este código no se ejecutará debido a la condición (formato == 'pdf' or True)
+            # pero lo mantenemos por si en el futuro queremos tener ambas opciones
+            return render(request, 'votacion/verificar_carnet.html', {
+                'carnet': carnet,
+                'verificado': True
+            })
         
     except Exception as e:
         messages.error(request, f'Error al verificar el carnet: {str(e)}')
@@ -617,6 +618,178 @@ def verificar_carnet(request, codigo_verificacion):
             'verificado': False,
             'error': str(e)
         })
+
+
+def descargar_datos_votante(request, carnet_id):
+    """
+    Vista para generar un PDF completo con todos los datos del votante
+    """
+    try:
+        # Obtener el carnet y la configuración del logo institucional
+        from Aplicaciones.configuracion.models import LogoConfig
+        carnet = get_object_or_404(CarnetVotacion, id=carnet_id)
+        logo_config = LogoConfig.objects.first()
+        
+        # Crear un objeto HttpResponse con las cabeceras PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="datos_votante_{carnet.voto.votante.cedula}.pdf"'
+        
+        # Usar tamaño carta para este PDF
+        width, height = letter
+        
+        # Crear el objeto PDF
+        p = canvas.Canvas(response, pagesize=letter)
+        
+        # Añadir el logo institucional a la izquierda del título
+        if logo_config and logo_config.logo_1:
+            try:
+                # Obtener la ruta del archivo
+                logo_path = logo_config.logo_1.path
+                
+                # Verificar si el archivo existe
+                if os.path.exists(logo_path):
+                    # Tamaño y posición del sello - al lado del título
+                    logo_width = 80
+                    logo_height = 80
+                    logo_x = 70  # Posición a la izquierda
+                    logo_y = height - 90  # Alineado con los títulos
+                    
+                    # Dibujar el logo sin bordes negros
+                    p.drawImage(logo_path, logo_x, logo_y, width=logo_width, height=logo_height, preserveAspectRatio=True, mask='auto')
+            except Exception as e:
+                print(f"Error al cargar el sello junto al título: {str(e)}")
+        
+        # Añadir un título (más a la derecha para dar espacio al logo)
+        p.setFont("Helvetica-Bold", 18)
+        p.drawString(180, height - 50, "CERTIFICADO DE VOTACIÓN")
+        
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(180, height - 80, "ESCUELA DE EDUCACIÓN BÁSICA RIOBAMBA")
+        
+        # Línea horizontal
+        p.setStrokeColor('#3b82f6')
+        p.line(50, height - 100, width - 50, height - 100)
+        
+        # Datos del votante
+        y_pos = height - 140
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(50, y_pos, "DATOS DEL VOTANTE:")
+        y_pos -= 25
+        
+        # Información del votante
+        votante = carnet.voto.votante
+        proceso = carnet.voto.proceso_electoral
+        
+        # Añadir datos personales
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Nombre completo:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, f"{votante.nombre} {votante.apellidos}")
+        y_pos -= 20
+        
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Cédula de identidad:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, votante.cedula)
+        y_pos -= 20
+        
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Correo electrónico:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, votante.correo if votante.correo else "No registrado")
+        y_pos -= 40
+        
+        # Datos de la votación
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(50, y_pos, "DATOS DEL PROCESO ELECTORAL:")
+        y_pos -= 25
+        
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Proceso electoral:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, proceso.nombre)
+        y_pos -= 20
+        
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Período:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, proceso.periodo.nombre)
+        y_pos -= 20
+        
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(60, y_pos, "Fecha de votación:")
+        p.setFont("Helvetica", 11)
+        p.drawString(200, y_pos, carnet.fecha_votacion.strftime('%d/%m/%Y'))
+        y_pos -= 20
+        
+        
+       
+        
+        # Generar código QR para verificación
+        try:
+            import qrcode
+            from io import BytesIO
+            
+            # URL de verificación del carnet
+            url_verificacion = request.build_absolute_uri(
+                reverse('votacion:verificar_carnet', kwargs={'codigo_verificacion': carnet.codigo_verificacion})
+            )
+            
+            # Generar el código QR
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(url_verificacion)
+            qr.make(fit=True)
+            
+            # Crear la imagen del QR
+            qr_img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Guardar la imagen del QR en un buffer
+            buffer = BytesIO()
+            qr_img.save(buffer, format='PNG')
+            buffer.seek(0)
+            
+            # Dibujar el código QR en el PDF centrado
+            qr_reader = ImageReader(buffer)
+            qr_size = 100  # Tamaño del código QR
+            # Centrar el QR horizontalmente
+            qr_x = (width - qr_size) / 2
+            p.drawImage(qr_reader, qr_x, y_pos - qr_size, width=qr_size, height=qr_size)
+            
+            # Texto debajo del QR, también centrado
+            p.setFont("Helvetica", 8)
+            p.drawCentredString(width/2, y_pos - qr_size - 15, "Escanear para verificar")
+            
+        except Exception as e:
+            print(f"Error al generar el código QR: {str(e)}")
+        
+        # Se mantiene solo el logo del encabezado (el que aparece junto al título)
+        
+        # Sello de autenticidad
+        y_pos = 150  # Posición del sello
+        p.setFont("Helvetica-Bold", 12)
+        p.drawCentredString(width/2, y_pos, "DOCUMENTO VÁLIDO COMO CERTIFICADO DE VOTACIÓN")
+        y_pos -= 20
+        
+        # Pie de página
+        p.setFont("Helvetica", 8)
+        p.drawCentredString(width/2, 50, f"Certificado generado el {timezone.now().strftime('%d/%m/%Y')}")  
+        p.drawCentredString(width/2, 35, "Este documento certifica la participación del votante en el proceso electoral")
+        p.drawCentredString(width/2, 20, "Sistema de Votación Electrónica - Escuela de Educación Básica Riobamba")
+        
+        # Cerrar el objeto PDF
+        p.showPage()
+        p.save()
+        
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'Error al generar el PDF con los datos del votante: {str(e)}')
+        return redirect('administracion:index')
 
 def registrar_voto(request, proceso_id):
     if not request.session.get('padron_autenticado'):

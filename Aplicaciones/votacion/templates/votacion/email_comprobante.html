@@ -1,3 +1,4 @@
+[media pointer="file-service://file-H5etKiu4ZbhCtzYhTpXEEn"]
 
 <!DOCTYPE html>
 <html>
@@ -47,6 +48,24 @@
             padding: 8px;
             background: white;
             display: flex;
+            position: relative;
+        }
+        .carnet-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            opacity: 0.08;
+        }
+        .carnet-background img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
         }
         .carnet-left {
             width: 40%;
@@ -163,20 +182,28 @@
             
             <div class="carnet-body">
                 <!-- Sección izquierda con QR -->
-                <div class="carnet-left" style="justify-content: center; width: 100%;">
-                    {% if logo_config and logo_config.logo_1 %}
-                        <div style="width: 150px; height: 150px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                            <img src="cid:logo_institucional" alt="Logo Institucional" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                        </div>
-                    {% else %}
-                        <div style="width: 150px; height: 150px; background-color: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 72px; color: #0d6efd;">
-                            {{ carnet.nombre_completo|slice:':1' }}
-                        </div>
-                    {% endif %}
+                <div class="carnet-left" style="position: relative; z-index: 2; width: 40%; border-right: 1px dashed #ddd; padding: 8px 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <!-- Código QR -->
+                    <div style="width: 100px; height: 100px; margin: 10px auto; display: flex; align-items: center; justify-content: center;">
+                        <img src="cid:codigo_qr" alt="Código QR" style="width: 100px; height: 100px;">
+                    </div>
+                    <!--
+                    <div style="font-size: 8px; text-align: center; color: #555;">
+                        Escanea para verificar
+                    </div>
+                    
+                    -->
                 </div>
                 
+                <!-- Logo institucional debajo de los datos -->
+                {% if logo_config and logo_config.logo_1 %}
+                <div style="margin-top: 10px; display: flex; justify-content: center;">
+                    <img src="cid:logo_institucional" alt="Logo Institucional" style="height: 60px; object-fit: contain;">
+                </div>
+                {% endif %}
+                
                 <!-- Sección derecha con información -->
-                <div class="carnet-right">
+                <div class="carnet-right" style="width: 60%; padding: 8px 10px; font-size: 11px; display: block;">
                     <div class="carnet-field">
                         <div class="carnet-label">NOMBRE:</div>
                         <div class="carnet-value">
@@ -204,6 +231,8 @@
                             {{ carnet.fecha_votacion|date:"d/m/Y H:i" }}
                         </div>
                     </div>
+                    
+                    
                 </div>
             </div>
             

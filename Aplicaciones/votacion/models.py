@@ -110,6 +110,10 @@ class CarnetVotacion(models.Model):
     proceso_electoral = models.CharField(max_length=200, blank=True, null=True)
     fecha_votacion = models.DateTimeField(null=True, blank=True)
     
+    # Campos para control de verificación
+    utilizado = models.BooleanField(default=False, help_text='Indica si el carnet ha sido verificado')
+    fecha_verificacion = models.DateTimeField(null=True, blank=True, help_text='Fecha y hora de la verificación')
+    
     class Meta:
         verbose_name = 'Carnet de Votación'
         verbose_name_plural = 'Carnets de Votación'
@@ -117,4 +121,3 @@ class CarnetVotacion(models.Model):
     
     def __str__(self):
         return f"Carnet de {self.nombre_completo} - {self.proceso_electoral}"
-        return f"Voto para {self.lista} - {self.votante}"
