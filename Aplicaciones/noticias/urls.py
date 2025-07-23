@@ -6,7 +6,7 @@ app_name = 'noticias'
 
 # Función para aplicar login_required a las vistas basadas en funciones
 def login_required_view(view_func):
-    return login_required(view_func, login_url='login')
+    return login_required(view_func, login_url='agregarLogin')
 
 urlpatterns = [
     # URLs para noticias (requieren autenticación)

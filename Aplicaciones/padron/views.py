@@ -29,7 +29,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 #CRUD GRADOS
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def generar_credenciales(request):
     # Inicializar el diccionario de credenciales generadas
     if not hasattr(request, 'session'):
@@ -133,7 +133,7 @@ def generar_credenciales(request):
         'mostrar_envio': False
     })
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def exportar_credenciales_pdf(request):
     """
     Genera un PDF con las credenciales de los usuarios
@@ -212,7 +212,7 @@ def exportar_credenciales_pdf(request):
     
     return response
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def enviar_credenciales(request):
     if request.method == 'POST':
         print('=== INICIO DE ENVÍO DE CREDENCIALES ===')
@@ -325,7 +325,7 @@ Consejo Electoral - Unidad Educativa Riobamba"""
 #CRUD GRADOS
 
 class GradoListView(LoginRequiredMixin, ListView):
-    login_url = 'login'
+    login_url = 'agregarLogin'
     model = Grado
     template_name = 'grados/agregarGrado.html'
     context_object_name = 'grados'
@@ -340,7 +340,7 @@ class GradoListView(LoginRequiredMixin, ListView):
         context['periodo_actual'] = Periodo.objects.order_by('-fecha_inicio').first()
         return context
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def agregar_grado(request):
     # SOLUCIÓN: Obtener el período más reciente por fecha de inicio
     periodo_actual = Periodo.objects.order_by('-fecha_inicio').first()
@@ -378,7 +378,7 @@ def agregar_grado(request):
     })
 
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def editar_grado(request, id):
     grado = get_object_or_404(Grado, pk=id)
     
@@ -407,7 +407,7 @@ def editar_grado(request, id):
         'grado': grado
     })
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def eliminar_grado(request, id):
     grado = get_object_or_404(Grado, pk=id)
     
@@ -429,7 +429,7 @@ def eliminar_grado(request, id):
 #CRUD PARALELOS
 
 class ParaleloListView(LoginRequiredMixin, ListView):
-    login_url = 'login'
+    login_url = 'agregarLogin'
     model = Paralelo
     template_name = 'paralelos/agregarParalelo.html'
     context_object_name = 'paralelos'
@@ -443,7 +443,7 @@ class ParaleloListView(LoginRequiredMixin, ListView):
         context['grados'] = Grado.objects.all()
         return context
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def agregar_paralelo(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre').upper()
@@ -470,7 +470,7 @@ def agregar_paralelo(request):
         'grados': Grado.objects.all()
     })
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def editar_paralelo(request, id):
     paralelo = get_object_or_404(Paralelo, pk=id)
     
@@ -499,7 +499,7 @@ def editar_paralelo(request, id):
         'grados': Grado.objects.all()
     })
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def eliminar_paralelo(request, id):
     paralelo = get_object_or_404(Paralelo, pk=id)
     
@@ -522,7 +522,7 @@ ESTADOS = [
     ('inactivo', 'Inactivo'),
 ]
 @login_required
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def gestion_padron(request):
     padron = PadronElectoral.objects.select_related('grado', 'paralelo', 'periodo').all().order_by('apellidos', 'nombre')
     grados = Grado.objects.all().prefetch_related('paralelos')
@@ -542,7 +542,7 @@ def gestion_padron(request):
     }
     return render(request, 'padron/agregarPadron.html', context)
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def agregar_estudiante(request):
     if request.method == 'POST':
         # Obtener datos del formulario
@@ -631,7 +631,7 @@ def agregar_estudiante(request):
     # Si no es POST, redirigir a la gestión de padrón
     return redirect('gestion_padron')
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def editar_estudiante(request, estudiante_id):
     estudiante = get_object_or_404(PadronElectoral, id=estudiante_id)
     
@@ -710,7 +710,7 @@ def editar_estudiante(request, estudiante_id):
     })
     
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def eliminar_estudiante(request, estudiante_id):
     estudiante = get_object_or_404(PadronElectoral, id=estudiante_id)
     
@@ -722,7 +722,7 @@ def eliminar_estudiante(request, estudiante_id):
     
     return redirect('gestion_padron')
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def cargar_paralelos(request):
     grado_id = request.GET.get('grado_id')
     paralelos = Paralelo.objects.filter(grado_id=grado_id).order_by('nombre')
@@ -733,7 +733,7 @@ def cargar_paralelos(request):
     return JsonResponse(data)
 
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def estadisticas_padron(request):
     """
     Devuelve estadísticas del padrón en formato JSON para ser usadas en AJAX
@@ -747,7 +747,7 @@ def estadisticas_padron(request):
         'total_estudiantes': total_estudiantes,
     })
 
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def eliminar_todo_el_padron(request):
     """
     Elimina todo el padrón electoral y los grados/paralelos que ya no están en uso.
@@ -845,7 +845,7 @@ def eliminar_todo_el_padron(request):
 
 
 # FORMATO PADORN ELECTORAL
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def exportar_padron_excel(request):
     # Crear el libro de trabajo y la hoja
     wb = Workbook()
@@ -888,7 +888,7 @@ def exportar_padron_excel(request):
     return response
 
 # CARGAR EL PADRON ELECTORAL DESDE UN ARCHIVO EXCEL
-@login_required(login_url='login')
+@login_required(login_url='agregarLogin')
 def importar_padron_excel(request):
     print("DEBUG: Iniciando importación de archivo Excel")
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'

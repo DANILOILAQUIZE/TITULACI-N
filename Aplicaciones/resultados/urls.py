@@ -4,7 +4,7 @@ from . import views
 
 # Función para aplicar login_required a las vistas basadas en funciones
 def login_required_view(view_func):
-    return login_required(view_func, login_url='login')
+    return login_required(view_func, login_url='agregarLogin')
 
 urlpatterns = [
     # Rutas de resultados (requieren autenticación)

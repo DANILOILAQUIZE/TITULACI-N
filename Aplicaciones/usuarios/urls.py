@@ -9,7 +9,7 @@ from .views import CambioContrasena, dashboard, editar_rol, eliminarrol, agregar
 # Función para aplicar login_required a todas las vistas
 def login_required_decorator(func):
     """Aplica login_required a una vista, excepto si ya lo tiene"""
-    decorator = login_required(login_url='login')
+    decorator = login_required(login_url='agregarLogin')
     if hasattr(func, 'view_class'):  # Para class-based views
         func.view_class = type(
             func.view_class.__name__,
@@ -44,5 +44,5 @@ urlpatterns = [
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Configuración para redirigir a la página de login si no está autenticado
-login_url = 'login'
-login_redirect_url = 'login'
+login_url = 'agregarLogin'
+login_redirect_url = 'agregarLogin'

@@ -7,11 +7,11 @@ app_name = 'votacion'
 
 # Función para aplicar login_required a las vistas basadas en funciones
 def login_required_view(view_func):
-    return login_required(view_func, login_url='login')
+    return login_required(view_func, login_url='agregarLogin')
 
 # Función para aplicar login_required a las vistas basadas en clases
 def login_required_class_view(view_class):
-    view_class.dispatch = login_required(view_class.dispatch, login_url='login')
+    view_class.dispatch = login_required(view_class.dispatch, login_url='agregarLogin')
     return view_class
 
 urlpatterns = [

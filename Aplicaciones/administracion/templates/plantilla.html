@@ -146,7 +146,7 @@
                       </div>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'administracion:index' %}">
+                    <a class="dropdown-item" href="#" id="logout-link">
                       <i class="ft-power"></i> Cerrar Sesión
                     </a>
                   </div>
@@ -241,10 +241,12 @@
                   <a href="{% url 'configurar_logo' %}"><i class="ft-settings"></i><span class="menu-title" data-i18n="">Configuración</span></a>
             </li>
             <li class="nav-item mt-1">
-              <a href="{% url 'administracion:index' %}">
+              <a href="#" id="logout-link">
               <i class="ft-power"></i><span class="menu-title">Cerrar Sesión</span>
               </a>
             </li> 
+
+              
 
           
           </li>
@@ -543,11 +545,10 @@
 
     <footer class="footer footer-static footer-light navbar-border navbar-shadow">
       <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
-        <span class="float-md-left d-block d-md-inline-block">2018  &copy; Copyright <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank">ThemeSelection</a></span>
+        <span class="float-md-left d-block d-md-inline-block">2025  &copy; Copyright Escuela Riobamba</span>
+        <span class="float-md-right d-block d-md-inline-block">Developed by: Darwin Ilaquize - Joel Vega</span>
         <ul class="list-inline float-md-right d-block d-md-inline-blockd-none d-lg-block mb-0">
-          <li class="list-inline-item"><a class="my-1" href="https://themeselection.com/" target="_blank"> More themes</a></li>
-          <li class="list-inline-item"><a class="my-1" href="https://themeselection.com/support" target="_blank"> Support</a></li>
-          <li class="list-inline-item"><a class="my-1" href="https://themeselection.com/products/chameleon-admin-modern-bootstrap-webapp-dashboard-html-template-ui-kit/" target="_blank"> Purchase</a></li>
+      
         </ul>
       </div>
     </footer>
@@ -777,7 +778,30 @@
     </script>
   
 
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+          console.log('Logout link clicked');
+          e.preventDefault();
+          Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: '¿Estás seguro de que quieres salir del sistema?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "{% url 'administracion:index' %}";
+            }
+          });
+        });
+      });
+    </script>
+    {% endblock %}
 
     <!-- jQuery (necesario para fileinput) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
