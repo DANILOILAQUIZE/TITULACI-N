@@ -92,18 +92,78 @@
   <!-- ***** Main Banner Area Start ***** -->
   <section class="section main-banner" id="top" data-section="section1" style="padding-bottom: 0 !important; margin-bottom: 0 !important;">
     <video autoplay muted loop id="bg-video">
-      <source src="{% static 'plantillas/assets/assets_informativo/images/INGRESO_ESCUELA.mp4' %}" type="video/mp4" />
+      <source src="{% static 'plantillas/assets/assets_informativo/images/VIDEO_ESCUELA.mp4' %}" type="video/mp4" />
     </video>
 
     <div class="video-overlay header-text">
       <div class="caption">
-        <h2><em>Votación</em> Electrónica</h2>
-        <div class="main-button">
-          <a href="#section2" class="btn-modern btn-primary-modern">EMITIR VOTO</a>
-        </div>
+        
+        <!-- Texto animado -->
+        <h2 id="bienvenida" class="typing-text">Hola!! <span id="texto-escribir"></span></h2>
+    
+        <!-- Texto descriptivo fijo debajo -->
+        <p class="descripcion">
+          Este es un sistemas de la Escuela de Educación Básica Riobamba,
+          donde nuestros estudiantes ejercen su derecho al voto de forma segura, moderna y electrónica.
+        </p>
+    
       </div>
     </div>
+    
+    <script>
+      const texto = "Bienvenidos";
+      const spanTexto = document.getElementById("texto-escribir");
+      let index = 0;
+    
+      function escribirTexto() {
+        if (index < texto.length) {
+          spanTexto.textContent += texto.charAt(index);
+          index++;
+          setTimeout(escribirTexto, 100);
+        } else {
+          setTimeout(() => {
+            spanTexto.textContent = "";
+            index = 0;
+            escribirTexto();
+          }, 5000);
+        }
+      }
+    
+      window.onload = escribirTexto;
+    </script>
+    
+    <style>
+    .typing-text {
+      font-size: 32px;
+      font-weight: bold;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .descripcion {
+      font-size: 18px;
+      color: #f0f0f0;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    </style>
+    
+    
+    <style>
+    .typing-text {
+      font-size: 32px;
+      font-weight: bold;
+      color: #fff;
+      text-align: center;
+    }
+    </style>
+    
+    
   </section>
+  
   <!-- ***** Main Banner Area End ***** -->
 
   <!-- ***** Features Area Start ***** -->
@@ -119,7 +179,6 @@
               <div class="content-hide">
                 <p>Nuestro sistema de votación electrónica garantiza la seguridad y confidencialidad de cada voto emitido. Utilizamos tecnología de encriptación de última generación.</p>
                 <p class="hidden-sm">Cada voto es verificado y almacenado de manera segura en nuestra base de datos.</p>
-                <div class="scroll-to-section"><a href="#section2">Más Información</a></div>
               </div>
             </div>
           </div>
@@ -133,7 +192,6 @@
               <div class="content-hide">
                 <p>Garantizamos la transparencia en todo el proceso electoral. Los resultados son verificables y auditables en tiempo real por las autoridades competentes.</p>
                 <p class="hidden-sm">Cada paso del proceso está diseñado para asegurar la integridad de los resultados.</p>
-                <div class="scroll-to-section"><a href="#section3">Detalles</a></div>
               </div>
             </div>
           </div>
@@ -147,7 +205,6 @@
               <div class="content-hide">
                 <p>Nuestra plataforma es intuitiva y fácil de usar. Diseñada pensando en todos los miembros de la comunidad educativa, sin importar su nivel de experiencia tecnológica.</p>
                 <p class="hidden-sm">Guías paso a paso disponibles para facilitar el proceso de votación.</p>
-                <div class="scroll-to-section"><a href="#section4">Leer Más</a></div>
               </div>
             </div>
           </div>
@@ -157,200 +214,42 @@
   </section>
   <!-- ***** Features Area End ***** -->
 
-  
-
-
-  <!-- Modal para Jiménez Jiménez Juan Carlos -->
-  <div class="modal fade" id="docenteModal302" tabindex="-1" role="dialog" aria-labelledby="docenteModal302Label"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="docenteModal302Label">DATOS DEL DOCENTE</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <div class="sinfotoempresa image sinfoto-hover">
-                <div class="letracentro">J</div>
-              </div>
-              <br><br>
-              <label for="" style="font-size:18px; letter-spacing:1px; color:#312783;">
-                <b>Jiménez Jiménez Juan Carlos</b>
-              </label>
-              <br>
-              <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a docente deseo hacerle una consulta. "
-                target="_blank" class="btn btn-primary btn-circle btn-lg" style="padding-top:3px;">
-                <i class="fa fa-whatsapp"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <div class="text-justify" style="padding:20px;">
-                <center>
-                  <label for="" style="font-weight:bold; font-size:18px; color:#312783;">PERFIL PROFESIONAL</label>
-                </center>
-                <hr style="background: #312783;">
-                <p>Descripción del perfil profesional del docente...</p>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="container">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="text-center">
-                      <br>
-                      <center>
-                        <label for="" style="font-weight:bold; font-size:18px; color:#312783;">SOFTWARE</label>
-                      </center>
-                      <hr style="background: #312783;">
-                    </div>
-
-                    <div class="text-center">
-                      <i class="fa fa-envelope" style="color: #312783;"></i> correo@ejemplo.com<br>
-                      <i class="fa fa-phone" style="color: #312783;"></i> 0984257262
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-outline-principal btn-block" data-toggle="modal"
-                      data-target="#propuestasModal302">
-                      <i class="fa fa-graduation-cap"></i> Propuestas de Titulación
-                    </button>
-                    <br>
-                    <a href="https://api.whatsapp.com/send?phone=+5930984257262&text=Saludos estimado/a deseo hacerle una consulta. "
-                      target="_blank" class="btn btn-outline-principal btn-block">
-                      <i class="fa fa-whatsapp"></i> Contactar por Whatsapp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <section class="section video" data-section="section5">
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 align-self-center">
+      <div class="row align-items-center">
+        
+        <!-- Texto a la izquierda -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
           <div class="left-content">
-            <span>Innovación Educativa</span>
+            <h2>Innovación Educativa</h2>
             <h4>Conoce nuestro <em>Proyecto Educativo Digital</em></h4>
-            <p>La Escuela de Educación Básica Riobamba estamos comprometidos con la innovación tecnológica y la transformación
+            <p>
+              En la Escuela de Educación Básica Riobamba estamos comprometidos con la innovación tecnológica y la transformación
               digital de la educación. Nuestro sistema de votación electrónica es solo una muestra de cómo integramos la
               tecnología para mejorar la experiencia educativa.
-              <br><br>Descubre cómo nuestros estudiantes participan activamente en proyectos tecnológicos que fomentan
+              <br><br>
+              Descubre cómo nuestros estudiantes participan activamente en proyectos tecnológicos que fomentan
               el pensamiento crítico, la colaboración y las habilidades digitales esenciales para el futuro.
             </p>
           </div>
         </div>
-        <div class="col-md-6">
+  
+        <!-- Imagen a la derecha -->
+        <div class="col-lg-6">
           <article class="video-item">
-            <div class="video-caption">
-              <h4>Innovación Educativa UE Riobamba</h4>
-            </div>
             <figure>
-              <a href="https://www.youtube.com/watch?v=x4GV9ynVvGg" class="play">
-                <img src="{% static 'images/video-thumbnail.jpg' %}" alt="Video Institucional"
-                  onerror="this.src='static/plantillas/assets/assets_informativo/images/courses-01.jpg'">
-              </a>
+              <img src="{% static 'plantillas/assets/assets_informativo/images/INGRESO.JPG' %}" 
+                   alt="IMAGEN" 
+                   class="img-fluid rounded shadow"
+                   style="width: 100%; height: auto;">
             </figure>
           </article>
         </div>
-      </div>
-    </div>
-  </section>
-  <!-- 
-  <section class="section contact" data-section="section6">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="section-heading">
-            <h2>Comunícate con Nosotros</h2>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <form id="contact" action="" method="post">
-            <div class="row">
-              <div class="col-md-6">
-                <fieldset>
-                  <input name="name" type="text" class="form-control" id="name" placeholder="Nombre completo"
-                    required="">
-                </fieldset>
-              </div>
-              <div class="col-md-6">
-                <fieldset>
-                  <input name="email" type="text" class="form-control" id="email" placeholder="Correo electrónico"
-                    required="">
-                </fieldset>
-              </div>
-              <div class="col-md-6">
-                <fieldset>
-                  <select name="tipo" class="form-control" id="tipo" required="">
-                    <option value="" disabled selected>Tipo de consulta</option>
-                    <option value="admision">Admisiones</option>
-                    <option value="academico">Información académica</option>
-                    <option value="votacion">Sistema de votación</option>
-                    <option value="otro">Otro</option>
-                  </select>
-                </fieldset>
-              </div>
-              <div class="col-md-6">
-                <fieldset>
-                  <input name="phone" type="text" class="form-control" id="phone" placeholder="Número telefónico">
-                </fieldset>
-              </div>
-              <div class="col-md-12">
-                <fieldset>
-                  <textarea name="message" rows="6" class="form-control" id="message"
-                    placeholder="Escribe tu mensaje aquí..." required=""></textarea>
-                </fieldset>
-              </div>
-              <div class="col-md-12">
-                <fieldset>
-                  <button type="submit" id="form-submit" class="button">Enviar Mensaje</button>
-                </fieldset>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="col-md-6">
-          <div id="map">
-       
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.757095390994!2d-78.54700172524211!3d-0.31741383533419143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d5a3b9f5c2dbb9%3A0xa02573d5c674ac55!2sEscuela%20Riobamba!5e0!3m2!1ses!2sec!4v1751476292014!5m2!1ses!2sec" 
-            width="700px" height="500px" frameborder="0" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> 
-          </div>
-          <br>
-          <div class="contact-info mt-4 center">
-            <div class="row">
-              <div class="col-md-4 text-center">
-                <i class="fa fa-map-marker fa-2x"></i>
-                <p>Av. Principal s/n<br>Pedro Vicente</p>
-              </div>
-              <div class="col-md-4 text-center">
-                <i class="fa fa-phone fa-2x"></i>
-                <p>+593 91 11 30 63</p>
-              </div>
-              <div class="col-md-4 text-center">
-                <i class="fa fa-envelope fa-2x"></i>
-                <p>info@ueriobamba.edu.ec</p>
-              </div>
-            </div>
-          </div>
-        </div>
+  
       </div>
     </div>
   </section>
   
-
-
-
- 
-  
-
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'plantillas/assets/vendor_informativo/jquery/jquery.min.js' %}"></script>

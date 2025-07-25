@@ -147,6 +147,8 @@ def enviar_comprobante_email(carnet, request=None):
                     carnet.save()
                     print("Formato QR corregido")
         
+
+        
         # Obtener la configuración del logo
         from Aplicaciones.configuracion.models import LogoConfig
         logo_config = LogoConfig.objects.first()
