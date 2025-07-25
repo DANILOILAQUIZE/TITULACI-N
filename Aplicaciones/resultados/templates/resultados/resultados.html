@@ -423,29 +423,21 @@
                 <div class="d-flex flex-column flex-md-row align-items-stretch justify-content-md-end">
                     <!-- Botón de descarga -->
                     <div class="btn-group" role="group">
-                        <button type="button" id="btnDescargarResultados" class="btn btn-success btn-sm">
-                            <i class="la la-download"></i> Descargar Resultados
-                        </button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" id="btnVolverLista">
+                        <a href="{% url 'descargar_backup' %}" class="btn btn-success btn-sm" role="button">
+                            <i class="la la-download"></i> Descargar Backup
+                        </a>
+                        <a href="{% url 'lista_resultados' %}" class="btn btn-outline-primary btn-sm">
                             <i class="la la-arrow-left"></i> Volver a Lista
-                        </button>
+                        </a>
+                        
                     </div>
                 </div>
             </div>
-
-            <div class="card-content">
-                <div class="card-body">
-
-    <!-- Sección para PDF -->
-    <div id="seccion-resultados-pdf">
-        <!-- Encabezado del PDF -->
-        
-       
-
+  
     <!-- Resumen de participación -->
     
 
-    <!-- Tabla de resultados por lista -->
+    <!-- Tabla de resultados por lista -->  
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="mb-0"><i class="la la-list text-success"></i> Resultados por Lista</h5>

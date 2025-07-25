@@ -5,6 +5,10 @@ from django.db.models import Count, F
 from Aplicaciones.votacion.models import ProcesoElectoral, Voto
 from Aplicaciones.elecciones.models import Lista
 from Aplicaciones.padron.models import PadronElectoral
+import os
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, FileResponse
+from datetime import datetime
 
 @login_required
 def resultados_votacion(request, proceso_id):
@@ -88,3 +92,21 @@ def lista_resultados(request):
         'procesos': procesos,
         'titulo': 'Resultados de Procesos Electorales'
     })
+
+
+#===============================================
+# Funcion para descargar backup
+#===============================================
+@login_required
+def descargar_backup_sqlite(request):
+    try:
+        ruta_db = settings.DATABASES['default']['NAME']
+    except KeyError:
+        return HttpResponseNotFound("Configuración de base de datos no encontrada")
+
+    if os.path.exists(ruta_db):
+        fecha_actual = datetime.now().strftime('%Y-%m-%d')
+        nombre_archivo = f"backup_escuela_riobamba_{fecha_actual}.sqlite3"
+        return FileResponse(open(ruta_db, 'rb'), as_attachment=True, filename=nombre_archivo)
+    else:
+        return HttpResponseNotFound(f"Archivo de base de datos no encontrado en: {ruta_db}")
