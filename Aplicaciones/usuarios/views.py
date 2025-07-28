@@ -29,6 +29,10 @@ def dashboard(request):
         from django.contrib.auth import update_session_auth_hash
         update_session_auth_hash(request, request.user)
         
+        # Agregar contexto para mostrar el modal (aunque será manejado por la redirección)
+        context = {'mostrar_modal': True}
+        return render(request, 'rol/dashboard.html', context)
+        
     # Datos existentes
     total_usuarios = Usuarios.objects.count()
     total_estudiantes = PadronElectoral.objects.count()
@@ -345,6 +349,11 @@ def eliminarUsuario(request, id):
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.contrib.auth import update_session_auth_hash
 
 class CambioContrasena(PasswordChangeView):
     template_name = 'usuarios/password_change_form.html'
@@ -355,12 +364,47 @@ class CambioContrasena(PasswordChangeView):
             response = super().form_valid(form)
             self.request.user.primer_inicio = False
             self.request.user.save()
+            
+            # Si es una petición AJAX, devolver respuesta JSON
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Contraseña cambiada exitosamente.'
+                })
+                
             messages.success(self.request, 'Contraseña cambiada exitosamente. Ya no estás en primer inicio.')
             return response
+            
         except Exception as e:
-            messages.error(self.request, f'Error al cambiar la contraseña: {str(e)}')
+            error_message = f'Error al cambiar la contraseña: {str(e)}'
+            
+            # Si es una petición AJAX, devolver error en JSON
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'__all__': [error_message]}
+                }, status=400)
+                
+            messages.error(self.request, error_message)
             return super().form_invalid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Por favor, corrige los errores en el formulario.')
+        error_message = 'Por favor, corrige los errores en el formulario.'
+        
+        # Si es una petición AJAX, devolver errores de validación en JSON
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            errors = {}
+            for field, error_list in form.errors.items():
+                errors[field] = [str(error) for error in error_list]
+                
+            return JsonResponse({
+                'success': False,
+                'errors': errors
+            }, status=400)
+            
+        messages.error(self.request, error_message)
         return super().form_invalid(form)
+        
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)

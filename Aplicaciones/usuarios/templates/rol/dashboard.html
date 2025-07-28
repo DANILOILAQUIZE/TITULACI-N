@@ -368,4 +368,31 @@
     });
 </script>
 
+<!-- Redirección automática para cambio de contraseña con mensaje -->
+{% if mostrar_modal %}
+<!-- Incluir SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar mensaje con SweetAlert2
+    Swal.fire({
+      title: '¡Bienvenido!',
+      text: 'Por seguridad, debes cambiar tu contraseña antes de continuar.',
+      icon: 'info',
+      confirmButtonText: 'Entendido',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: true,
+      backdrop: true
+    }).then((result) => {
+      // Redirigir después de hacer clic en el botón
+      if (result.isConfirmed) {
+        console.log('Redirigiendo a la página de cambio de contraseña...');
+        window.location.href = '{% url "cambiar_contrasena" %}';
+      }
+    });
+  });
+</script>
+{% endif %}
+
 {% endblock %}
