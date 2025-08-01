@@ -536,9 +536,16 @@ class GenerarCarnetPDF(View):
         
         # Código QR con la URL de verificación
         try:
-            # Construir la URL de verificación
-            dominio = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+            # Construir la URL de verificación usando la configuración de SITE_URL
             from django.urls import reverse
+            from django.conf import settings
+            
+            # Usar SITE_URL de la configuración
+            dominio = settings.SITE_URL
+            # Asegurarse de que el dominio no termine con /
+            dominio = dominio.rstrip('/')
+            
+            # Construir la URL completa
             url_verificacion = f"{dominio}{reverse('votacion:verificar_carnet', kwargs={'codigo_verificacion': carnet.codigo_verificacion})}"
             
             # Generar el código QR con la URL de verificación
