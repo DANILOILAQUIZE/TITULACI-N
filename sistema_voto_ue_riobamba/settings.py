@@ -162,16 +162,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'usuarios.Usuarios'  # Esto debe estar definido
 
 #ENVIO DE CORREOS ELECTRONICOS
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.privateemail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = 'info@escuelariobamba.com'
-EMAIL_HOST_PASSWORD = 'Darwin23_@'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.privateemail.com'
+#EMAIL_PORT = 465
+#EMAIL_USE_SSL = True
+#EMAIL_USE_TLS = False
+#EMAIL_HOST_USER = 'info@escuelariobamba.com'
+#EMAIL_HOST_PASSWORD = 'Darwin23_@'
+
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Configuración del sitio
 SITE_URL = 'https://escuelariobamba.com'
 
 # Configuración de seguridad para HTTPS en producción
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'darwin.ilaquize1102@utc.edu.ec'
+EMAIL_HOST_PASSWORD = 'cipyqosk ekiz qbtj'
+DEFAULT_FROM_EMAIL = 'Sistema de Votación UE Riobamba <darwin.ilaquize1102@utc.edu.ec>'
